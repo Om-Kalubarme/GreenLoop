@@ -261,3 +261,122 @@ Retrieve detailed listing information including donor contact details.
   ]
 }
 ```
+
+---
+
+## 4. Interest Expression & Coordination Endpoints
+
+### `POST /api/listings/:id/interests`
+Submit a formal interest request for an available material listing.
+
+* **Access:** Authenticated (Recipient or Admin)
+* **Request Body:**
+```json
+{
+  "message": "Hello, our community workshop would love to collect these crates this Saturday morning for an upcycling project."
+}
+```
+* **Sample Response (HTTP 201 Created):**
+```json
+{
+  "success": true,
+  "message": "Interest request successfully sent to the material donor",
+  "interest": {
+    "id": "c1111111-cccc-cccc-cccc-cccccccccccc",
+    "listing_id": "a1111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "recipient_id": "33333333-3333-3333-3333-333333333333",
+    "message": "Hello, our community workshop would love to collect these...",
+    "status": "pending",
+    "created_at": "2026-10-26T11:00:00.000Z"
+  }
+}
+```
+* **Error Response (HTTP 409 Conflict — Duplicate Submission):**
+```json
+{
+  "success": false,
+  "error": "You have already submitted an interest request for this listing"
+}
+```
+
+---
+
+### `GET /api/listings/:id/interests`
+Retrieve all interest proposals received for a specific listing.
+
+* **Access:** Authenticated (Listing Owner or Admin)
+* **Sample Response (HTTP 200 OK):**
+```json
+{
+  "success": true,
+  "count": 1,
+  "interests": [
+    {
+      "id": "c1111111-cccc-cccc-cccc-cccccccccccc",
+      "listing_id": "a1111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "recipient_id": "33333333-3333-3333-3333-333333333333",
+      "message": "Hello, our community workshop would love to collect these...",
+      "status": "pending",
+      "created_at": "2026-10-26T11:00:00.000Z",
+      "recipient_name": "Ananya Iyer (Design Student)",
+      "recipient_email": "recipient1@resourceai.org",
+      "recipient_city": "Bengaluru",
+      "recipient_role": "recipient"
+    }
+  ]
+}
+```
+
+---
+
+### `GET /api/interests/my`
+Fetch all interest proposals sent (as recipient) or received (as donor).
+
+* **Access:** Authenticated
+* **Sample Response (HTTP 200 OK):**
+```json
+{
+  "success": true,
+  "sent": [
+    {
+      "id": "c1111111-cccc-cccc-cccc-cccccccccccc",
+      "listing_id": "a1111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "message": "Hello, our community workshop...",
+      "status": "accepted",
+      "created_at": "2026-10-26T11:00:00.000Z",
+      "listing_title": "Clean Heavy-Duty Corrugated Shipping Boxes",
+      "material_category": "cardboard",
+      "listing_city": "Bengaluru",
+      "donor_name": "Rahul Sharma (Eco Logistics)",
+      "donor_email": "donor1@resourceai.org"
+    }
+  ],
+  "received": []
+}
+```
+
+---
+
+### `PATCH /api/interests/:id/status`
+Accept or decline an incoming interest proposal. When accepted, the listing status automatically transitions to `reserved`.
+
+* **Access:** Authenticated (Listing Owner)
+* **Request Body:**
+```json
+{
+  "status": "accepted"
+}
+```
+* **Sample Response (HTTP 200 OK):**
+```json
+{
+  "success": true,
+  "message": "Interest request marked as accepted",
+  "interest": {
+    "id": "c1111111-cccc-cccc-cccc-cccccccccccc",
+    "listing_id": "a1111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "status": "accepted"
+  }
+}
+```
+

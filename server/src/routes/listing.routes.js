@@ -7,6 +7,10 @@ import {
   deleteListing, 
   getMyListings 
 } from '../controllers/listing.controller.js';
+import { 
+  createInterest, 
+  getInterestsForListing 
+} from '../controllers/interest.controller.js';
 import { verifyToken, requireRole } from '../middleware/auth.middleware.js';
 
 const router = Router();
@@ -28,5 +32,9 @@ router.patch('/:id', verifyToken, updateListing);
 
 // Protected: Delete / Archive Listing (Owner or Admin)
 router.delete('/:id', verifyToken, deleteListing);
+
+// Interests nested under listings
+router.post('/:id/interests', verifyToken, createInterest);
+router.get('/:id/interests', verifyToken, getInterestsForListing);
 
 export default router;

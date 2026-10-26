@@ -1,7 +1,19 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Recycle, Sparkles, User, LogIn, LogOut, Menu, X, ArrowRight, LayoutDashboard } from 'lucide-react';
+import { 
+  Recycle, 
+  Sparkles, 
+  User, 
+  LogIn, 
+  LogOut, 
+  Menu, 
+  X, 
+  ArrowRight, 
+  LayoutDashboard,
+  Layers,
+  Heart
+} from 'lucide-react';
 
 export default function Navbar({ connectionStatus }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -36,8 +48,17 @@ export default function Navbar({ connectionStatus }) {
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
             <Link to="/" className="hover:text-emerald-600 transition-colors">Home</Link>
+            <Link to="/browse" className="hover:text-emerald-600 transition-colors flex items-center gap-1.5 font-semibold text-slate-900">
+              <Layers className="w-4 h-4 text-emerald-600" />
+              Browse Materials
+            </Link>
+            {isAuthenticated && (
+              <Link to="/interests" className="hover:text-emerald-600 transition-colors flex items-center gap-1.5">
+                <Heart className="w-4 h-4 text-rose-500" />
+                Interests
+              </Link>
+            )}
             <a href="/#categories" className="hover:text-emerald-600 transition-colors">Categories</a>
-            <a href="/#how-it-works" className="hover:text-emerald-600 transition-colors">How It Works</a>
             <a href="/#connection-test" className="hover:text-emerald-600 transition-colors">System Probe</a>
           </nav>
 
@@ -119,8 +140,22 @@ export default function Navbar({ connectionStatus }) {
           >
             Home
           </Link>
+          <Link
+            to="/browse"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-md text-base font-medium text-emerald-700 bg-emerald-50/50"
+          >
+            Browse Materials
+          </Link>
           {isAuthenticated ? (
             <>
+              <Link
+                to="/interests"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-emerald-50"
+              >
+                Interest Proposals
+              </Link>
               <Link
                 to="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}

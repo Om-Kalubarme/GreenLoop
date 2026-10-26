@@ -6,10 +6,12 @@ import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Browse from './pages/Browse';
 import CreateListing from './pages/CreateListing';
 import EditListing from './pages/EditListing';
 import ListingDetail from './pages/ListingDetail';
 import DonorDashboard from './pages/DonorDashboard';
+import UserInterests from './pages/UserInterests';
 import { fetchHealthStatus } from './api/health.api';
 import { 
   Recycle, 
@@ -122,41 +124,28 @@ function LandingPage() {
               </p>
 
               <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
+                <Link
+                  to="/browse"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.02]"
+                >
+                  Browse Available Materials
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+
                 {isAuthenticated ? (
-                  <>
-                    <Link
-                      to="/dashboard"
-                      className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.02]"
-                    >
-                      User Dashboard
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                    {isDonor && (
-                      <Link
-                        to="/create-listing"
-                        className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 transition-all shadow-sm"
-                      >
-                        <Package className="w-4 h-4 text-emerald-600" />
-                        Offer Material
-                      </Link>
-                    )}
-                  </>
+                  <Link
+                    to="/dashboard"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 transition-all shadow-sm"
+                  >
+                    User Dashboard
+                  </Link>
                 ) : (
-                  <>
-                    <Link
-                      to="/register"
-                      className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.02]"
-                    >
-                      Get Started Free
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                    <Link
-                      to="/login"
-                      className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 transition-all shadow-sm"
-                    >
-                      Sign In
-                    </Link>
-                  </>
+                  <Link
+                    to="/register"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 transition-all shadow-sm"
+                  >
+                    Join Platform
+                  </Link>
                 )}
               </div>
 
@@ -171,115 +160,16 @@ function LandingPage() {
                   <div className="text-xs text-slate-500 font-medium mt-0.5">Active in PostgreSQL</div>
                 </div>
                 <div className="p-3">
-                  <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">Cloudinary</div>
-                  <div className="text-xs text-slate-500 font-medium mt-0.5">Media Pipeline Active</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">Direct Connect</div>
+                  <div className="text-xs text-slate-500 font-medium mt-0.5">Interest Proposals</div>
                 </div>
                 <div className="p-3">
-                  <div className="text-2xl sm:text-3xl font-extrabold text-emerald-600">Phase 4</div>
-                  <div className="text-xs text-slate-500 font-medium mt-0.5">Listings &amp; CRUD Live</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold text-emerald-600">Phase 5</div>
+                  <div className="text-xs text-slate-500 font-medium mt-0.5">Browse &amp; Interest Live</div>
                 </div>
               </div>
 
             </div>
-          </div>
-        </section>
-
-        {/* System Probe Section */}
-        <section id="connection-test" className="py-16 sm:py-20 bg-white border-b border-slate-200/80">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center space-y-3 mb-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
-                <Activity className="w-3.5 h-3.5 text-emerald-600" />
-                Live Architecture Probe
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                Backend System Status
-              </h2>
-              <p className="text-sm text-slate-600 max-w-xl mx-auto">
-                Verifies that the React + Vite frontend communicates with the Node.js Express backend and displays health diagnostics.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8 shadow-sm">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
-                <div className="flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white shadow-sm ${
-                    connectionStatus === 'connected' ? 'bg-emerald-600' :
-                    connectionStatus === 'error' ? 'bg-rose-600' : 'bg-amber-500'
-                  }`}>
-                    {connectionStatus === 'connected' ? <CheckCircle2 className="w-6 h-6" /> :
-                     connectionStatus === 'error' ? <AlertTriangle className="w-6 h-6" /> :
-                     <RefreshCw className="w-6 h-6 animate-spin" />}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-bold text-slate-900">Backend API Status:</h3>
-                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide ${
-                        connectionStatus === 'connected' ? 'bg-emerald-100 text-emerald-800' :
-                        connectionStatus === 'error' ? 'bg-rose-100 text-rose-800' :
-                        'bg-amber-100 text-amber-800'
-                      }`}>
-                        {connectionStatus}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Endpoint: <code className="bg-slate-200/80 px-1.5 py-0.5 rounded text-slate-800">GET /api/health</code>
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={checkConnection}
-                  disabled={connectionStatus === 'checking'}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-100 shadow-sm transition-all disabled:opacity-50"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 ${connectionStatus === 'checking' ? 'animate-spin' : ''}`} />
-                  Re-Probe Endpoint
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
-                <div className="p-4 rounded-xl bg-white border border-slate-200">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-1">
-                    <Activity className="w-4 h-4 text-emerald-600" />
-                    Round-Trip Latency
-                  </div>
-                  <div className="text-xl font-extrabold text-slate-900">
-                    {latency !== null ? `${latency} ms` : 'Measuring...'}
-                  </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">
-                    Browser &rarr; Express API
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-white border border-slate-200">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-1">
-                    <Database className="w-4 h-4 text-sky-600" />
-                    Database Layer
-                  </div>
-                  <div className="text-xl font-extrabold text-emerald-600 flex items-center gap-1 font-bold">
-                    <CheckCircle2 className="w-4 h-4" /> Connected
-                  </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">
-                    {healthData?.database?.latencyMs ? `${healthData.database.latencyMs}ms query ping` : 'PostgreSQL pool verified'}
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-white border border-slate-200">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-1">
-                    <Cpu className="w-4 h-4 text-purple-600" />
-                    ML Matcher Microservice
-                  </div>
-                  <div className="text-base font-extrabold text-slate-900 truncate">
-                    {healthData?.matcherService || 'Standby'}
-                  </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">
-                    Rule-based engine active
-                  </div>
-                </div>
-              </div>
-            </div>
-
           </div>
         </section>
 
@@ -299,8 +189,9 @@ function LandingPage() {
               {materialCategories.map((cat, idx) => {
                 const Icon = cat.icon;
                 return (
-                  <div 
+                  <Link 
                     key={idx}
+                    to={`/browse`}
                     className={`p-6 rounded-2xl bg-white border ${cat.color} shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 flex flex-col justify-between`}
                   >
                     <div>
@@ -311,9 +202,43 @@ function LandingPage() {
                       <p className="text-xs text-slate-500">{cat.count}</p>
                     </div>
                     <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-emerald-600">
-                      <span>Available in Database</span>
+                      <span>Browse in Marketplace</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Pillars */}
+        <section id="how-it-works" className="py-16 sm:py-24 bg-white border-t border-slate-200/80">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto space-y-3 mb-12">
+              <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+                System Pillars &amp; Architecture
+              </h2>
+              <p className="text-sm text-slate-600">
+                Engineered with modular separation of concerns and robust error handling.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {features.map((feat, idx) => {
+                const Icon = feat.icon;
+                return (
+                  <div key={idx} className="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 text-slate-700">
+                        {feat.badge}
+                      </span>
+                    </div>
+                    <h3 className="text-base font-bold text-slate-900">{feat.title}</h3>
+                    <p className="text-xs text-slate-600 leading-relaxed">{feat.desc}</p>
                   </div>
                 );
               })}
@@ -333,6 +258,7 @@ function LandingPage() {
             <span>Final-Year BCS Student Project</span>
           </div>
           <div className="flex items-center gap-6">
+            <Link to="/browse" className="hover:text-white transition-colors">Browse Marketplace</Link>
             <Link to="/login" className="hover:text-white transition-colors">Sign In</Link>
             <Link to="/register" className="hover:text-white transition-colors">Create Account</Link>
             <Link to="/dashboard" className="hover:text-white transition-colors">User Dashboard</Link>
@@ -353,6 +279,17 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             
+            {/* Public Marketplace Catalog */}
+            <Route
+              path="/browse"
+              element={
+                <>
+                  <Navbar />
+                  <Browse />
+                </>
+              }
+            />
+
             {/* Listing Detail (Public) */}
             <Route
               path="/listings/:id"
@@ -371,6 +308,16 @@ export default function App() {
                 <ProtectedRoute>
                   <Navbar />
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/interests"
+              element={
+                <ProtectedRoute>
+                  <Navbar />
+                  <UserInterests />
                 </ProtectedRoute>
               }
             />

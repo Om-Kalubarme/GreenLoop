@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { fetchListingById } from '../api/listings.api';
 import { useAuth } from '../context/AuthContext';
+import InterestModal from '../components/InterestModal';
 import { 
   MapPin, 
   Tag, 
@@ -28,7 +29,7 @@ const CATEGORY_COLORS = {
   other: 'bg-gray-100 text-gray-800 border-gray-200',
 };
 
-export default function ListingDetail({ onExpressInterest }) {
+export default function ListingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
@@ -37,6 +38,8 @@ export default function ListingDetail({ onExpressInterest }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [interestModalOpen, setInterestModalOpen] = useState(false);
+  const [interestSubmitted, setInterestSubmitted] = useState(false);
 
   useEffect(() => {
     const loadListing = async () => {
@@ -127,7 +130,7 @@ export default function ListingDetail({ onExpressInterest }) {
               <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border shadow-md backdrop-blur-md ${categoryStyle}`}>
                 {listing.material_category}
               </span>
-              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-900/80 text-white shadow-md backdrop-blur-md">
+              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-900/80 text-white shadow-md backdrop-blur-md capitalize">
                 {listing.status}
               </span>
             </div>
@@ -192,9 +195,16 @@ export default function ListingDetail({ onExpressInterest }) {
                 </div>
               ) : (
                 <div className="space-y-3">
+                  {interestSubmitted && (
+                    <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      Interest request submitted! The donor will review your proposal.
+                    </div>
+                  )}
+
                   {isAuthenticated ? (
                     <button
-                      onClick={() => onExpressInterest ? onExpressInterest(listing) : alert(`Interest expression modal active in Phase 5!`)}
+                      onClick={() => setInterestModalOpen(true)}
                       disabled={listing.status !== 'available'}
                       className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold text-sm bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50"
                     >
@@ -237,6 +247,14 @@ export default function ListingDetail({ onExpressInterest }) {
         </div>
 
       </div>
+
+      {/* Interest Proposal Modal */}
+      <InterestModal
+        listing={listing}
+        isOpen={interestModalOpen}
+        onClose={() => setInterestModalOpen(false)}
+        onSuccess={() => setInterestSubmitted(true)}
+      />
 
     </div>
   );
