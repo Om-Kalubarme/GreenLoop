@@ -12,6 +12,7 @@ import EditListing from './pages/EditListing';
 import ListingDetail from './pages/ListingDetail';
 import DonorDashboard from './pages/DonorDashboard';
 import UserInterests from './pages/UserInterests';
+import Recommendations from './pages/Recommendations';
 import { fetchHealthStatus } from './api/health.api';
 import { 
   Recycle, 
@@ -318,6 +319,16 @@ export default function App() {
                 <ProtectedRoute>
                   <Navbar />
                   <UserInterests />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/recommendations"
+              element={
+                <ProtectedRoute>
+                  <Navbar />
+                  <Recommendations />
                 </ProtectedRoute>
               }
             />

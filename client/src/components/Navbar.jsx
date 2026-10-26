@@ -53,10 +53,16 @@ export default function Navbar({ connectionStatus }) {
               Browse Materials
             </Link>
             {isAuthenticated && (
-              <Link to="/interests" className="hover:text-emerald-600 transition-colors flex items-center gap-1.5">
-                <Heart className="w-4 h-4 text-rose-500" />
-                Interests
-              </Link>
+              <>
+                <Link to="/recommendations" className="hover:text-emerald-600 transition-colors flex items-center gap-1.5 font-medium text-emerald-700 bg-emerald-50/80 px-2.5 py-1 rounded-lg border border-emerald-200/60">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                  AI Matches
+                </Link>
+                <Link to="/interests" className="hover:text-emerald-600 transition-colors flex items-center gap-1.5">
+                  <Heart className="w-4 h-4 text-rose-500" />
+                  Interests
+                </Link>
+              </>
             )}
             <a href="/#categories" className="hover:text-emerald-600 transition-colors">Categories</a>
             <a href="/#connection-test" className="hover:text-emerald-600 transition-colors">System Probe</a>
@@ -149,6 +155,13 @@ export default function Navbar({ connectionStatus }) {
           </Link>
           {isAuthenticated ? (
             <>
+              <Link
+                to="/recommendations"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-md text-base font-medium text-emerald-700 bg-emerald-50/60"
+              >
+                AI Recommendations
+              </Link>
               <Link
                 to="/interests"
                 onClick={() => setMobileMenuOpen(false)}

@@ -5,6 +5,7 @@ import authRoutes from './auth.routes.js';
 import userRoutes from './user.routes.js';
 import uploadRoutes from './upload.routes.js';
 import interestRoutes from './interest.routes.js';
+import recommendationRoutes from './recommendation.routes.js';
 
 const apiRouter = Router();
 
@@ -25,5 +26,8 @@ apiRouter.use('/uploads', uploadRoutes);
 
 // Interest Requests Pipeline
 apiRouter.use('/interests', interestRoutes);
+
+// AI Recommendation Engine
+apiRouter.use('/recommendations', recommendationRoutes);
 
 export default apiRouter;
