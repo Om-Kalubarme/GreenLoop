@@ -3,6 +3,7 @@ import healthRoutes from './health.routes.js';
 import listingRoutes from './listing.routes.js';
 import authRoutes from './auth.routes.js';
 import userRoutes from './user.routes.js';
+import uploadRoutes from './upload.routes.js';
 
 const apiRouter = Router();
 
@@ -17,5 +18,8 @@ apiRouter.use('/users', userRoutes);
 
 // Material Listings Routes
 apiRouter.use('/listings', listingRoutes);
+
+// Media / Image Upload Pipeline
+apiRouter.use('/uploads', uploadRoutes);
 
 export default apiRouter;

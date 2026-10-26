@@ -6,11 +6,14 @@ import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import CreateListing from './pages/CreateListing';
+import EditListing from './pages/EditListing';
+import ListingDetail from './pages/ListingDetail';
+import DonorDashboard from './pages/DonorDashboard';
 import { fetchHealthStatus } from './api/health.api';
 import { 
   Recycle, 
   Sparkles, 
-  ShieldCheck, 
   Layers, 
   ArrowRight, 
   Activity, 
@@ -31,7 +34,7 @@ function LandingPage() {
   const [connectionStatus, setConnectionStatus] = useState('checking');
   const [latency, setLatency] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isDonor } = useAuth();
 
   const checkConnection = async () => {
     setConnectionStatus('checking');
@@ -120,13 +123,24 @@ function LandingPage() {
 
               <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
                 {isAuthenticated ? (
-                  <Link
-                    to="/dashboard"
-                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.02]"
-                  >
-                    Go to Your Dashboard
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  <>
+                    <Link
+                      to="/dashboard"
+                      className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.02]"
+                    >
+                      User Dashboard
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                    {isDonor && (
+                      <Link
+                        to="/create-listing"
+                        className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 transition-all shadow-sm"
+                      >
+                        <Package className="w-4 h-4 text-emerald-600" />
+                        Offer Material
+                      </Link>
+                    )}
+                  </>
                 ) : (
                   <>
                     <Link
@@ -154,15 +168,15 @@ function LandingPage() {
                 </div>
                 <div className="p-3">
                   <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">10 Listings</div>
-                  <div className="text-xs text-slate-500 font-medium mt-0.5">Active in Seed DB</div>
+                  <div className="text-xs text-slate-500 font-medium mt-0.5">Active in PostgreSQL</div>
                 </div>
                 <div className="p-3">
-                  <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">JWT Auth</div>
-                  <div className="text-xs text-slate-500 font-medium mt-0.5">bcrypt Encryption</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">Cloudinary</div>
+                  <div className="text-xs text-slate-500 font-medium mt-0.5">Media Pipeline Active</div>
                 </div>
                 <div className="p-3">
-                  <div className="text-2xl sm:text-3xl font-extrabold text-emerald-600">Phase 3</div>
-                  <div className="text-xs text-slate-500 font-medium mt-0.5">Auth Layer Verified</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold text-emerald-600">Phase 4</div>
+                  <div className="text-xs text-slate-500 font-medium mt-0.5">Listings &amp; CRUD Live</div>
                 </div>
               </div>
 
@@ -173,21 +187,19 @@ function LandingPage() {
         {/* System Probe Section */}
         <section id="connection-test" className="py-16 sm:py-20 bg-white border-b border-slate-200/80">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            
             <div className="text-center space-y-3 mb-10">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
                 <Activity className="w-3.5 h-3.5 text-emerald-600" />
                 Live Architecture Probe
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                Frontend-to-Backend Connection Test
+                Backend System Status
               </h2>
               <p className="text-sm text-slate-600 max-w-xl mx-auto">
                 Verifies that the React + Vite frontend communicates with the Node.js Express backend and displays health diagnostics.
               </p>
             </div>
 
-            {/* Health Status Card */}
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8 shadow-sm">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
                 <div className="flex items-center gap-3">
@@ -226,7 +238,6 @@ function LandingPage() {
                 </button>
               </div>
 
-              {/* Diagnostic Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
                 <div className="p-4 rounded-xl bg-white border border-slate-200">
                   <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-1">
@@ -267,19 +278,6 @@ function LandingPage() {
                   </div>
                 </div>
               </div>
-
-              {/* Raw JSON Response Preview */}
-              {healthData && (
-                <div className="mt-6">
-                  <div className="text-xs font-semibold text-slate-600 mb-2 flex items-center justify-between">
-                    <span>Raw JSON Response from /api/health:</span>
-                    <span className="text-[10px] text-slate-400">HTTP 200 OK</span>
-                  </div>
-                  <pre className="p-4 rounded-xl bg-slate-900 text-emerald-400 text-xs font-mono overflow-x-auto shadow-inner">
-                    {JSON.stringify(healthData, null, 2)}
-                  </pre>
-                </div>
-              )}
             </div>
 
           </div>
@@ -322,43 +320,8 @@ function LandingPage() {
             </div>
           </div>
         </section>
-
-        {/* Pillars */}
-        <section id="how-it-works" className="py-16 sm:py-24 bg-white border-t border-slate-200/80">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto space-y-3 mb-12">
-              <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-                System Pillars &amp; Architecture
-              </h2>
-              <p className="text-sm text-slate-600">
-                Engineered with modular separation of concerns and robust error handling.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {features.map((feat, idx) => {
-                const Icon = feat.icon;
-                return (
-                  <div key={idx} className="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 text-slate-700">
-                        {feat.badge}
-                      </span>
-                    </div>
-                    <h3 className="text-base font-bold text-slate-900">{feat.title}</h3>
-                    <p className="text-xs text-slate-600 leading-relaxed">{feat.desc}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
       </main>
 
-      {/* Footer */}
       <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs">
           <div className="flex items-center gap-2">
@@ -389,12 +352,55 @@ export default function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            
+            {/* Listing Detail (Public) */}
+            <Route
+              path="/listings/:id"
+              element={
+                <>
+                  <Navbar />
+                  <ListingDetail />
+                </>
+              }
+            />
+
+            {/* Protected Routes */}
             <Route
               path="/dashboard"
               element={
                 <ProtectedRoute>
                   <Navbar />
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/create-listing"
+              element={
+                <ProtectedRoute allowedRoles={['donor', 'admin']}>
+                  <Navbar />
+                  <CreateListing />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/edit-listing/:id"
+              element={
+                <ProtectedRoute allowedRoles={['donor', 'admin']}>
+                  <Navbar />
+                  <EditListing />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/donor/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['donor', 'admin']}>
+                  <Navbar />
+                  <DonorDashboard />
                 </ProtectedRoute>
               }
             />
