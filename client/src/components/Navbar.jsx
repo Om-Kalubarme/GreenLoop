@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
-  Recycle, 
   Sparkles, 
   User, 
   LogIn, 
@@ -12,12 +11,16 @@ import {
   ArrowRight, 
   LayoutDashboard,
   Layers,
-  Heart
+  Heart,
+  Search,
+  PlusCircle,
+  Leaf
 } from 'lucide-react';
 
 export default function Navbar({ connectionStatus }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth();
+  const [searchQuery, setSearchQuery] = useState('');
+  const { user, isAuthenticated, isDonor, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -25,78 +28,108 @@ export default function Navbar({ connectionStatus }) {
     navigate('/');
   };
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/browse?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-slate-200/80 transition-all">
+    <header className="sticky top-0 z-50 backdrop-blur-md bg-[#FAF7F2]/90 border-b border-[#E8E2D6] transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20">
+        <div className="flex items-center justify-between h-20">
           
-          {/* Brand Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white font-bold group-hover:scale-105 transition-all">
-              <Recycle className="w-6 h-6 animate-spin-slow" />
+          {/* Brand Logo - Inspired by editorial serif Homedine brand */}
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="w-10 h-10 rounded-full bg-[#1B3B2B] text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-all">
+              <Leaf className="w-5 h-5 text-[#E2EBD8]" />
             </div>
             <div>
-              <span className="text-xl sm:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-emerald-950 to-emerald-700 bg-clip-text text-transparent">
-                ReSource <span className="text-emerald-600">AI</span>
+              <span className="text-2xl font-serif font-bold tracking-tight text-[#1C241E]">
+                ReSource <span className="text-[#76937F] font-serif italic">◇ AI</span>
               </span>
-              <span className="hidden sm:block text-[10px] tracking-wider uppercase font-semibold text-emerald-600/90 -mt-1">
-                Waste-to-Resource Platform
+              <span className="hidden sm:block text-[10px] tracking-widest uppercase font-semibold text-[#76937F] -mt-1">
+                Waste to Resource
               </span>
             </div>
           </Link>
 
+          {/* Center Search Pill - Like the inspiration header search bar */}
+          <form 
+            onSubmit={handleSearchSubmit}
+            className="hidden lg:flex items-center w-80 relative"
+          >
+            <Search className="w-4 h-4 text-[#76937F] absolute left-3.5" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search materials, cardboard, timber..."
+              className="w-full pl-10 pr-4 py-2 bg-white/70 border border-[#E8E2D6] rounded-full text-xs text-[#1C241E] placeholder-[#76937F]/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1B3B2B]/20 focus:border-[#1B3B2B] transition-all"
+            />
+          </form>
+
           {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
-            <Link to="/" className="hover:text-emerald-600 transition-colors">Home</Link>
-            <Link to="/browse" className="hover:text-emerald-600 transition-colors flex items-center gap-1.5 font-semibold text-slate-900">
-              <Layers className="w-4 h-4 text-emerald-600" />
-              Browse Materials
+          <nav className="hidden md:flex items-center gap-7 text-xs font-semibold uppercase tracking-wider text-[#4A584E]">
+            <Link to="/browse" className="hover:text-[#1B3B2B] transition-colors flex items-center gap-1.5">
+              Materials
             </Link>
+            <Link to="/recommendations" className="hover:text-[#1B3B2B] transition-colors flex items-center gap-1.5 text-[#1B3B2B] font-bold">
+              <Sparkles className="w-3.5 h-3.5 text-[#76937F]" />
+              AI Matches
+            </Link>
+            <a href="/#categories" className="hover:text-[#1B3B2B] transition-colors">
+              Categories
+            </a>
+            <a href="/#gallery" className="hover:text-[#1B3B2B] transition-colors">
+              Inspiration
+            </a>
             {isAuthenticated && (
-              <>
-                <Link to="/recommendations" className="hover:text-emerald-600 transition-colors flex items-center gap-1.5 font-medium text-emerald-700 bg-emerald-50/80 px-2.5 py-1 rounded-lg border border-emerald-200/60">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                  AI Matches
-                </Link>
-                <Link to="/interests" className="hover:text-emerald-600 transition-colors flex items-center gap-1.5">
-                  <Heart className="w-4 h-4 text-rose-500" />
-                  Interests
-                </Link>
-              </>
+              <Link to="/interests" className="hover:text-[#1B3B2B] transition-colors flex items-center gap-1">
+                <Heart className="w-3.5 h-3.5 text-[#C86D51]" />
+                Interests
+              </Link>
             )}
-            <a href="/#categories" className="hover:text-emerald-600 transition-colors">Categories</a>
-            <a href="/#connection-test" className="hover:text-emerald-600 transition-colors">System Probe</a>
           </nav>
 
           {/* Right Action & Auth States */}
-          <div className="hidden sm:flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-3">
             
             {/* Live Backend Connection Indicator */}
             {connectionStatus && (
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-medium">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EFEAE1] border border-[#E8E2D6] text-[11px] font-medium text-[#4A584E]">
                 <span className={`w-2 h-2 rounded-full ${
-                  connectionStatus === 'connected' ? 'bg-emerald-500' :
+                  connectionStatus === 'connected' ? 'bg-[#4E7158]' :
                   connectionStatus === 'error' ? 'bg-rose-500' : 'bg-amber-400 animate-ping'
                 }`} />
-                <span className="text-slate-600 text-[11px] capitalize">
-                  API: {connectionStatus}
-                </span>
+                <span className="capitalize">{connectionStatus}</span>
               </div>
             )}
 
             {isAuthenticated ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                {isDonor && (
+                  <Link
+                    to="/create-listing"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-[#E2EBD8] text-[#1B3B2B] hover:bg-[#D5E4C8] transition-all"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5 text-[#1B3B2B]" />
+                    Post Material
+                  </Link>
+                )}
+
                 <Link
-                  to="/dashboard"
-                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-all"
+                  to={isDonor ? "/donor/dashboard" : "/dashboard"}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold bg-white border border-[#E8E2D6] text-[#1C241E] hover:bg-[#FAF7F2] shadow-sm transition-all"
                 >
-                  <LayoutDashboard className="w-3.5 h-3.5" />
+                  <User className="w-3.5 h-3.5 text-[#76937F]" />
                   <span>{user?.name?.split(' ')[0]}</span>
                 </Link>
 
                 <button
                   onClick={handleLogout}
-                  className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-all"
+                  className="p-2 rounded-full text-[#76937F] hover:text-[#C86D51] hover:bg-rose-50 transition-all"
                   title="Sign Out"
                 >
                   <LogOut className="w-4 h-4" />
@@ -106,15 +139,15 @@ export default function Navbar({ connectionStatus }) {
               <div className="flex items-center gap-2">
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-emerald-700 transition-colors"
+                  className="px-3 py-2 text-xs font-semibold text-[#1C241E] hover:text-[#1B3B2B] transition-colors"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/register"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm shadow-emerald-600/30 transition-all hover:scale-[1.02]"
+                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-semibold bg-[#1B3B2B] text-white hover:bg-[#28533E] shadow-sm transition-all hover:scale-[1.02]"
                 >
-                  Register
+                  Get Started
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
@@ -126,7 +159,7 @@ export default function Navbar({ connectionStatus }) {
           <div className="md:hidden flex items-center gap-2">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              className="p-2 rounded-full text-[#1C241E] hover:bg-[#EFEAE1]"
               aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -138,41 +171,52 @@ export default function Navbar({ connectionStatus }) {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-slate-200 bg-white/95 backdrop-blur-lg px-4 pt-2 pb-6 space-y-3">
+        <div className="md:hidden border-b border-[#E8E2D6] bg-[#FAF7F2] px-6 pt-3 pb-6 space-y-3">
+          <form onSubmit={handleSearchSubmit} className="relative mb-3">
+            <Search className="w-4 h-4 text-[#76937F] absolute left-3 top-2.5" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search materials..."
+              className="w-full pl-9 pr-4 py-2 bg-white border border-[#E8E2D6] rounded-full text-xs text-[#1C241E]"
+            />
+          </form>
+
           <Link
             to="/"
             onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-emerald-50"
+            className="block px-3 py-2 rounded-xl text-sm font-medium text-[#1C241E] hover:bg-[#EFEAE1]"
           >
             Home
           </Link>
           <Link
             to="/browse"
             onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 rounded-md text-base font-medium text-emerald-700 bg-emerald-50/50"
+            className="block px-3 py-2 rounded-xl text-sm font-medium text-[#1B3B2B] bg-[#E2EBD8]/50"
           >
             Browse Materials
+          </Link>
+          <Link
+            to="/recommendations"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-xl text-sm font-medium text-[#1B3B2B]"
+          >
+            AI Matches & Recommendations
           </Link>
           {isAuthenticated ? (
             <>
               <Link
-                to="/recommendations"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-md text-base font-medium text-emerald-700 bg-emerald-50/60"
-              >
-                AI Recommendations
-              </Link>
-              <Link
                 to="/interests"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-emerald-50"
+                className="block px-3 py-2 rounded-xl text-sm font-medium text-[#1C241E] hover:bg-[#EFEAE1]"
               >
                 Interest Proposals
               </Link>
               <Link
-                to="/dashboard"
+                to={isDonor ? "/donor/dashboard" : "/dashboard"}
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-md text-base font-medium text-emerald-700 bg-emerald-50"
+                className="block px-3 py-2 rounded-xl text-sm font-medium text-[#1B3B2B] bg-[#E2EBD8]"
               >
                 Dashboard ({user?.name})
               </Link>
@@ -181,28 +225,28 @@ export default function Navbar({ connectionStatus }) {
                   setMobileMenuOpen(false);
                   handleLogout();
                 }}
-                className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-rose-600 hover:bg-rose-50"
+                className="w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-[#C86D51] hover:bg-rose-50"
               >
                 Sign Out
               </button>
             </>
           ) : (
-            <>
+            <div className="pt-2 flex flex-col gap-2">
               <Link
                 to="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-emerald-50"
+                className="block text-center py-2.5 rounded-full border border-[#E8E2D6] text-xs font-semibold text-[#1C241E]"
               >
                 Sign In
               </Link>
               <Link
                 to="/register"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-md text-base font-medium text-emerald-700 hover:bg-emerald-50"
+                className="block text-center py-2.5 rounded-full bg-[#1B3B2B] text-white text-xs font-semibold"
               >
-                Create Account
+                Join Platform
               </Link>
-            </>
+            </div>
           )}
         </div>
       )}
