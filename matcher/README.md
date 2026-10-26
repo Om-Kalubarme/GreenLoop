@@ -23,7 +23,7 @@ This service provides content-based recommendation ranking using **scikit-learn*
 3. **Run Self-Test / Unit Tests:**
    ```bash
    python rank.py
-   pytest tests/
+   python3 -m unittest discover tests/
    ```
 
 4. **Start Microservice:**

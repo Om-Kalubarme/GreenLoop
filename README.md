@@ -174,15 +174,15 @@ Matcher microservice runs on `http://localhost:8000`.
 ## 🧭 Phased Implementation Roadmap
 
 - [x] **Phase 0:** Project Planning & Technical Documentation (`PDR.md`, `TDR.md`, `ARCHITECTURE.md`, `PROJECT_PLAN.md`)
-- [ ] **Phase 1:** Repository Initialization & Full-Stack Skeleton (Vite + Tailwind, Express, Health Check)
-- [ ] **Phase 2:** PostgreSQL Database Layer (Schema DDL, Migrations, Seed Data, Error Handling)
-- [ ] **Phase 3:** Authentication & Authorization (JWT, bcrypt, Protected Routes, Auth Context)
-- [ ] **Phase 4:** Material Listings & Cloudinary Image Uploads (Listing CRUD, Media Service, Cards)
-- [ ] **Phase 5:** Browse & Interest Workflow (Search, Multi-Filter, Interest Requests, Donor Dashboard)
-- [ ] **Phase 6:** Explainable Recommendation Engine (Rule-based 100-pt Scorer + Python TF-IDF Cosine Matcher)
-- [ ] **Phase 7:** Testing, Security, Accessibility & Polish (Unit/Integration Tests, Seed Dataset, A11y)
-- [ ] **Phase 8:** Deployment Preparation (Vercel, Render/Railway, Managed PostgreSQL, Production Builds)
-- [ ] **Phase 9:** Handover, Postman Collection, User Manual & Project Presentation Script
+- [x] **Phase 1:** Repository Initialization & Full-Stack Skeleton (Vite + Tailwind, Express, Health Check)
+- [x] **Phase 2:** PostgreSQL Database Layer (Schema DDL, Migrations, Seed Data, Error Handling)
+- [x] **Phase 3:** Authentication & Authorization (JWT, bcrypt, Protected Routes, Auth Context)
+- [x] **Phase 4:** Material Listings & Cloudinary Image Uploads (Listing CRUD, Media Service, Cards)
+- [x] **Phase 5:** Browse & Interest Workflow (Search, Multi-Filter, Interest Requests, Donor Dashboard)
+- [x] **Phase 6:** Explainable Recommendation Engine (Rule-based 100-pt Scorer + Python TF-IDF Cosine Matcher)
+- [x] **Phase 7:** Testing, Security, Accessibility & Polish (Unit/Integration Tests, Seed Dataset, A11y)
+- [x] **Phase 8:** Deployment Preparation (Vercel, Render/Railway, Managed PostgreSQL, Production Builds)
+- [x] **Phase 9:** Handover, Postman Collection, User Manual & Project Presentation Script
 
 ---
 
@@ -200,6 +200,8 @@ Matcher microservice runs on `http://localhost:8000`.
 | [docs/TEST_PLAN.md](docs/TEST_PLAN.md) | Manual test matrix, automated test scripts, security audit |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Cloud hosting setup, environment variables, troubleshooting |
 | [docs/USER_MANUAL.md](docs/USER_MANUAL.md) | User guides for Donors, Recipients, and Platform Admins |
+| [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) | Viva presentation & demonstration script with examiner Q&A |
+| [postman/ReSource-AI.postman_collection.json](postman/ReSource-AI.postman_collection.json) | Complete Postman collection for all endpoints |
 
 ---
 
