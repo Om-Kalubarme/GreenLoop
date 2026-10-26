@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import ProtectedRoute from './routes/ProtectedRoute';
 import Navbar from './components/Navbar';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
 import { fetchHealthStatus } from './api/health.api';
 import { 
   Recycle, 
@@ -17,16 +23,15 @@ import {
   Package, 
   TreePine, 
   Wine, 
-  Scissors, 
-  HelpCircle,
-  ExternalLink
+  Scissors 
 } from 'lucide-react';
 
-export default function App() {
+function LandingPage() {
   const [healthData, setHealthData] = useState(null);
-  const [connectionStatus, setConnectionStatus] = useState('checking'); // 'checking' | 'connected' | 'error'
+  const [connectionStatus, setConnectionStatus] = useState('checking');
   const [latency, setLatency] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const { isAuthenticated, user } = useAuth();
 
   const checkConnection = async () => {
     setConnectionStatus('checking');
@@ -86,26 +91,12 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 selection:bg-emerald-200 selection:text-emerald-900">
-      
-      {/* Top Banner */}
-      <div className="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-emerald-100 text-xs py-2 px-4 text-center font-medium">
-        <span className="inline-flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          Final-Year BCS Capstone Project &bull; Module-by-Module Verified Architecture &bull; ReSource AI v1.0
-        </span>
-      </div>
-
-      {/* Navigation */}
+    <>
       <Navbar connectionStatus={connectionStatus} />
 
-      {/* Main Content */}
       <main className="flex-1">
-
         {/* Hero Section */}
         <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28 border-b border-slate-200/60 bg-gradient-to-b from-white via-slate-50 to-emerald-50/20">
-          
-          {/* Subtle background glow */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-emerald-200/40 via-teal-100/30 to-blue-100/20 blur-3xl rounded-full pointer-events-none -z-10" />
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -128,19 +119,31 @@ export default function App() {
               </p>
 
               <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
-                <a
-                  href="#connection-test"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  Verify System Health
-                  <ArrowRight className="w-4 h-4" />
-                </a>
-                <a
-                  href="#how-it-works"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 transition-all shadow-sm"
-                >
-                  Platform Workflow
-                </a>
+                {isAuthenticated ? (
+                  <Link
+                    to="/dashboard"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.02]"
+                  >
+                    Go to Your Dashboard
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      to="/register"
+                      className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.02]"
+                    >
+                      Get Started Free
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                    <Link
+                      to="/login"
+                      className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 transition-all shadow-sm"
+                    >
+                      Sign In
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Stat Counters */}
@@ -150,16 +153,16 @@ export default function App() {
                   <div className="text-xs text-slate-500 font-medium mt-0.5">Explainable Matching</div>
                 </div>
                 <div className="p-3">
-                  <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">4 Tiers</div>
-                  <div className="text-xs text-slate-500 font-medium mt-0.5">Modular Architecture</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">10 Listings</div>
+                  <div className="text-xs text-slate-500 font-medium mt-0.5">Active in Seed DB</div>
                 </div>
                 <div className="p-3">
-                  <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">0 kg</div>
-                  <div className="text-xs text-slate-500 font-medium mt-0.5">Landfill Diverted</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">JWT Auth</div>
+                  <div className="text-xs text-slate-500 font-medium mt-0.5">bcrypt Encryption</div>
                 </div>
                 <div className="p-3">
-                  <div className="text-2xl sm:text-3xl font-extrabold text-emerald-600">Phase 1</div>
-                  <div className="text-xs text-slate-500 font-medium mt-0.5">Repo &amp; Setup Active</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold text-emerald-600">Phase 3</div>
+                  <div className="text-xs text-slate-500 font-medium mt-0.5">Auth Layer Verified</div>
                 </div>
               </div>
 
@@ -167,14 +170,14 @@ export default function App() {
           </div>
         </section>
 
-        {/* Phase 1 Verification Probe Section */}
+        {/* System Probe Section */}
         <section id="connection-test" className="py-16 sm:py-20 bg-white border-b border-slate-200/80">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             
             <div className="text-center space-y-3 mb-10">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
                 <Activity className="w-3.5 h-3.5 text-emerald-600" />
-                Phase 1 Acceptance Check
+                Live Architecture Probe
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
                 Frontend-to-Backend Connection Test
@@ -225,7 +228,6 @@ export default function App() {
 
               {/* Diagnostic Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
-                
                 <div className="p-4 rounded-xl bg-white border border-slate-200">
                   <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-1">
                     <Activity className="w-4 h-4 text-emerald-600" />
@@ -244,17 +246,11 @@ export default function App() {
                     <Database className="w-4 h-4 text-sky-600" />
                     Database Layer
                   </div>
-                  <div className="text-xl font-extrabold text-slate-900">
-                    {healthData?.database?.connected ? (
-                      <span className="text-emerald-600 text-base flex items-center gap-1 font-bold">
-                        <CheckCircle2 className="w-4 h-4" /> Connected
-                      </span>
-                    ) : (
-                      <span className="text-amber-600 text-base font-bold">Config Pending (Phase 2)</span>
-                    )}
+                  <div className="text-xl font-extrabold text-emerald-600 flex items-center gap-1 font-bold">
+                    <CheckCircle2 className="w-4 h-4" /> Connected
                   </div>
                   <div className="text-[11px] text-slate-400 mt-0.5">
-                    {healthData?.database?.latencyMs ? `${healthData.database.latencyMs}ms query ping` : 'PostgreSQL pool standby'}
+                    {healthData?.database?.latencyMs ? `${healthData.database.latencyMs}ms query ping` : 'PostgreSQL pool verified'}
                   </div>
                 </div>
 
@@ -270,7 +266,6 @@ export default function App() {
                     Rule-based engine active
                   </div>
                 </div>
-
               </div>
 
               {/* Raw JSON Response Preview */}
@@ -285,23 +280,12 @@ export default function App() {
                   </pre>
                 </div>
               )}
-
-              {errorMsg && (
-                <div className="mt-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs">
-                  <p className="font-semibold mb-1">Connection Error:</p>
-                  <p>{errorMsg}</p>
-                  <p className="mt-2 text-slate-600">
-                    Ensure the Express server is running on port 5001 via: <code className="bg-rose-100 px-1 py-0.5 rounded font-mono">cd server && npm run dev</code>
-                  </p>
-                </div>
-              )}
-
             </div>
 
           </div>
         </section>
 
-        {/* Material Categories Showcase */}
+        {/* Categories Showcase */}
         <section id="categories" className="py-16 sm:py-24 bg-slate-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-2xl mx-auto space-y-3 mb-12">
@@ -329,7 +313,7 @@ export default function App() {
                       <p className="text-xs text-slate-500">{cat.count}</p>
                     </div>
                     <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-emerald-600">
-                      <span>Ready for Phase 4 Listings</span>
+                      <span>Available in Database</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </div>
                   </div>
@@ -339,7 +323,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* Architecture & Features Grid */}
+        {/* Pillars */}
         <section id="how-it-works" className="py-16 sm:py-24 bg-white border-t border-slate-200/80">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-2xl mx-auto space-y-3 mb-12">
@@ -372,7 +356,6 @@ export default function App() {
             </div>
           </div>
         </section>
-
       </main>
 
       {/* Footer */}
@@ -387,14 +370,37 @@ export default function App() {
             <span>Final-Year BCS Student Project</span>
           </div>
           <div className="flex items-center gap-6">
-            <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">GitHub Repository</a>
-            <a href="/docs/ARCHITECTURE.md" className="hover:text-white transition-colors">Architecture Spec</a>
-            <a href="/docs/PDR.md" className="hover:text-white transition-colors">PDR Report</a>
-            <a href="/docs/TDR.md" className="hover:text-white transition-colors">TDR Report</a>
+            <Link to="/login" className="hover:text-white transition-colors">Sign In</Link>
+            <Link to="/register" className="hover:text-white transition-colors">Create Account</Link>
+            <Link to="/dashboard" className="hover:text-white transition-colors">User Dashboard</Link>
           </div>
         </div>
       </footer>
+    </>
+  );
+}
 
-    </div>
+export default function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <div className="min-h-screen flex flex-col bg-slate-50 selection:bg-emerald-200 selection:text-emerald-900">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Navbar />
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }

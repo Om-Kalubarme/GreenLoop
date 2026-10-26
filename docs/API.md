@@ -29,7 +29,132 @@ Checks overall server status, PostgreSQL database connectivity, and recommendati
 
 ---
 
-## 2. Listings Endpoints
+## 2. Authentication & User Endpoints
+
+### `POST /api/auth/register`
+Register a new donor or recipient account. Issues a signed JWT token on success.
+
+* **Access:** Public
+* **Request Body:**
+```json
+{
+  "name": "Ananya Iyer",
+  "email": "ananya@example.com",
+  "password": "Password123!",
+  "role": "recipient",
+  "city": "Bengaluru",
+  "preferred_categories": ["cardboard", "wood"]
+}
+```
+* **Sample Response (HTTP 201 Created):**
+```json
+{
+  "success": true,
+  "message": "User registered successfully",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "33333333-3333-3333-3333-333333333333",
+    "name": "Ananya Iyer",
+    "email": "ananya@example.com",
+    "role": "recipient",
+    "city": "Bengaluru",
+    "preferred_categories": ["cardboard", "wood"],
+    "created_at": "2026-10-26T10:30:00.000Z"
+  }
+}
+```
+* **Error Response (HTTP 409 Conflict):**
+```json
+{
+  "success": false,
+  "error": "An account with this email address already exists"
+}
+```
+
+---
+
+### `POST /api/auth/login`
+Authenticate credentials and obtain a JWT bearer token.
+
+* **Access:** Public
+* **Request Body:**
+```json
+{
+  "email": "ananya@example.com",
+  "password": "Password123!"
+}
+```
+* **Sample Response (HTTP 200 OK):**
+```json
+{
+  "success": true,
+  "message": "Logged in successfully",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "33333333-3333-3333-3333-333333333333",
+    "name": "Ananya Iyer",
+    "email": "ananya@example.com",
+    "role": "recipient",
+    "city": "Bengaluru",
+    "preferred_categories": ["cardboard", "wood"]
+  }
+}
+```
+
+---
+
+### `GET /api/auth/me`
+Retrieve currently authenticated user's profile.
+
+* **Access:** Authenticated (Requires `Authorization: Bearer <token>`)
+* **Sample Response (HTTP 200 OK):**
+```json
+{
+  "success": true,
+  "user": {
+    "id": "33333333-3333-3333-3333-333333333333",
+    "name": "Ananya Iyer",
+    "email": "ananya@example.com",
+    "role": "recipient",
+    "city": "Bengaluru",
+    "preferred_categories": ["cardboard", "wood"],
+    "created_at": "2026-10-26T10:30:00.000Z"
+  }
+}
+```
+
+---
+
+### `PATCH /api/users/me`
+Update operational city and preferred categories.
+
+* **Access:** Authenticated
+* **Request Body:**
+```json
+{
+  "city": "Mumbai",
+  "preferred_categories": ["glass", "textile", "wood"]
+}
+```
+* **Sample Response (HTTP 200 OK):**
+```json
+{
+  "success": true,
+  "message": "Profile updated successfully",
+  "user": {
+    "id": "33333333-3333-3333-3333-333333333333",
+    "name": "Ananya Iyer",
+    "email": "ananya@example.com",
+    "role": "recipient",
+    "city": "Mumbai",
+    "preferred_categories": ["glass", "textile", "wood"]
+  }
+}
+```
+
+---
+
+## 3. Listings Endpoints
 
 ### `GET /api/listings`
 Retrieve paginated listings with optional multi-facet filtering and full-text keyword search.
