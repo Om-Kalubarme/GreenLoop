@@ -102,31 +102,32 @@ export default function CreateListing() {
       {/* Back button */}
       <button
         onClick={() => navigate(-1)}
-        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 mb-6 transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#5A524C] hover:text-[#1A261D] mb-6 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-4 h-4 text-[#0A5C36]" />
         Back to Dashboard
       </button>
 
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-10">
+      <div className="bg-[#FDFBF7] rounded-2xl border border-[#EAE3D2] shadow-sm p-6 sm:p-10">
         
         {/* Header */}
-        <div className="pb-6 border-b border-slate-100 mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold mb-2">
-            <Package className="w-3.5 h-3.5 text-emerald-600" />
-            Donor Creation Portal
+        <div className="pb-6 border-b border-[#EAE3D2] mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E1F2E8] border border-[#CEEAD8] text-[#0A5C36] text-xs font-semibold mb-3">
+            <Package className="w-3.5 h-3.5 text-[#0A5C36]" />
+            <span>Donor Creation Portal</span>
+            <span className="text-[#D9381E]">◇</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A261D] tracking-tight">
             Offer Reusable Surplus Material
           </h1>
-          <p className="text-sm text-slate-600 mt-1">
+          <p className="text-sm text-[#5A524C] mt-1.5">
             Provide details so nearby students, artisans, and non-profits can discover and repurpose your discarded items.
           </p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+          <div className="mb-6 p-4 rounded-xl bg-[#FCEBE6] border border-[#F8D0C7] text-[#B72B15] text-xs font-medium flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-[#D9381E] shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
@@ -135,7 +136,7 @@ export default function CreateListing() {
           
           {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+            <label htmlFor="title" className="block text-xs font-semibold text-[#5A524C] uppercase tracking-wider mb-1.5">
               Listing Title *
             </label>
             <input
@@ -146,21 +147,21 @@ export default function CreateListing() {
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="e.g. 40 Clean Flattened Double-Wall Moving Cartons"
-              className="mt-1 block w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all"
+              className="mt-1 block w-full px-4 py-2.5 bg-[#FAF6EE] border border-[#EAE3D2] rounded-xl text-[#1A261D] placeholder:text-[#8C827A] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0A5C36] text-sm transition-all"
             />
           </div>
 
           {/* Category & Specific Material Type */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label htmlFor="category" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              <label htmlFor="category" className="block text-xs font-semibold text-[#5A524C] uppercase tracking-wider mb-1.5">
                 Material Category *
               </label>
               <select
                 id="category"
                 value={formData.material_category}
                 onChange={(e) => setFormData({ ...formData, material_category: e.target.value })}
-                className="mt-1 block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all"
+                className="mt-1 block w-full px-3.5 py-2.5 bg-[#FAF6EE] border border-[#EAE3D2] rounded-xl text-[#1A261D] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0A5C36] text-sm transition-all"
               >
                 {CATEGORIES.map((c) => (
                   <option key={c.id} value={c.id}>{c.label}</option>
@@ -169,7 +170,7 @@ export default function CreateListing() {
             </div>
 
             <div>
-              <label htmlFor="mtype" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              <label htmlFor="mtype" className="block text-xs font-semibold text-[#5A524C] uppercase tracking-wider mb-1.5">
                 Specific Material Type *
               </label>
               <input
@@ -179,7 +180,7 @@ export default function CreateListing() {
                 value={formData.material_type}
                 onChange={(e) => setFormData({ ...formData, material_type: e.target.value })}
                 placeholder="e.g. Corrugated Cardboard, Pine Pallets"
-                className="mt-1 block w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all"
+                className="mt-1 block w-full px-4 py-2.5 bg-[#FAF6EE] border border-[#EAE3D2] rounded-xl text-[#1A261D] placeholder:text-[#8C827A] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0A5C36] text-sm transition-all"
               />
             </div>
           </div>
@@ -187,14 +188,14 @@ export default function CreateListing() {
           {/* Condition, Quantity & City */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <div>
-              <label htmlFor="condition" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              <label htmlFor="condition" className="block text-xs font-semibold text-[#5A524C] uppercase tracking-wider mb-1.5">
                 Condition Grade *
               </label>
               <select
                 id="condition"
                 value={formData.condition}
                 onChange={(e) => setFormData({ ...formData, condition: e.target.value })}
-                className="mt-1 block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all"
+                className="mt-1 block w-full px-3.5 py-2.5 bg-[#FAF6EE] border border-[#EAE3D2] rounded-xl text-[#1A261D] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0A5C36] text-sm transition-all"
               >
                 {CONDITIONS.map((cond) => (
                   <option key={cond} value={cond}>{cond}</option>
@@ -203,7 +204,7 @@ export default function CreateListing() {
             </div>
 
             <div>
-              <label htmlFor="qty" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              <label htmlFor="qty" className="block text-xs font-semibold text-[#5A524C] uppercase tracking-wider mb-1.5">
                 Quantity / Volume *
               </label>
               <input
@@ -213,12 +214,12 @@ export default function CreateListing() {
                 value={formData.quantity_description}
                 onChange={(e) => setFormData({ ...formData, quantity_description: e.target.value })}
                 placeholder="e.g. 25 boxes, 15 kg"
-                className="mt-1 block w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all"
+                className="mt-1 block w-full px-4 py-2.5 bg-[#FAF6EE] border border-[#EAE3D2] rounded-xl text-[#1A261D] placeholder:text-[#8C827A] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0A5C36] text-sm transition-all"
               />
             </div>
 
             <div>
-              <label htmlFor="city" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              <label htmlFor="city" className="block text-xs font-semibold text-[#5A524C] uppercase tracking-wider mb-1.5">
                 Pickup City *
               </label>
               <input
@@ -228,14 +229,14 @@ export default function CreateListing() {
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                 placeholder="e.g. Bengaluru, Mumbai"
-                className="mt-1 block w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all"
+                className="mt-1 block w-full px-4 py-2.5 bg-[#FAF6EE] border border-[#EAE3D2] rounded-xl text-[#1A261D] placeholder:text-[#8C827A] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0A5C36] text-sm transition-all"
               />
             </div>
           </div>
 
           {/* Description */}
           <div>
-            <label htmlFor="desc" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+            <label htmlFor="desc" className="block text-xs font-semibold text-[#5A524C] uppercase tracking-wider mb-1.5">
               Detailed Description &amp; Collection Guidelines *
             </label>
             <textarea
@@ -246,19 +247,19 @@ export default function CreateListing() {
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="State dimensions, cleanliness, packaging status, and when/where the recipient can pick up the materials."
-              className="mt-1 block w-full p-4 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all"
+              className="mt-1 block w-full p-4 bg-[#FAF6EE] border border-[#EAE3D2] rounded-xl text-[#1A261D] placeholder:text-[#8C827A] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0A5C36] text-sm transition-all"
             />
           </div>
 
           {/* Image Upload Component */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-[#5A524C] uppercase tracking-wider mb-2">
               Listing Image (Upload Photo or Provide Image URL)
             </label>
 
-            <div className="flex flex-col sm:flex-row items-center gap-6 p-4 rounded-xl border border-dashed border-slate-300 bg-slate-50">
+            <div className="flex flex-col sm:flex-row items-center gap-6 p-4 rounded-xl border border-dashed border-[#D5CBBA] bg-[#FAF6EE]">
               {/* Preview Thumbnail */}
-              <div className="w-28 h-28 rounded-xl bg-slate-200 overflow-hidden shrink-0 flex items-center justify-center border border-slate-300">
+              <div className="w-28 h-28 rounded-xl bg-[#F3ECE0] overflow-hidden shrink-0 flex items-center justify-center border border-[#EAE3D2]">
                 {imagePreview || formData.image_url ? (
                   <img
                     src={imagePreview || formData.image_url}
@@ -266,15 +267,15 @@ export default function CreateListing() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <ImageIcon className="w-8 h-8 text-slate-400" />
+                  <ImageIcon className="w-8 h-8 text-[#8C827A]" />
                 )}
               </div>
 
               {/* Upload controls */}
               <div className="flex-1 space-y-3 w-full">
                 <div className="flex items-center gap-3">
-                  <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer shadow-sm transition-all">
-                    <Upload className="w-4 h-4 text-emerald-600" />
+                  <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FDFBF7] border border-[#EAE3D2] text-xs font-semibold text-[#1A261D] hover:bg-[#F3ECE0] cursor-pointer shadow-sm transition-all">
+                    <Upload className="w-4 h-4 text-[#0A5C36]" />
                     <span>{uploadingImage ? 'Uploading Image...' : 'Choose Local Image'}</span>
                     <input
                       type="file"
@@ -284,16 +285,16 @@ export default function CreateListing() {
                       disabled={uploadingImage}
                     />
                   </label>
-                  {uploadingImage && <RefreshCw className="w-4 h-4 animate-spin text-emerald-600" />}
+                  {uploadingImage && <RefreshCw className="w-4 h-4 animate-spin text-[#0A5C36]" />}
                   {formData.image_url && !uploadingImage && (
-                    <span className="text-xs text-emerald-600 font-semibold flex items-center gap-1">
+                    <span className="text-xs text-[#0A5C36] font-semibold flex items-center gap-1">
                       <Check className="w-3.5 h-3.5" /> Uploaded to Media Store
                     </span>
                   )}
                 </div>
 
                 <div>
-                  <span className="text-[11px] text-slate-400 block mb-1">Or paste a direct web image URL:</span>
+                  <span className="text-[11px] text-[#8C827A] block mb-1">Or paste a direct web image URL:</span>
                   <input
                     type="url"
                     value={formData.image_url}
@@ -302,7 +303,7 @@ export default function CreateListing() {
                       setImagePreview(e.target.value);
                     }}
                     placeholder="https://images.unsplash.com/..."
-                    className="block w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="block w-full px-3 py-1.5 bg-white border border-[#EAE3D2] rounded-lg text-xs text-[#1A261D] placeholder:text-[#8C827A] focus:outline-none focus:ring-1 focus:ring-[#0A5C36]"
                   />
                 </div>
               </div>
@@ -310,18 +311,18 @@ export default function CreateListing() {
           </div>
 
           {/* Submit Action */}
-          <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+          <div className="pt-4 border-t border-[#EAE3D2] flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50 transition-all"
+              className="px-5 py-2.5 rounded-xl border border-[#EAE3D2] text-[#5A524C] text-sm font-semibold hover:bg-[#F3ECE0] transition-all"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting || uploadingImage}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-sm text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm shadow-emerald-600/20 transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-sm text-white bg-[#0A5C36] hover:bg-[#0D7A47] shadow-sm shadow-[#0A5C36]/20 transition-all disabled:opacity-50"
             >
               {submitting ? 'Publishing...' : 'Publish Listing'}
             </button>

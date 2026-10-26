@@ -19,7 +19,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#1C241E] selection:bg-[#E2EBD8] selection:text-[#1B3B2B]">
+        <div className="min-h-screen flex flex-col bg-[#FAF6EE] text-[#1A261D] selection:bg-[#CEEAD8] selection:text-[#0A5C36]">
           <Routes>
             {/* Landing Page with Editorial Design */}
             <Route 

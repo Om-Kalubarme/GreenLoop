@@ -36,58 +36,58 @@ export default function Navbar({ connectionStatus }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-md bg-[#FAF7F2]/90 border-b border-[#E8E2D6] transition-all">
+    <header className="sticky top-0 z-50 backdrop-blur-md bg-[#FAF6EE]/90 border-b border-[#EAE3D2] transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
-          {/* Brand Logo - Inspired by editorial serif Homedine brand */}
+          {/* Brand Logo - Warm Ivory, Emerald Green & Vermillion */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-full bg-[#1B3B2B] text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-all">
-              <Leaf className="w-5 h-5 text-[#E2EBD8]" />
+            <div className="w-10 h-10 rounded-full bg-[#0A5C36] text-white flex items-center justify-center shadow-emerald-glow group-hover:scale-105 transition-all">
+              <Leaf className="w-5 h-5 text-[#FAF6EE]" />
             </div>
             <div>
-              <span className="text-2xl font-serif font-bold tracking-tight text-[#1C241E]">
-                ReSource <span className="text-[#76937F] font-serif italic">◇ AI</span>
+              <span className="text-2xl font-serif font-bold tracking-tight text-[#1A261D]">
+                ReSource <span className="text-[#D9381E] font-serif italic">◇ AI</span>
               </span>
-              <span className="hidden sm:block text-[10px] tracking-widest uppercase font-semibold text-[#76937F] -mt-1">
+              <span className="hidden sm:block text-[10px] tracking-widest uppercase font-semibold text-[#0A5C36] -mt-1">
                 Waste to Resource
               </span>
             </div>
           </Link>
 
-          {/* Center Search Pill - Like the inspiration header search bar */}
+          {/* Center Search Pill */}
           <form 
             onSubmit={handleSearchSubmit}
             className="hidden lg:flex items-center w-80 relative"
           >
-            <Search className="w-4 h-4 text-[#76937F] absolute left-3.5" />
+            <Search className="w-4 h-4 text-[#586A5E] absolute left-3.5" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search materials, cardboard, timber..."
-              className="w-full pl-10 pr-4 py-2 bg-white/70 border border-[#E8E2D6] rounded-full text-xs text-[#1C241E] placeholder-[#76937F]/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1B3B2B]/20 focus:border-[#1B3B2B] transition-all"
+              placeholder="Search materials, boxes, timber..."
+              className="w-full pl-10 pr-4 py-2 bg-white/80 border border-[#EAE3D2] rounded-full text-xs text-[#1A261D] placeholder-[#586A5E]/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0A5C36]/20 focus:border-[#0A5C36] transition-all"
             />
           </form>
 
           {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-7 text-xs font-semibold uppercase tracking-wider text-[#4A584E]">
-            <Link to="/browse" className="hover:text-[#1B3B2B] transition-colors flex items-center gap-1.5">
+          <nav className="hidden md:flex items-center gap-7 text-xs font-semibold uppercase tracking-wider text-[#3A483E]">
+            <Link to="/browse" className="hover:text-[#0A5C36] transition-colors flex items-center gap-1.5">
               Materials
             </Link>
-            <Link to="/recommendations" className="hover:text-[#1B3B2B] transition-colors flex items-center gap-1.5 text-[#1B3B2B] font-bold">
-              <Sparkles className="w-3.5 h-3.5 text-[#76937F]" />
+            <Link to="/recommendations" className="hover:text-[#0A5C36] transition-colors flex items-center gap-1.5 text-[#0A5C36] font-bold">
+              <Sparkles className="w-3.5 h-3.5 text-[#D9381E]" />
               AI Matches
             </Link>
-            <a href="/#categories" className="hover:text-[#1B3B2B] transition-colors">
+            <a href="/#categories" className="hover:text-[#0A5C36] transition-colors">
               Categories
             </a>
-            <a href="/#gallery" className="hover:text-[#1B3B2B] transition-colors">
+            <a href="/#gallery" className="hover:text-[#0A5C36] transition-colors">
               Inspiration
             </a>
             {isAuthenticated && (
-              <Link to="/interests" className="hover:text-[#1B3B2B] transition-colors flex items-center gap-1">
-                <Heart className="w-3.5 h-3.5 text-[#C86D51]" />
+              <Link to="/interests" className="hover:text-[#0A5C36] transition-colors flex items-center gap-1">
+                <Heart className="w-3.5 h-3.5 text-[#D9381E]" />
                 Interests
               </Link>
             )}
@@ -98,10 +98,10 @@ export default function Navbar({ connectionStatus }) {
             
             {/* Live Backend Connection Indicator */}
             {connectionStatus && (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EFEAE1] border border-[#E8E2D6] text-[11px] font-medium text-[#4A584E]">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F3ECE0] border border-[#EAE3D2] text-[11px] font-medium text-[#3A483E]">
                 <span className={`w-2 h-2 rounded-full ${
-                  connectionStatus === 'connected' ? 'bg-[#4E7158]' :
-                  connectionStatus === 'error' ? 'bg-rose-500' : 'bg-amber-400 animate-ping'
+                  connectionStatus === 'connected' ? 'bg-[#0A5C36]' :
+                  connectionStatus === 'error' ? 'bg-[#D9381E]' : 'bg-amber-400 animate-ping'
                 }`} />
                 <span className="capitalize">{connectionStatus}</span>
               </div>
@@ -112,24 +112,24 @@ export default function Navbar({ connectionStatus }) {
                 {isDonor && (
                   <Link
                     to="/create-listing"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-[#E2EBD8] text-[#1B3B2B] hover:bg-[#D5E4C8] transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-[#E1F2E8] text-[#0A5C36] hover:bg-[#C5E5D1] transition-all"
                   >
-                    <PlusCircle className="w-3.5 h-3.5 text-[#1B3B2B]" />
+                    <PlusCircle className="w-3.5 h-3.5 text-[#0A5C36]" />
                     Post Material
                   </Link>
                 )}
 
                 <Link
                   to={isDonor ? "/donor/dashboard" : "/dashboard"}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold bg-white border border-[#E8E2D6] text-[#1C241E] hover:bg-[#FAF7F2] shadow-sm transition-all"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold bg-white border border-[#EAE3D2] text-[#1A261D] hover:bg-[#FAF6EE] shadow-sm transition-all"
                 >
-                  <User className="w-3.5 h-3.5 text-[#76937F]" />
+                  <User className="w-3.5 h-3.5 text-[#0A5C36]" />
                   <span>{user?.name?.split(' ')[0]}</span>
                 </Link>
 
                 <button
                   onClick={handleLogout}
-                  className="p-2 rounded-full text-[#76937F] hover:text-[#C86D51] hover:bg-rose-50 transition-all"
+                  className="p-2 rounded-full text-[#586A5E] hover:text-[#D9381E] hover:bg-[#FCEBE6] transition-all"
                   title="Sign Out"
                 >
                   <LogOut className="w-4 h-4" />
@@ -139,13 +139,13 @@ export default function Navbar({ connectionStatus }) {
               <div className="flex items-center gap-2">
                 <Link
                   to="/login"
-                  className="px-3 py-2 text-xs font-semibold text-[#1C241E] hover:text-[#1B3B2B] transition-colors"
+                  className="px-3 py-2 text-xs font-semibold text-[#1A261D] hover:text-[#0A5C36] transition-colors"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/register"
-                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-semibold bg-[#1B3B2B] text-white hover:bg-[#28533E] shadow-sm transition-all hover:scale-[1.02]"
+                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-semibold bg-[#0A5C36] text-white hover:bg-[#0D7A47] shadow-emerald-glow transition-all hover:scale-[1.02]"
                 >
                   Get Started
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -159,7 +159,7 @@ export default function Navbar({ connectionStatus }) {
           <div className="md:hidden flex items-center gap-2">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-full text-[#1C241E] hover:bg-[#EFEAE1]"
+              className="p-2 rounded-full text-[#1A261D] hover:bg-[#F3ECE0]"
               aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -171,36 +171,36 @@ export default function Navbar({ connectionStatus }) {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-[#E8E2D6] bg-[#FAF7F2] px-6 pt-3 pb-6 space-y-3">
+        <div className="md:hidden border-b border-[#EAE3D2] bg-[#FAF6EE] px-6 pt-3 pb-6 space-y-3">
           <form onSubmit={handleSearchSubmit} className="relative mb-3">
-            <Search className="w-4 h-4 text-[#76937F] absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-[#586A5E] absolute left-3 top-2.5" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search materials..."
-              className="w-full pl-9 pr-4 py-2 bg-white border border-[#E8E2D6] rounded-full text-xs text-[#1C241E]"
+              className="w-full pl-9 pr-4 py-2 bg-white border border-[#EAE3D2] rounded-full text-xs text-[#1A261D]"
             />
           </form>
 
           <Link
             to="/"
             onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 rounded-xl text-sm font-medium text-[#1C241E] hover:bg-[#EFEAE1]"
+            className="block px-3 py-2 rounded-xl text-sm font-medium text-[#1A261D] hover:bg-[#F3ECE0]"
           >
             Home
           </Link>
           <Link
             to="/browse"
             onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 rounded-xl text-sm font-medium text-[#1B3B2B] bg-[#E2EBD8]/50"
+            className="block px-3 py-2 rounded-xl text-sm font-medium text-[#0A5C36] bg-[#E1F2E8]/60"
           >
             Browse Materials
           </Link>
           <Link
             to="/recommendations"
             onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 rounded-xl text-sm font-medium text-[#1B3B2B]"
+            className="block px-3 py-2 rounded-xl text-sm font-medium text-[#0A5C36]"
           >
             AI Matches & Recommendations
           </Link>
@@ -209,14 +209,14 @@ export default function Navbar({ connectionStatus }) {
               <Link
                 to="/interests"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-xl text-sm font-medium text-[#1C241E] hover:bg-[#EFEAE1]"
+                className="block px-3 py-2 rounded-xl text-sm font-medium text-[#1A261D] hover:bg-[#F3ECE0]"
               >
                 Interest Proposals
               </Link>
               <Link
                 to={isDonor ? "/donor/dashboard" : "/dashboard"}
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-xl text-sm font-medium text-[#1B3B2B] bg-[#E2EBD8]"
+                className="block px-3 py-2 rounded-xl text-sm font-medium text-[#0A5C36] bg-[#E1F2E8]"
               >
                 Dashboard ({user?.name})
               </Link>
@@ -225,7 +225,7 @@ export default function Navbar({ connectionStatus }) {
                   setMobileMenuOpen(false);
                   handleLogout();
                 }}
-                className="w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-[#C86D51] hover:bg-rose-50"
+                className="w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-[#D9381E] hover:bg-[#FCEBE6]"
               >
                 Sign Out
               </button>
@@ -235,14 +235,14 @@ export default function Navbar({ connectionStatus }) {
               <Link
                 to="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block text-center py-2.5 rounded-full border border-[#E8E2D6] text-xs font-semibold text-[#1C241E]"
+                className="block text-center py-2.5 rounded-full border border-[#EAE3D2] text-xs font-semibold text-[#1A261D]"
               >
                 Sign In
               </Link>
               <Link
                 to="/register"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block text-center py-2.5 rounded-full bg-[#1B3B2B] text-white text-xs font-semibold"
+                className="block text-center py-2.5 rounded-full bg-[#0A5C36] text-white text-xs font-semibold shadow-emerald-glow"
               >
                 Join Platform
               </Link>

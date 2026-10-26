@@ -36,22 +36,22 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#FAF7F2]">
+    <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#FAF6EE]">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         
         {/* Brand Icon */}
         <div className="flex justify-center">
-          <Link to="/" className="w-12 h-12 rounded-full bg-[#1B3B2B] flex items-center justify-center text-white shadow-md hover:scale-105 transition-all">
-            <Leaf className="w-6 h-6 text-[#E2EBD8]" />
+          <Link to="/" className="w-12 h-12 rounded-full bg-[#0A5C36] flex items-center justify-center text-white shadow-emerald-glow hover:scale-105 transition-all">
+            <Leaf className="w-6 h-6 text-[#FAF6EE]" />
           </Link>
         </div>
 
-        <h2 className="mt-4 text-center text-3xl font-serif font-bold text-[#1C241E] tracking-tight">
-          Welcome back <span className="font-serif italic font-normal text-[#76937F]">◇ Sign In</span>
+        <h2 className="mt-4 text-center text-3xl font-serif font-bold text-[#1A261D] tracking-tight">
+          Welcome back <span className="font-serif italic font-normal text-[#D9381E]">◇ Sign In</span>
         </h2>
-        <p className="mt-2 text-center text-xs text-[#5D6E62]">
+        <p className="mt-2 text-center text-xs text-[#586A5E]">
           Sign in to your ReSource AI account, or{' '}
-          <Link to="/register" className="font-semibold text-[#1B3B2B] hover:underline">
+          <Link to="/register" className="font-semibold text-[#D9381E] hover:underline">
             create a new account
           </Link>
         </p>
@@ -59,22 +59,22 @@ export default function Login() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 shadow-luxury border border-[#E8E2D6] rounded-3xl sm:px-10">
+        <div className="bg-[#FDFBF7] py-8 px-6 shadow-luxury border border-[#EAE3D2] rounded-3xl sm:px-10">
           
           {error && (
-            <div className="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 flex items-start gap-3 text-rose-800 text-xs font-medium">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+            <div className="mb-6 p-4 rounded-2xl bg-[#FCEBE6] border border-[#F8D0C7] flex items-start gap-3 text-[#D9381E] text-xs font-medium">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#D9381E]" />
               <span>{error}</span>
             </div>
           )}
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-xs font-bold text-[#1C241E] uppercase tracking-wider">
+              <label htmlFor="email" className="block text-xs font-bold text-[#1A261D] uppercase tracking-wider">
                 Email Address
               </label>
               <div className="mt-1 relative rounded-full shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#76937F]">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#586A5E]">
                   <Mail className="w-4 h-4" />
                 </div>
                 <input
@@ -84,17 +84,17 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="donor1@resourceai.org"
-                  className="block w-full pl-10 pr-4 py-2.5 bg-[#FAF7F2] border border-[#E8E2D6] rounded-full text-[#1C241E] placeholder-[#76937F]/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1B3B2B]/20 focus:border-[#1B3B2B] text-xs transition-all"
+                  className="block w-full pl-10 pr-4 py-2.5 bg-white border border-[#EAE3D2] rounded-full text-[#1A261D] placeholder-[#586A5E]/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0A5C36]/20 focus:border-[#0A5C36] text-xs transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-xs font-bold text-[#1C241E] uppercase tracking-wider">
+              <label htmlFor="password" className="block text-xs font-bold text-[#1A261D] uppercase tracking-wider">
                 Password
               </label>
               <div className="mt-1 relative rounded-full shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#76937F]">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#586A5E]">
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
@@ -104,7 +104,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="block w-full pl-10 pr-4 py-2.5 bg-[#FAF7F2] border border-[#E8E2D6] rounded-full text-[#1C241E] placeholder-[#76937F]/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1B3B2B]/20 focus:border-[#1B3B2B] text-xs transition-all"
+                  className="block w-full pl-10 pr-4 py-2.5 bg-white border border-[#EAE3D2] rounded-full text-[#1A261D] placeholder-[#586A5E]/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0A5C36]/20 focus:border-[#0A5C36] text-xs transition-all"
                 />
               </div>
             </div>
@@ -113,7 +113,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-full text-xs font-bold uppercase tracking-wider text-white bg-[#1B3B2B] hover:bg-[#28533E] focus:outline-none focus:ring-2 focus:ring-[#1B3B2B] shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-full text-xs font-bold uppercase tracking-wider text-white bg-[#0A5C36] hover:bg-[#0D7A47] focus:outline-none focus:ring-2 focus:ring-[#0A5C36] shadow-emerald-glow transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
               >
                 {submitting ? 'Authenticating...' : 'Sign In'}
                 <ArrowRight className="w-4 h-4" />
@@ -122,27 +122,27 @@ export default function Login() {
           </form>
 
           {/* Demo User Fast-Autofill */}
-          <div className="mt-8 pt-6 border-t border-[#E8E2D6]">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-[#1C241E] mb-3">
-              <Sparkles className="w-3.5 h-3.5 text-[#2D5A3E]" />
+          <div className="mt-8 pt-6 border-t border-[#EAE3D2]">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-[#1A261D] mb-3">
+              <Sparkles className="w-3.5 h-3.5 text-[#D9381E]" />
               Quick Demo Accounts (1-Click Fill):
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <button
                 type="button"
                 onClick={() => handleQuickFill('donor1@resourceai.org')}
-                className="px-3 py-2 rounded-2xl bg-[#E2EBD8]/50 hover:bg-[#E2EBD8] border border-[#D5E4C8] text-[#1C241E] font-medium text-left transition-all"
+                className="px-3 py-2 rounded-2xl bg-[#E1F2E8]/60 hover:bg-[#E1F2E8] border border-[#C5E5D1] text-[#1A261D] font-medium text-left transition-all"
               >
-                <div className="font-bold text-[#1B3B2B]">Donor (Rahul)</div>
-                <div className="text-[10px] text-[#5D6E62]">Logistics Warehouse</div>
+                <div className="font-bold text-[#0A5C36]">Donor (Rahul)</div>
+                <div className="text-[10px] text-[#586A5E]">Logistics Warehouse</div>
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickFill('recipient1@resourceai.org')}
-                className="px-3 py-2 rounded-2xl bg-[#E2EBD8]/50 hover:bg-[#E2EBD8] border border-[#D5E4C8] text-[#1C241E] font-medium text-left transition-all"
+                className="px-3 py-2 rounded-2xl bg-[#E1F2E8]/60 hover:bg-[#E1F2E8] border border-[#C5E5D1] text-[#1A261D] font-medium text-left transition-all"
               >
-                <div className="font-bold text-[#2D5A3E]">Recipient (Ananya)</div>
-                <div className="text-[10px] text-[#5D6E62]">Architecture Student</div>
+                <div className="font-bold text-[#0A5C36]">Recipient (Ananya)</div>
+                <div className="text-[10px] text-[#586A5E]">Architecture Student</div>
               </button>
             </div>
           </div>

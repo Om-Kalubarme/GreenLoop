@@ -67,31 +67,32 @@ export default function UserInterests() {
       
       {/* Header */}
       <div>
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold mb-2">
-          <Heart className="w-3.5 h-3.5 text-emerald-600" />
-          Reuse Coordination
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E1F2E8] border border-[#CEEAD8] text-[#0A5C36] text-xs font-semibold mb-2">
+          <Heart className="w-3.5 h-3.5 text-[#D9381E] fill-[#D9381E]" />
+          <span>Reuse Coordination</span>
+          <span className="text-[#D9381E]">◇</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-3xl font-serif font-bold text-[#1A261D] tracking-tight">
           Material Interest Requests
         </h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-[#5A524C] mt-1">
           Review community reuse proposals and coordinate material collection dates.
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-200">
+      <div className="flex border-b border-[#EAE3D2]">
         <button
           onClick={() => setActiveTab('received')}
           className={`py-3 px-6 text-sm font-bold border-b-2 transition-all flex items-center gap-2 ${
             activeTab === 'received'
-              ? 'border-emerald-600 text-emerald-700 bg-emerald-50/30'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-[#0A5C36] text-[#0A5C36] bg-[#E1F2E8]/40'
+              : 'border-transparent text-[#5A524C] hover:text-[#1A261D]'
           }`}
         >
-          <Inbox className="w-4 h-4" />
+          <Inbox className="w-4 h-4 text-[#0A5C36]" />
           Received Proposals
-          <span className="ml-1.5 px-2 py-0.5 rounded-full text-xs bg-slate-200 text-slate-700">
+          <span className="ml-1.5 px-2 py-0.5 rounded-full text-xs bg-[#EAE3D2] text-[#1A261D]">
             {receivedList.length}
           </span>
         </button>
@@ -100,13 +101,13 @@ export default function UserInterests() {
           onClick={() => setActiveTab('sent')}
           className={`py-3 px-6 text-sm font-bold border-b-2 transition-all flex items-center gap-2 ${
             activeTab === 'sent'
-              ? 'border-emerald-600 text-emerald-700 bg-emerald-50/30'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-[#0A5C36] text-[#0A5C36] bg-[#E1F2E8]/40'
+              : 'border-transparent text-[#5A524C] hover:text-[#1A261D]'
           }`}
         >
-          <Send className="w-4 h-4" />
+          <Send className="w-4 h-4 text-[#0A5C36]" />
           My Sent Requests
-          <span className="ml-1.5 px-2 py-0.5 rounded-full text-xs bg-slate-200 text-slate-700">
+          <span className="ml-1.5 px-2 py-0.5 rounded-full text-xs bg-[#EAE3D2] text-[#1A261D]">
             {sentList.length}
           </span>
         </button>
@@ -114,21 +115,21 @@ export default function UserInterests() {
 
       {/* Content */}
       {loading ? (
-        <div className="min-h-[40vh] flex flex-col items-center justify-center text-slate-500">
-          <RefreshCw className="w-8 h-8 animate-spin text-emerald-600 mb-3" />
+        <div className="min-h-[40vh] flex flex-col items-center justify-center text-[#5A524C]">
+          <RefreshCw className="w-8 h-8 animate-spin text-[#0A5C36] mb-3" />
           <p className="text-sm font-medium">Loading requests...</p>
         </div>
       ) : error ? (
-        <div className="p-6 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800 text-sm">
+        <div className="p-6 bg-[#FCEBE6] border border-[#F8D0C7] rounded-2xl text-[#B72B15] text-sm">
           {error}
         </div>
       ) : activeTab === 'received' ? (
         /* Received List */
         receivedList.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-md mx-auto shadow-sm">
-            <Inbox className="w-12 h-12 text-slate-400 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-900 mb-1">No Received Proposals</h3>
-            <p className="text-xs text-slate-500">
+          <div className="bg-[#FDFBF7] rounded-2xl border border-[#EAE3D2] p-12 text-center max-w-md mx-auto shadow-sm">
+            <Inbox className="w-12 h-12 text-[#8C827A] mx-auto mb-3" />
+            <h3 className="text-base font-serif font-bold text-[#1A261D] mb-1">No Received Proposals</h3>
+            <p className="text-xs text-[#5A524C]">
               When recipients request your materials, their proposals will appear here.
             </p>
           </div>
@@ -137,36 +138,36 @@ export default function UserInterests() {
             {receivedList.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+                className="bg-[#FDFBF7] rounded-2xl border border-[#EAE3D2] p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:border-[#CEEAD8] transition-all"
               >
                 <div className="space-y-2 flex-1">
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="font-semibold text-slate-500">Listing:</span>
-                    <Link to={`/listings/${item.listing_id}`} className="font-bold text-emerald-700 hover:underline">
+                    <span className="font-semibold text-[#5A524C]">Listing:</span>
+                    <Link to={`/listings/${item.listing_id}`} className="font-serif font-bold text-[#0A5C36] hover:underline">
                       {item.listing_title}
                     </Link>
-                    <span className="text-slate-300">&bull;</span>
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                      item.status === 'accepted' ? 'bg-emerald-100 text-emerald-800' :
-                      item.status === 'declined' ? 'bg-rose-100 text-rose-800' :
-                      'bg-amber-100 text-amber-800'
+                    <span className="text-[#8C827A]">&bull;</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${
+                      item.status === 'accepted' ? 'bg-[#E1F2E8] text-[#0A5C36] border-[#CEEAD8]' :
+                      item.status === 'declined' ? 'bg-[#FCEBE6] text-[#B72B15] border-[#F8D0C7]' :
+                      'bg-[#FAF6EE] text-[#5A524C] border-[#EAE3D2]'
                     }`}>
                       {item.status}
                     </span>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-slate-50 text-xs text-slate-800 font-medium leading-relaxed">
+                  <div className="p-3 rounded-xl bg-[#FAF6EE] border border-[#EAE3D2] text-xs text-[#1A261D] font-medium leading-relaxed">
                     "{item.message}"
                   </div>
 
-                  <div className="flex items-center gap-4 text-xs text-slate-500 pt-1">
-                    <span className="font-semibold text-slate-700">From: {item.recipient_name}</span>
+                  <div className="flex items-center gap-4 text-xs text-[#5A524C] pt-1">
+                    <span className="font-semibold text-[#1A261D]">From: {item.recipient_name}</span>
                     <span className="flex items-center gap-1">
-                      <Mail className="w-3.5 h-3.5 text-slate-400" />
+                      <Mail className="w-3.5 h-3.5 text-[#8C827A]" />
                       {item.recipient_email}
                     </span>
                     <span className="flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+                      <MapPin className="w-3.5 h-3.5 text-[#0A5C36]" />
                       {item.recipient_city}
                     </span>
                   </div>
@@ -178,7 +179,7 @@ export default function UserInterests() {
                     <button
                       onClick={() => handleStatusChange(item.id, 'accepted')}
                       disabled={updatingId === item.id}
-                      className="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition-all disabled:opacity-50"
+                      className="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-[#0A5C36] text-white hover:bg-[#0D7A47] shadow-sm shadow-[#0A5C36]/20 transition-all disabled:opacity-50"
                     >
                       <Check className="w-3.5 h-3.5" />
                       Accept Proposal
@@ -186,7 +187,7 @@ export default function UserInterests() {
                     <button
                       onClick={() => handleStatusChange(item.id, 'declined')}
                       disabled={updatingId === item.id}
-                      className="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-rose-50 hover:text-rose-700 border border-slate-200 transition-all disabled:opacity-50"
+                      className="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-[#FAF6EE] text-[#5A524C] hover:bg-[#FCEBE6] hover:text-[#B72B15] border border-[#EAE3D2] transition-all disabled:opacity-50"
                     >
                       <X className="w-3.5 h-3.5" />
                       Decline
@@ -200,13 +201,13 @@ export default function UserInterests() {
       ) : (
         /* Sent List */
         sentList.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-md mx-auto shadow-sm">
-            <Send className="w-12 h-12 text-slate-400 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-900 mb-1">No Sent Requests Yet</h3>
-            <p className="text-xs text-slate-500 mb-4">
+          <div className="bg-[#FDFBF7] rounded-2xl border border-[#EAE3D2] p-12 text-center max-w-md mx-auto shadow-sm">
+            <Send className="w-12 h-12 text-[#8C827A] mx-auto mb-3" />
+            <h3 className="text-base font-serif font-bold text-[#1A261D] mb-1">No Sent Requests Yet</h3>
+            <p className="text-xs text-[#5A524C] mb-4">
               Browse available listings and express interest in materials for your projects.
             </p>
-            <Link to="/browse" className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white">
+            <Link to="/browse" className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#0A5C36] text-white hover:bg-[#0D7A47] shadow-sm">
               Browse Materials
             </Link>
           </div>
@@ -215,31 +216,31 @@ export default function UserInterests() {
             {sentList.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+                className="bg-[#FDFBF7] rounded-2xl border border-[#EAE3D2] p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:border-[#CEEAD8] transition-all"
               >
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="font-semibold text-slate-500">Material Requested:</span>
-                    <Link to={`/listings/${item.listing_id}`} className="font-bold text-emerald-700 hover:underline">
+                    <span className="font-semibold text-[#5A524C]">Material Requested:</span>
+                    <Link to={`/listings/${item.listing_id}`} className="font-serif font-bold text-[#0A5C36] hover:underline">
                       {item.listing_title}
                     </Link>
-                    <span className="text-slate-300">&bull;</span>
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                      item.status === 'accepted' ? 'bg-emerald-100 text-emerald-800' :
-                      item.status === 'declined' ? 'bg-rose-100 text-rose-800' :
-                      'bg-amber-100 text-amber-800'
+                    <span className="text-[#8C827A]">&bull;</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${
+                      item.status === 'accepted' ? 'bg-[#E1F2E8] text-[#0A5C36] border-[#CEEAD8]' :
+                      item.status === 'declined' ? 'bg-[#FCEBE6] text-[#B72B15] border-[#F8D0C7]' :
+                      'bg-[#FAF6EE] text-[#5A524C] border-[#EAE3D2]'
                     }`}>
                       {item.status}
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-600 italic">"{item.message}"</p>
+                  <p className="text-xs text-[#5A524C] italic">"{item.message}"</p>
 
-                  <div className="flex items-center gap-4 text-xs text-slate-500">
-                    <span>Donor: {item.donor_name}</span>
+                  <div className="flex items-center gap-4 text-xs text-[#5A524C]">
+                    <span>Donor: <strong className="text-[#1A261D]">{item.donor_name}</strong></span>
                     {item.status === 'accepted' && (
-                      <span className="text-emerald-700 font-semibold flex items-center gap-1">
-                        <Mail className="w-3.5 h-3.5" />
+                      <span className="text-[#0A5C36] font-semibold flex items-center gap-1">
+                        <Mail className="w-3.5 h-3.5 text-[#0A5C36]" />
                         Donor Email: {item.donor_email}
                       </span>
                     )}
@@ -248,7 +249,7 @@ export default function UserInterests() {
 
                 <Link
                   to={`/listings/${item.listing_id}`}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#FAF6EE] hover:bg-[#F3ECE0] text-[#1A261D] border border-[#EAE3D2] transition-colors"
                 >
                   View Listing
                 </Link>

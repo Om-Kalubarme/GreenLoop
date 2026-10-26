@@ -20,13 +20,13 @@ import {
 } from 'lucide-react';
 
 const CATEGORY_COLORS = {
-  cardboard: 'bg-amber-100 text-amber-800 border-amber-200',
-  wood: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  glass: 'bg-cyan-100 text-cyan-800 border-cyan-200',
-  textile: 'bg-purple-100 text-purple-800 border-purple-200',
-  plastic: 'bg-blue-100 text-blue-800 border-blue-200',
-  metal: 'bg-slate-200 text-slate-800 border-slate-300',
-  other: 'bg-gray-100 text-gray-800 border-gray-200',
+  cardboard: 'bg-[#FCEBE6] text-[#D9381E] border-[#F8D0C7]',
+  wood: 'bg-[#E1F2E8] text-[#0A5C36] border-[#C5E5D1]',
+  glass: 'bg-[#EBF5FB] text-[#1B4F72] border-[#D4E6F1]',
+  textile: 'bg-[#FAF3EB] text-[#873600] border-[#EDBB99]',
+  plastic: 'bg-[#E8F8F5] text-[#117A65] border-[#A3E4D7]',
+  metal: 'bg-[#F2F3F4] text-[#2C3E50] border-[#D5D8DC]',
+  other: 'bg-[#F3ECE0] text-[#0A5C36] border-[#EAE3D2]',
 };
 
 export default function ListingDetail() {
@@ -68,180 +68,186 @@ export default function ListingDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-slate-500">
-        <RefreshCw className="w-8 h-8 animate-spin text-emerald-600 mb-3" />
-        <p className="text-sm font-medium">Loading material details...</p>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-[#586A5E] bg-[#FAF6EE]">
+        <RefreshCw className="w-8 h-8 animate-spin text-[#0A5C36] mb-3" />
+        <p className="text-xs font-medium">Loading material details...</p>
       </div>
     );
   }
 
   if (error || !listing) {
     return (
-      <div className="max-w-md mx-auto my-16 p-8 bg-white border border-rose-200 rounded-2xl shadow-sm text-center">
-        <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
-        <h2 className="text-lg font-bold text-slate-900 mb-2">Item Not Found</h2>
-        <p className="text-sm text-slate-600 mb-6">{error || 'This listing does not exist.'}</p>
-        <Link to="/browse" className="px-5 py-2.5 rounded-xl font-semibold text-sm bg-emerald-600 text-white">
-          Return to Marketplace
-        </Link>
+      <div className="min-h-screen bg-[#FAF6EE] py-16 px-4">
+        <div className="max-w-md mx-auto p-8 bg-[#FDFBF7] border border-[#F8D0C7] rounded-3xl shadow-sm text-center">
+          <AlertCircle className="w-10 h-10 text-[#D9381E] mx-auto mb-3" />
+          <h2 className="text-lg font-serif font-bold text-[#1A261D] mb-2">Item Unavailable</h2>
+          <p className="text-xs text-[#586A5E] mb-6">{error || 'This material listing does not exist or has been removed.'}</p>
+          <Link
+            to="/browse"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0A5C36] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#0D7A47] transition-all"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Marketplace
+          </Link>
+        </div>
       </div>
     );
   }
 
-  const isOwner = user && user.id === listing.owner_id;
+  const isOwner = isAuthenticated && user && user.id === listing.owner_id;
   const fallbackImage = 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=800&auto=format&fit=crop&q=80';
   const categoryStyle = CATEGORY_COLORS[listing.material_category] || CATEGORY_COLORS.other;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
-      
-      {/* Top Breadcrumb & Share Bar */}
-      <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Listings
-        </button>
-
-        <button
-          onClick={handleShare}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-all"
-        >
-          <Share2 className="w-3.5 h-3.5" />
-          {copied ? 'Link Copied!' : 'Share'}
-        </button>
-      </div>
-
-      {/* Main Two-Column View */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <div className="min-h-screen bg-[#FAF6EE] py-8 sm:py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         
-        {/* Left Column: Image Showcase */}
-        <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          <div className="aspect-[4/3] w-full bg-slate-100 relative">
-            <img
-              src={listing.image_url || fallbackImage}
-              alt={listing.title}
-              onError={(e) => { e.currentTarget.src = fallbackImage; }}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute top-4 left-4 flex gap-2">
-              <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border shadow-md backdrop-blur-md ${categoryStyle}`}>
-                {listing.material_category}
-              </span>
-              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-900/80 text-white shadow-md backdrop-blur-md capitalize">
-                {listing.status}
-              </span>
-            </div>
-          </div>
+        {/* Navigation Breadcrumb */}
+        <div className="flex items-center justify-between">
+          <Link
+            to="/browse"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#586A5E] hover:text-[#0A5C36] transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Materials Marketplace
+          </Link>
+
+          <button
+            onClick={handleShare}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FDFBF7] border border-[#EAE3D2] text-xs font-semibold text-[#1A261D] hover:bg-[#F3ECE0] transition-all"
+          >
+            <Share2 className="w-3.5 h-3.5 text-[#0A5C36]" />
+            <span>{copied ? 'Link Copied!' : 'Share Listing'}</span>
+          </button>
         </div>
 
-        {/* Right Column: Details & Actions */}
-        <div className="lg:col-span-5 space-y-6">
+        {/* Main Details Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-5">
-            
-            {/* Header info */}
-            <div>
-              <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                <span className="font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">
-                  {listing.material_type}
+          {/* Left Column: Image Showcase */}
+          <div className="lg:col-span-7 bg-[#FDFBF7] rounded-3xl border border-[#EAE3D2] overflow-hidden shadow-luxury p-3">
+            <div className="aspect-[4/3] w-full bg-[#F3ECE0] rounded-2xl relative overflow-hidden">
+              <img
+                src={listing.image_url || fallbackImage}
+                alt={listing.title}
+                onError={(e) => { e.currentTarget.src = fallbackImage; }}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute top-4 left-4 flex gap-2">
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border shadow-md backdrop-blur-md ${categoryStyle}`}>
+                  {listing.material_category}
                 </span>
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4 text-emerald-600" />
-                  {listing.city}
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#0A5C36]/90 text-white shadow-md backdrop-blur-md capitalize">
+                  {listing.status}
                 </span>
               </div>
-
-              <h1 className="text-2xl font-extrabold text-slate-900 leading-snug">
-                {listing.title}
-              </h1>
-
-              <div className="mt-4 flex flex-wrap items-center gap-3 text-xs">
-                <div className="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-medium">
-                  <strong>Condition:</strong> {listing.condition}
-                </div>
-                <div className="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-medium">
-                  <strong>Quantity:</strong> {listing.quantity_description}
-                </div>
-              </div>
             </div>
-
-            {/* Description */}
-            <div className="pt-4 border-t border-slate-100">
-              <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                Description &amp; Collection Guidelines:
-              </h2>
-              <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
-                {listing.description}
-              </p>
-            </div>
-
-            {/* Actions for Owner vs Recipient */}
-            <div className="pt-4 border-t border-slate-100">
-              {isOwner ? (
-                <div className="space-y-3">
-                  <div className="text-xs text-slate-500 font-medium">
-                    You posted this listing.
-                  </div>
-                  <Link
-                    to={`/edit-listing/${listing.id}`}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold text-sm bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-sm"
-                  >
-                    <Edit3 className="w-4 h-4" />
-                    Edit or Update Status
-                  </Link>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {interestSubmitted && (
-                    <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      Interest request submitted! The donor will review your proposal.
-                    </div>
-                  )}
-
-                  {isAuthenticated ? (
-                    <button
-                      onClick={() => setInterestModalOpen(true)}
-                      disabled={listing.status !== 'available'}
-                      className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold text-sm bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50"
-                    >
-                      <Heart className="w-4 h-4" />
-                      {listing.status === 'available' ? 'Express Interest in Material' : `Item is ${listing.status}`}
-                    </button>
-                  ) : (
-                    <Link
-                      to="/login"
-                      className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold text-sm bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm"
-                    >
-                      Sign In to Express Interest
-                    </Link>
-                  )}
-                </div>
-              )}
-            </div>
-
           </div>
 
-          {/* Donor Information Card */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
-            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Offered By (Donor Profile)
-            </h3>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
-                {listing.donor_name?.charAt(0) || 'D'}
-              </div>
+          {/* Right Column: Details & Actions */}
+          <div className="lg:col-span-5 space-y-6">
+            
+            <div className="bg-[#FDFBF7] rounded-3xl border border-[#EAE3D2] p-6 sm:p-8 shadow-luxury space-y-5">
+              
+              {/* Header info */}
               <div>
-                <div className="text-sm font-bold text-slate-900">{listing.donor_name}</div>
-                <div className="text-xs text-slate-500 flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-                  {listing.donor_city || listing.city} &bull; Verified Donor
+                <div className="flex items-center justify-between text-xs text-[#586A5E] mb-2">
+                  <span className="font-semibold text-[#0A5C36] bg-[#E1F2E8] px-3 py-0.5 rounded-full">
+                    {listing.material_type}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-4 h-4 text-[#0A5C36]" />
+                    {listing.city}
+                  </span>
+                </div>
+
+                <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A261D] leading-snug">
+                  {listing.title}
+                </h1>
+
+                <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
+                  <div className="px-3 py-1.5 rounded-full bg-[#FAF6EE] border border-[#EAE3D2] text-[#1A261D] font-medium">
+                    <strong>Condition:</strong> {listing.condition}
+                  </div>
+                  <div className="px-3 py-1.5 rounded-full bg-[#FAF6EE] border border-[#EAE3D2] text-[#1A261D] font-medium">
+                    <strong>Quantity:</strong> {listing.quantity_description}
+                  </div>
                 </div>
               </div>
+
+              {/* Description */}
+              <div className="pt-4 border-t border-[#EAE3D2]">
+                <h2 className="text-xs font-bold text-[#0A5C36] uppercase tracking-wider mb-2">
+                  Description &amp; Collection Guidelines:
+                </h2>
+                <p className="text-xs text-[#1A261D] leading-relaxed whitespace-pre-line">
+                  {listing.description}
+                </p>
+              </div>
+
+              {/* Actions for Owner vs Recipient */}
+              <div className="pt-4 border-t border-[#EAE3D2]">
+                {isOwner ? (
+                  <div className="space-y-3">
+                    <div className="text-xs text-[#586A5E] font-medium">
+                      You posted this material listing.
+                    </div>
+                    <Link
+                      to={`/edit-listing/${listing.id}`}
+                      className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-full font-bold text-xs uppercase tracking-wider bg-[#0A5C36] text-white hover:bg-[#0D7A47] shadow-emerald-glow transition-all"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                      Edit or Update Status
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {interestSubmitted && (
+                      <div className="p-3.5 rounded-2xl bg-[#E1F2E8] border border-[#C5E5D1] text-[#0A5C36] text-xs font-semibold flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0A5C36]" />
+                        Interest request submitted! The donor will review your proposal.
+                      </div>
+                    )}
+
+                    {isAuthenticated ? (
+                      <button
+                        onClick={() => setInterestModalOpen(true)}
+                        disabled={listing.status !== 'available'}
+                        className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-full font-bold text-xs uppercase tracking-wider bg-[#D9381E] text-white hover:bg-[#B72B15] shadow-vermillion-glow transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                      >
+                        <Heart className="w-4 h-4 fill-white" />
+                        {listing.status === 'available' ? 'Express Interest in Material' : `Item is ${listing.status}`}
+                      </button>
+                    ) : (
+                      <Link
+                        to="/login"
+                        className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-full font-bold text-xs uppercase tracking-wider bg-[#0A5C36] text-white hover:bg-[#0D7A47] shadow-emerald-glow transition-all"
+                      >
+                        Sign In to Express Interest
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Donor Contact Information */}
+              <div className="pt-4 border-t border-[#EAE3D2] space-y-2">
+                <h3 className="text-xs font-bold text-[#586A5E] uppercase tracking-wider">
+                  Material Donor Details:
+                </h3>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#E1F2E8] text-[#0A5C36] font-serif font-bold text-sm flex items-center justify-center">
+                    {listing.donor_name ? listing.donor_name.charAt(0) : 'D'}
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-[#1A261D]">{listing.donor_name}</div>
+                    <div className="text-[11px] text-[#586A5E]">{listing.donor_city} • Community Verified</div>
+                  </div>
+                </div>
+              </div>
+
             </div>
+
           </div>
 
         </div>
@@ -253,9 +259,10 @@ export default function ListingDetail() {
         listing={listing}
         isOpen={interestModalOpen}
         onClose={() => setInterestModalOpen(false)}
-        onSuccess={() => setInterestSubmitted(true)}
+        onSuccess={() => {
+          setInterestSubmitted(true);
+        }}
       />
-
     </div>
   );
 }

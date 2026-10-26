@@ -5,8 +5,8 @@
 @layer base {
   html {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    color: #1C241E;
-    background-color: #FAF7F2;
+    color: #1A261D;
+    background-color: #FAF6EE;
     scroll-behavior: smooth;
   }
 
@@ -16,25 +16,25 @@
   }
 
   ::selection {
-    background-color: #E2EBD8;
-    color: #1B3B2B;
+    background-color: #CEEAD8;
+    color: #0A5C36;
   }
 }
 
-/* Custom scrollbars styled to warm organic tones */
+/* Custom scrollbars styled to Warm Ivory & Emerald Green */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAF7F2;
+  background: #FAF6EE;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D5CABE;
+  background: #EAE3D2;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #76937F;
+  background: #0A5C36;
 }
 
 /* Luxury card hover transitions */
