@@ -1,0 +1,112 @@
+{
+  "classes": [
+    "Hazardous",
+    "Non-Recyclable",
+    "Organic",
+    "Recyclable"
+  ],
+  "class_to_idx": {
+    "Hazardous": 0,
+    "Non-Recyclable": 1,
+    "Organic": 2,
+    "Recyclable": 3
+  },
+  "metadata": {
+    "Hazardous": {
+      "badge_color": "#D9381E",
+      "bg_color": "#FCEBE6",
+      "icon": "\u26a0\ufe0f",
+      "recyclable": false,
+      "hazard_level": "High",
+      "description": "Hazardous materials including batteries, e-waste, solvents, paints, and chemicals requiring specialized disposal.",
+      "handling_instructions": "Do NOT place in municipal landfills or general recycling. Store in leak-proof containers and hand over to certified e-waste or hazmat collection centers.",
+      "suggested_actions": [
+        "Hazmat Disposal Facility",
+        "E-Waste Safe Recycler",
+        "Certified Battery Drop-off"
+      ]
+    },
+    "Non-Recyclable": {
+      "badge_color": "#7F8C8D",
+      "bg_color": "#F2F3F4",
+      "icon": "\ud83d\uddd1\ufe0f",
+      "recyclable": false,
+      "hazard_level": "Low",
+      "description": "Contaminated ceramics, styrofoam (EPS), sanitary products, or multi-laminate plastics that cannot be remanufactured.",
+      "handling_instructions": "Sort into non-recyclable solid waste streams. Where possible, seek mechanical downcycling or clean energy recovery.",
+      "suggested_actions": [
+        "Solid Waste Diversion",
+        "Refuse-Derived Fuel",
+        "Sanitary Landfill Management"
+      ]
+    },
+    "Organic": {
+      "badge_color": "#27AE60",
+      "bg_color": "#E8F8F5",
+      "icon": "\ud83c\udf31",
+      "recyclable": true,
+      "hazard_level": "None",
+      "description": "Biodegradable organic biomass, food offcuts, egg shells, yard waste, and compostable organic matter.",
+      "handling_instructions": "Ideal for aerobic composting, vermicomposting, or community anaerobic biodigesters to produce nutrient-rich bio-fertilizer.",
+      "suggested_actions": [
+        "Community Composting",
+        "Biogas Generation",
+        "Soil Conditioning"
+      ]
+    },
+    "Recyclable": {
+      "badge_color": "#0A5C36",
+      "bg_color": "#E1F2E8",
+      "icon": "\u267b\ufe0f",
+      "recyclable": true,
+      "hazard_level": "None",
+      "description": "High-purity secondary commodities: clean cardboard, paper packaging, glass containers, metal cans, and rigid plastics.",
+      "handling_instructions": "Rinse clean, compact if possible, and list on GreenLoop Marketplace for remanufacturers, upcyclers, and artisans.",
+      "suggested_actions": [
+        "GreenLoop Marketplace Listing",
+        "Materials Recovery Facility (MRF)",
+        "Industrial Upcycling"
+      ]
+    }
+  },
+  "architecture": "MobileNetV3-Large",
+  "val_accuracy": 80.68,
+  "per_class_metrics": {
+    "0": {
+      "name": "Hazardous",
+      "correct": 149,
+      "total": 170,
+      "accuracy": 87.65,
+      "precision": 82.32,
+      "recall": 87.65,
+      "f1": 84.9
+    },
+    "1": {
+      "name": "Non-Recyclable",
+      "correct": 84,
+      "total": 117,
+      "accuracy": 71.79,
+      "precision": 77.06,
+      "recall": 71.79,
+      "f1": 74.34
+    },
+    "2": {
+      "name": "Organic",
+      "correct": 103,
+      "total": 122,
+      "accuracy": 84.43,
+      "precision": 83.74,
+      "recall": 84.43,
+      "f1": 84.08
+    },
+    "3": {
+      "name": "Recyclable",
+      "correct": 90,
+      "total": 119,
+      "accuracy": 75.63,
+      "precision": 78.26,
+      "recall": 75.63,
+      "f1": 76.92
+    }
+  }
+}
