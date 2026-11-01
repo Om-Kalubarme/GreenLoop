@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
 
   res.status(isHealthy ? 200 : 503).json({
     status: isHealthy ? 'ok' : 'degraded',
-    service: 'ReSource AI Backend API',
+    service: 'GreenLoop Backend API',
     uptimeSeconds: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
     database: dbHealth,

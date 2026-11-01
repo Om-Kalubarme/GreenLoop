@@ -30,6 +30,11 @@ export const fetchMyListings = async () => {
   return response.data;
 };
 
+export const fetchDonorSalesAnalytics = async (params = {}) => {
+  const response = await apiClient.get('/listings/my/sales-analytics', { params });
+  return response.data;
+};
+
 export const uploadListingImage = async (file) => {
   const formData = new FormData();
   formData.append('image', file);
@@ -41,3 +46,4 @@ export const uploadListingImage = async (file) => {
   });
   return response.data;
 };
+

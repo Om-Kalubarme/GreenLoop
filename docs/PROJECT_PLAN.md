@@ -1,8 +1,8 @@
-# ReSource AI — Comprehensive Project Plan
+# GreenLoop — Comprehensive Project Plan
 
 ## 1. Project Overview & Meta Information
 
-* **Project Title:** ReSource AI — AI-Powered Waste-to-Resource Platform
+* **Project Title:** GreenLoop — AI-Powered Waste-to-Resource Platform
 * **Academic Level:** Final-Year Bachelor of Computer Science (BCS) Capstone Project
 * **Nature of Platform:** Full-Stack Circular Economy Web Application with Content-Based Recommendation Architecture
 * **Target Audience:** Donors (households, food establishments, artisans, commercial warehouses) and Recipients (students, NGOs, hobbyists, recycling hubs, small businesses)
@@ -24,7 +24,7 @@
 
 ```mermaid
 gantt
-    title ReSource AI Implementation Roadmap
+    title GreenLoop Implementation Roadmap
     dateFormat  YYYY-MM-DD
     section Documentation & Foundation
     Phase 0: Planning & Documentation :active, p0, 2026-10-26, 1d

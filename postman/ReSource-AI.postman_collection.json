@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "c1f79a90-8d54-4a2e-b61e-19bf12e9b812",
-    "name": "ReSource AI API Collection",
-    "description": "Complete REST API collection for ReSource AI — AI-Powered Waste-to-Resource Platform. Covers authentication, listings, media uploads, reuse proposals, recommendations, and health endpoints.",
+    "name": "GreenLoop API Collection",
+    "description": "Complete REST API collection for GreenLoop — AI-Powered Waste-to-Resource Platform. Covers authentication, listings, media uploads, reuse proposals, recommendations, and health endpoints.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [

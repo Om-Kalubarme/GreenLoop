@@ -163,4 +163,32 @@ describe('Phase 5: Browse & Interest Workflow Integration Tests', () => {
     expect(matched.status).toBe('accepted');
     expect(matched.donor_name).toBe(donorUser.name);
   });
+
+  test('PATCH /api/interests/:id/status - Donor declines request', async () => {
+    const res = await request(app)
+      .patch(`/api/interests/${testInterestId}/status`)
+      .set('Authorization', `Bearer ${donorToken}`)
+      .send({ status: 'declined' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.interest.status).toBe('declined');
+  });
+
+  test('DELETE /api/interests/:id - Donor removes declined proposal from inquiries list', async () => {
+    const res = await request(app)
+      .delete(`/api/interests/${testInterestId}`)
+      .set('Authorization', `Bearer ${donorToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+
+    // Verify it is removed from donor's received inquiries
+    const checkRes = await request(app)
+      .get('/api/interests/my')
+      .set('Authorization', `Bearer ${donorToken}`);
+
+    const found = checkRes.body.received.find((r) => r.id === testInterestId);
+    expect(found).toBeUndefined();
+  });
 });

@@ -140,18 +140,26 @@ export const getUserInterests = async (req, res, next) => {
       SELECT 
         i.id,
         i.listing_id,
+        i.recipient_id,
+        l.owner_id,
         i.message,
         i.status,
         i.created_at,
         l.title AS listing_title,
         l.material_category,
+        l.quantity_description,
         l.city AS listing_city,
         l.image_url AS listing_image,
-        u.name AS donor_name,
-        u.email AS donor_email
+        donor.name AS donor_name,
+        donor.email AS donor_email,
+        donor.city AS donor_city,
+        recipient.name AS recipient_name,
+        recipient.email AS recipient_email,
+        recipient.city AS recipient_city
       FROM interests i
       JOIN listings l ON i.listing_id = l.id
-      JOIN users u ON l.owner_id = u.id
+      JOIN users donor ON l.owner_id = donor.id
+      JOIN users recipient ON i.recipient_id = recipient.id
       WHERE i.recipient_id = $1
       ORDER BY i.created_at DESC;
     `;
@@ -162,18 +170,26 @@ export const getUserInterests = async (req, res, next) => {
       SELECT 
         i.id,
         i.listing_id,
+        i.recipient_id,
+        l.owner_id,
         i.message,
         i.status,
         i.created_at,
         l.title AS listing_title,
         l.material_category,
+        l.quantity_description,
         l.city AS listing_city,
-        u.name AS recipient_name,
-        u.email AS recipient_email,
-        u.city AS recipient_city
+        l.image_url AS listing_image,
+        donor.name AS donor_name,
+        donor.email AS donor_email,
+        donor.city AS donor_city,
+        recipient.name AS recipient_name,
+        recipient.email AS recipient_email,
+        recipient.city AS recipient_city
       FROM interests i
       JOIN listings l ON i.listing_id = l.id
-      JOIN users u ON i.recipient_id = u.id
+      JOIN users donor ON l.owner_id = donor.id
+      JOIN users recipient ON i.recipient_id = recipient.id
       WHERE l.owner_id = $1
       ORDER BY i.created_at DESC;
     `;
@@ -233,12 +249,84 @@ export const updateInterestStatus = async (req, res, next) => {
     // If accepted, also mark the material listing as 'reserved'
     if (status === 'accepted') {
       await query("UPDATE listings SET status = 'reserved', updated_at = NOW() WHERE id = $1", [listing_id]);
+    } else if (status === 'declined') {
+      const acceptedCount = await query(
+        "SELECT COUNT(*)::int AS count FROM interests WHERE listing_id = $1 AND status = 'accepted'",
+        [listing_id]
+      );
+      if (acceptedCount.rows[0].count === 0) {
+        await query(
+          "UPDATE listings SET status = 'available', updated_at = NOW() WHERE id = $1 AND status = 'reserved'",
+          [listing_id]
+        );
+      }
     }
 
     res.json({
       success: true,
       message: `Interest request marked as ${status}`,
       interest: result.rows[0],
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * DELETE /api/interests/:id
+ * Cancel/withdraw an interest proposal (Requester, Listing Owner, or Admin)
+ * Works across pending, accepted, or declined statuses.
+ */
+export const deleteInterest = async (req, res, next) => {
+  try {
+    const { id: interestId } = interestIdParamSchema.parse(req.params);
+    const userId = req.user.id;
+
+    // Check if interest exists and grab listing & recipient info
+    const checkSql = `
+      SELECT i.id, i.listing_id, i.recipient_id, i.status, l.owner_id
+      FROM interests i
+      JOIN listings l ON i.listing_id = l.id
+      WHERE i.id = $1;
+    `;
+    const checkRes = await query(checkSql, [interestId]);
+
+    if (checkRes.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Interest request not found' });
+    }
+
+    const { listing_id, recipient_id, status: interestStatus, owner_id } = checkRes.rows[0];
+
+    // Authorization: User must be recipient (who made the proposal), listing owner (donor), or admin
+    if (recipient_id !== userId && owner_id !== userId && req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        error: 'Forbidden: You do not have permission to cancel this proposal request',
+      });
+    }
+
+    // Delete the interest request
+    await query('DELETE FROM interests WHERE id = $1', [interestId]);
+
+    // If the proposal was 'accepted', check if there are any remaining accepted proposals for this listing.
+    // If not, revert listing status back to 'available'
+    if (interestStatus === 'accepted') {
+      const remainingAccepted = await query(
+        "SELECT COUNT(*)::int AS count FROM interests WHERE listing_id = $1 AND status = 'accepted'",
+        [listing_id]
+      );
+      if (remainingAccepted.rows[0].count === 0) {
+        await query(
+          "UPDATE listings SET status = 'available', updated_at = NOW() WHERE id = $1 AND status = 'reserved'",
+          [listing_id]
+        );
+      }
+    }
+
+    res.json({
+      success: true,
+      message: 'Proposal request cancelled successfully',
+      interestId,
     });
   } catch (err) {
     next(err);

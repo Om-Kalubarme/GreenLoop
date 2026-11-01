@@ -1,8 +1,8 @@
-# ReSource AI — User Manual & Operator Guide
+# GreenLoop — User Manual & Operator Guide
 
 ## 1. Introduction
 
-Welcome to **ReSource AI (AI-Powered Waste-to-Resource Platform)**. ReSource AI is a web application designed to accelerate the circular economy by connecting households, workshops, packaging facilities, and businesses with surplus reusable clean materials (cardboard boxes, glass jars, timber scraps, textiles, and plastic containers) to recipients (students, artists, makers, schools, and NGOs) who can repurpose them.
+Welcome to **GreenLoop (AI-Powered Waste-to-Resource Platform)**. GreenLoop is a web application designed to accelerate the circular economy by connecting households, workshops, packaging facilities, and businesses with surplus reusable clean materials (cardboard boxes, glass jars, timber scraps, textiles, and plastic containers) to recipients (students, artists, makers, schools, and NGOs) who can repurpose them.
 
 ---
 
@@ -110,7 +110,7 @@ On the landing page (`/`), an interactive **Live System Probe** widget continuou
 ## 6. Frequently Asked Questions (FAQ)
 
 **Q: Can I express interest in my own listing?**  
-*A: No. ReSource AI enforces strict role separation and business logic; donors cannot send proposals for materials they have posted.*
+*A: No. GreenLoop enforces strict role separation and business logic; donors cannot send proposals for materials they have posted.*
 
 **Q: What happens when a donor accepts my proposal?**  
 *A: The listing status changes to `reserved` so other users know the item is committed. You will see the status update to `Accepted` in your Interests tab.*

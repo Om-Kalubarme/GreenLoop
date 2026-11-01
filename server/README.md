@@ -1,6 +1,6 @@
-# ReSource AI — Server Backend (Node.js & Express)
+# GreenLoop — Server Backend (Node.js & Express)
 
-The production-grade REST API backend for **ReSource AI — AI-Powered Waste-to-Resource Platform**, built with Node.js (ES Modules), Express.js, PostgreSQL (`pg.Pool`), JWT authentication, Zod validation, and Cloudinary media processing.
+The production-grade REST API backend for **GreenLoop — AI-Powered Waste-to-Resource Platform**, built with Node.js (ES Modules), Express.js, PostgreSQL (`pg.Pool`), JWT authentication, Zod validation, and Cloudinary media processing.
 
 ---
 
@@ -78,10 +78,10 @@ PORT=5001
 NODE_ENV=development
 
 # PostgreSQL Connection String
-DATABASE_URL=postgresql://localhost:5432/resource_ai
+DATABASE_URL=postgresql://localhost:5432/greenloop
 
 # JWT Secret Key (min 32 characters)
-JWT_SECRET=super-secret-resource-ai-jwt-key-2026-production
+JWT_SECRET=super-secret-greenloop-jwt-key-2026-production
 
 # CORS Frontend Whitelist
 CLIENT_URL=http://localhost:5173

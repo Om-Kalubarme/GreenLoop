@@ -1,4 +1,4 @@
-# ReSource AI — Viva Presentation & Demonstration Script
+# GreenLoop — Viva Presentation & Demonstration Script
 
 ## 1. Presentation Outline & Timing (10–12 Minutes)
 
@@ -29,7 +29,7 @@
 
 ### Segment 1: Introduction & Live System Probe (2 Mins)
 **Speaker Script:**
-> *"Respected examiners, our final year project is ReSource AI — an AI-Powered Waste-to-Resource Platform. Millions of tons of clean industrial and household surplus like shipping boxes, wood offcuts, glass containers, and fabric remnants end up in landfills simply because donors have no direct, reliable channel to connect with local makers, students, and NGOs.*
+> *"Respected examiners, our final year project is GreenLoop — an AI-Powered Waste-to-Resource Platform. Millions of tons of clean industrial and household surplus like shipping boxes, wood offcuts, glass containers, and fabric remnants end up in landfills simply because donors have no direct, reliable channel to connect with local makers, students, and NGOs.*
 > 
 > *Our platform bridges this gap using a decoupled modern stack: a React Single-Page Application with Tailwind CSS, an Express REST API with Zod validation, a PostgreSQL relational database with ACID guarantees, and a hybrid content-based recommendation engine powered by Python scikit-learn with an automated 100-point rule-based fallback.*
 > 

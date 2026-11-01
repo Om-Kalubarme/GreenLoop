@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import apiRouter from './routes/index.js';
@@ -45,17 +46,29 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 const uploadsDir = path.join(__dirname, '../uploads');
 app.use('/uploads', express.static(uploadsDir));
 
-// Root welcome probe
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Welcome to ReSource AI REST API',
-    docs: '/api/health',
-    version: '1.0.0',
-  });
-});
-
 // Mount modular API routes under /api
 app.use('/api', apiRouter);
+
+// Serve frontend in production if built (monolithic deploy support)
+const clientDist = path.join(__dirname, '../../client/dist');
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+} else {
+  // Root welcome probe when running standalone backend
+  app.get('/', (req, res) => {
+    res.json({
+      message: 'Welcome to GreenLoop REST API',
+      docs: '/api/health',
+      version: '1.0.0',
+    });
+  });
+}
 
 // Error handlers
 app.use(notFoundHandler);

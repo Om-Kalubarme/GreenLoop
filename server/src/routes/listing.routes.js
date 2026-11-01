@@ -5,7 +5,8 @@ import {
   createListing, 
   updateListing, 
   deleteListing, 
-  getMyListings 
+  getMyListings,
+  getDonorSalesAnalytics
 } from '../controllers/listing.controller.js';
 import { 
   createInterest, 
@@ -20,6 +21,9 @@ router.get('/', getListings);
 
 // Protected: Get listings owned by logged in donor (placed before /:id)
 router.get('/my/listings', verifyToken, getMyListings);
+
+// Protected: Get donor month-wise sales analytics (Donor only, placed before /:id)
+router.get('/my/sales-analytics', verifyToken, requireRole('donor', 'admin'), getDonorSalesAnalytics);
 
 // Public Read Single Listing
 router.get('/:id', getListingById);

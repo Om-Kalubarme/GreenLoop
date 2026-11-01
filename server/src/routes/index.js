@@ -6,6 +6,7 @@ import userRoutes from './user.routes.js';
 import uploadRoutes from './upload.routes.js';
 import interestRoutes from './interest.routes.js';
 import recommendationRoutes from './recommendation.routes.js';
+import classifierRoutes from './classifier.routes.js';
 
 const apiRouter = Router();
 
@@ -29,5 +30,8 @@ apiRouter.use('/interests', interestRoutes);
 
 // AI Recommendation Engine
 apiRouter.use('/recommendations', recommendationRoutes);
+
+// AI 4-Class Waste & Material Classifier
+apiRouter.use('/classifier', classifierRoutes);
 
 export default apiRouter;

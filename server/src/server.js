@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 5001;
 
 const server = app.listen(PORT, async () => {
   console.log(`\n======================================================`);
-  console.log(`🚀 ReSource AI API Server running on port ${PORT}`);
+  console.log(`🚀 GreenLoop API Server running on port ${PORT}`);
   console.log(`   Health check: http://localhost:${PORT}/api/health`);
   console.log(`   Environment:  ${process.env.NODE_ENV || 'development'}`);
   console.log(`======================================================\n`);

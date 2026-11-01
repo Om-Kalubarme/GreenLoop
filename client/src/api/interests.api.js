@@ -19,3 +19,8 @@ export const updateInterestStatus = async (interestId, status) => {
   const response = await apiClient.patch(`/interests/${interestId}/status`, { status });
   return response.data;
 };
+
+export const cancelInterest = async (interestId) => {
+  const response = await apiClient.delete(`/interests/${interestId}`);
+  return response.data;
+};

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchMyListings } from '../api/listings.api';
 import { useAuth } from '../context/AuthContext';
+import DonorSalesChart from '../components/DonorSalesChart';
 import { 
   Package, 
   Plus, 
@@ -94,6 +95,9 @@ export default function DonorDashboard() {
         </div>
       </div>
 
+      {/* Annual Sales & Monetization Performance Graph */}
+      <DonorSalesChart />
+
       {/* Listing Cards / Table */}
       {loading ? (
         <div className="min-h-[40vh] flex flex-col items-center justify-center text-[#5A524C]">
@@ -131,9 +135,13 @@ export default function DonorDashboard() {
                   }`}>
                     {item.status}
                   </span>
-                  <span className="text-xs text-[#5A524C]">
-                    {item.interests_count || 0} Interest Requests
-                  </span>
+                  <Link
+                    to="/interests?tab=received"
+                    className="text-xs font-semibold text-[#0A5C36] hover:underline flex items-center gap-1"
+                  >
+                    <Inbox className="w-3.5 h-3.5" />
+                    <span>{item.interest_count || item.interests_count || 0} Inquir{item.interest_count === 1 ? 'y' : 'ies'}</span>
+                  </Link>
                 </div>
 
                 <h3 className="text-base font-serif font-bold text-[#1A261D] line-clamp-1">{item.title}</h3>

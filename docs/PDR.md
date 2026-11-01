@@ -1,10 +1,10 @@
 # Project Design Report (PDR)
-## ReSource AI — AI-Powered Waste-to-Resource Platform
+## GreenLoop — AI-Powered Waste-to-Resource Platform
 
 ---
 
 ### 1. Title & Executive Metadata
-* **Project Name:** ReSource AI (AI-Powered Waste-to-Resource Platform)
+* **Project Name:** GreenLoop (AI-Powered Waste-to-Resource Platform)
 * **Author / Candidate:** Final-Year Bachelor of Computer Science (BCS) Candidate
 * **Academic Guidance:** Project Mentor / Department of Computer Science
 * **Date of Documentation:** October 2026
@@ -15,7 +15,7 @@
 ### 2. Abstract
 Rapid urbanization and industrial consumption generate enormous volumes of clean, reusable solid waste—such as corrugated packaging, glass containers, hardwood offcuts, fabric scraps, and durable plastics. In traditional waste disposal systems, these items are directed to municipal landfills or incinerators because their generators lack an efficient, hyper-localized mechanism to discover potential reusers. Simultaneously, academic students, vocational schools, artisan upcyclers, non-governmental organizations (NGOs), and community recyclers actively seek affordable or free raw materials for design, prototyping, and community projects.
 
-**ReSource AI** bridges this systemic gap by establishing an intelligent, full-stack circular economy platform. Built using modern web technologies (React, Vite, Node.js, Express, PostgreSQL) and data science methodologies (TF-IDF vectorization and cosine similarity), ReSource AI enables donors to list surplus materials with location and imagery, while recipients can browse, filter, receive explainable recommendations, and submit formal interest requests. The platform features an explainable dual-layer recommendation framework: an operational 100-point heuristic baseline model and an advanced content-based scikit-learn machine learning engine with automatic fallback resilience.
+**GreenLoop** bridges this systemic gap by establishing an intelligent, full-stack circular economy platform. Built using modern web technologies (React, Vite, Node.js, Express, PostgreSQL) and data science methodologies (TF-IDF vectorization and cosine similarity), GreenLoop enables donors to list surplus materials with location and imagery, while recipients can browse, filter, receive explainable recommendations, and submit formal interest requests. The platform features an explainable dual-layer recommendation framework: an operational 100-point heuristic baseline model and an advanced content-based scikit-learn machine learning engine with automatic fallback resilience.
 
 ---
 
@@ -28,7 +28,7 @@ Contemporary waste management suffers from three acute structural deficiencies:
 ---
 
 ### 4. Project Objectives
-The primary engineering and research objectives of the ReSource AI project are:
+The primary engineering and research objectives of the GreenLoop project are:
 * **Objective 1 — Full-Stack Marketplace Infrastructure:** Develop a secure, responsive, and performant web application allowing material donors to publish listings and recipients to search, filter, and express interest.
 * **Objective 2 — Relational Persistence & Media Management:** Design an ACID-compliant PostgreSQL database schema supporting user management, listings lifecycle, interest tracking, and scoring records, supplemented by Cloudinary cloud image hosting.
 * **Objective 3 — Transparent Explainable Recommendations:** Build an explainable scoring architecture that computes relevance scores using multi-attribute matching (category, location, keywords, recency) and presents explicit human-readable reasons for every match.
@@ -63,7 +63,7 @@ The primary engineering and research objectives of the ReSource AI project are:
 
 ```mermaid
 graph LR
-    Donor[Donor<br/>Households, Workshops, Businesses] -->|Lists Materials / Reviews Requests| Platform((ReSource AI Platform))
+    Donor[Donor<br/>Households, Workshops, Businesses] -->|Lists Materials / Reviews Requests| Platform((GreenLoop Platform))
     Recipient[Recipient<br/>Students, NGOs, Artists, Recyclers] -->|Browses / Expresses Interest| Platform
     Admin[Platform Administrator<br/>Moderation & System Health] -->|Audits System / Manages Users| Platform
     Mentor[Academic Mentor / Evaluator<br/>BCS Project Assessment] -->|Reviews Code, Docs & Viva| Platform

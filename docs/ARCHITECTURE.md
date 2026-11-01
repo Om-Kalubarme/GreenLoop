@@ -1,10 +1,10 @@
-# ReSource AI — System Architecture Specification
+# GreenLoop — System Architecture Specification
 
 ---
 
 ## 1. Architectural Overview & Design Principles
 
-ReSource AI follows a **modular multi-tier distributed architecture** composed of four decoupled subsystems:
+GreenLoop follows a **modular multi-tier distributed architecture** composed of four decoupled subsystems:
 1. **Client Tier (Presentation):** Single-page web application built with React.js, Vite, and Tailwind CSS.
 2. **Application Tier (Business Logic):** RESTful API server built with Node.js and Express.js, implementing JWT security, input validation with Zod, and service orchestration.
 3. **Data Tier (Persistence):** ACID-compliant PostgreSQL relational database with connection pooling, migrations, and declarative indexes.

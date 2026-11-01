@@ -40,17 +40,19 @@ export default function Navbar({ connectionStatus }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
-          {/* Brand Logo - Warm Ivory, Emerald Green & Vermillion */}
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-full bg-[#0A5C36] text-white flex items-center justify-center shadow-emerald-glow group-hover:scale-105 transition-all">
-              <Leaf className="w-5 h-5 text-[#FAF6EE]" />
-            </div>
-            <div>
-              <span className="text-2xl font-serif font-bold tracking-tight text-[#1A261D]">
-                ReSource <span className="text-[#D9381E] font-serif italic">◇ AI</span>
+          {/* Brand Logo - GreenLoop */}
+          <Link to="/" className="flex items-center gap-3 group">
+            <img
+              src="/logo-icon.png"
+              alt="GreenLoop Emblem"
+              className="w-10 h-10 object-contain drop-shadow-sm group-hover:scale-105 transition-transform"
+            />
+            <div className="flex flex-col">
+              <span className="text-2xl font-bold tracking-tight text-[#1A261D] flex items-center leading-tight">
+                <span className="text-[#0D5C3A]">Green</span><span className="text-[#4E9F3D]">Loop</span>
               </span>
-              <span className="hidden sm:block text-[10px] tracking-widest uppercase font-semibold text-[#0A5C36] -mt-1">
-                Waste to Resource
+              <span className="hidden sm:block text-[9.5px] tracking-wider uppercase font-semibold text-[#0D5C3A] -mt-0.5">
+                AI Waste-to-Resource Platform
               </span>
             </div>
           </Link>
@@ -86,7 +88,7 @@ export default function Navbar({ connectionStatus }) {
               Inspiration
             </a>
             {isAuthenticated && (
-              <Link to="/interests" className="hover:text-[#0A5C36] transition-colors flex items-center gap-1">
+              <Link to={user?.role === 'donor' ? '/interests?tab=received' : '/interests?tab=sent'} className="hover:text-[#0A5C36] transition-colors flex items-center gap-1">
                 <Heart className="w-3.5 h-3.5 text-[#D9381E]" />
                 Interests
               </Link>
@@ -120,8 +122,9 @@ export default function Navbar({ connectionStatus }) {
                 )}
 
                 <Link
-                  to={isDonor ? "/donor/dashboard" : "/dashboard"}
+                  to="/"
                   className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold bg-white border border-[#EAE3D2] text-[#1A261D] hover:bg-[#FAF6EE] shadow-sm transition-all"
+                  title="Go to GreenLoop Dashboard"
                 >
                   <User className="w-3.5 h-3.5 text-[#0A5C36]" />
                   <span>{user?.name?.split(' ')[0]}</span>
@@ -207,18 +210,18 @@ export default function Navbar({ connectionStatus }) {
           {isAuthenticated ? (
             <>
               <Link
-                to="/interests"
+                to={user?.role === 'donor' ? '/interests?tab=received' : '/interests?tab=sent'}
                 onClick={() => setMobileMenuOpen(false)}
                 className="block px-3 py-2 rounded-xl text-sm font-medium text-[#1A261D] hover:bg-[#F3ECE0]"
               >
                 Interest Proposals
               </Link>
               <Link
-                to={isDonor ? "/donor/dashboard" : "/dashboard"}
+                to="/"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block px-3 py-2 rounded-xl text-sm font-medium text-[#0A5C36] bg-[#E1F2E8]"
               >
-                Dashboard ({user?.name})
+                GreenLoop Dashboard ({user?.name})
               </Link>
               <button
                 onClick={() => {

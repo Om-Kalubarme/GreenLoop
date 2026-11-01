@@ -1,4 +1,8 @@
-# ReSource AI — AI-Powered Waste-to-Resource Platform
+<p align="center">
+  <img src="client/public/logo.png" alt="GreenLoop — AI-Powered Waste-to-Resource Platform" width="480" />
+</p>
+
+# GreenLoop — AI-Powered Waste-to-Resource Platform
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 [![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite%20%2B%20Tailwind-blue)](client/)
@@ -6,14 +10,14 @@
 [![Database](https://img.shields.io/badge/Database-PostgreSQL-336791)](server/src/db/)
 [![ML Module](https://img.shields.io/badge/ML%20Module-Python%20%2B%20scikit--learn-orange)](matcher/)
 
-> **ReSource AI** is an intelligent full-stack circular economy platform connecting households, restaurants, workshops, and commercial businesses that possess surplus, reusable discarded materials (cardboard, glass jars, timber offcuts, textile scraps, containers) directly with artisans, students, non-profits, recyclers, and creators who need them.
+> **GreenLoop** is an intelligent full-stack circular economy platform connecting households, restaurants, workshops, and commercial businesses that possess surplus, reusable discarded materials (cardboard, glass jars, timber offcuts, textile scraps, containers) directly with artisans, students, non-profits, recyclers, and creators who need them.
 
 ---
 
 ## 📌 Problem & Solution
 
 * **The Problem:** Valuable and salvageable materials are routinely sent to landfills because owners lack a convenient, localized channel to find recipients who can repurpose them. Simultaneously, hobbyists, students, NGOs, and upcycling artisans struggle to source low-cost or free raw materials.
-* **The Solution:** ReSource AI provides an intuitive web platform with verified material listings, location-based discovery, secure express-interest workflows, and a **dual-layer explainable recommendation engine** (transparent rule-based scoring with a scikit-learn TF-IDF & cosine-similarity content-based matching engine).
+* **The Solution:** GreenLoop provides an intuitive web platform with verified material listings, location-based discovery, secure express-interest workflows, and a **dual-layer explainable recommendation engine** (transparent rule-based scoring with a scikit-learn TF-IDF & cosine-similarity content-based matching engine).
 
 ---
 
@@ -34,7 +38,7 @@ graph TD
 ## 🗂️ Project Structure
 
 ```text
-resource-ai/
+greenloop/
 │
 ├── client/                     # React + Vite + Tailwind CSS frontend
 │   ├── src/
@@ -90,7 +94,7 @@ resource-ai/
 │   └── diagrams/               # Architecture and data flow diagrams
 │
 ├── postman/
-│   └── ReSource-AI.postman_collection.json  # Complete API test collection
+│   └── GreenLoop.postman_collection.json  # Complete API test collection
 │
 ├── .gitignore                  # Git ignore rules across Node, Python, and OS
 ├── README.md                   # This root documentation
@@ -136,7 +140,7 @@ resource-ai/
 ### 1. Database Setup
 Ensure PostgreSQL is running, then create the database:
 ```bash
-createdb resource_ai
+createdb greenloop
 ```
 
 ### 2. Backend Setup
@@ -201,7 +205,7 @@ Matcher microservice runs on `http://localhost:8000`.
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Cloud hosting setup, environment variables, troubleshooting |
 | [docs/USER_MANUAL.md](docs/USER_MANUAL.md) | User guides for Donors, Recipients, and Platform Admins |
 | [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) | Viva presentation & demonstration script with examiner Q&A |
-| [postman/ReSource-AI.postman_collection.json](postman/ReSource-AI.postman_collection.json) | Complete Postman collection for all endpoints |
+| [postman/GreenLoop.postman_collection.json](postman/GreenLoop.postman_collection.json) | Complete Postman collection for all endpoints |
 
 ---
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchListingById, updateListing, deleteListing } from '../api/listings.api';
 import { useAuth } from '../context/AuthContext';
+import DashboardLayout from '../components/DashboardLayout';
 import { 
   Package, 
   Trash2, 
@@ -15,7 +16,7 @@ import {
 const CONDITIONS = ['Brand New', 'Like New', 'Good', 'Fair', 'Salvage'];
 const STATUS_OPTIONS = ['available', 'reserved', 'collected', 'archived'];
 
-export default function EditListing() {
+function EditListingContent() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -256,5 +257,13 @@ export default function EditListing() {
 
       </div>
     </div>
+  );
+}
+
+export default function EditListing() {
+  return (
+    <DashboardLayout activeTab="create-listing">
+      <EditListingContent />
+    </DashboardLayout>
   );
 }

@@ -1,3 +1,4 @@
+@import 'leaflet/dist/leaflet.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -45,3 +46,51 @@
 .luxury-card-transition:hover {
   transform: translateY(-4px);
 }
+
+/* Leaflet map styles & custom GreenLoop pin markers */
+.leaflet-popup-content-wrapper {
+  padding: 0 !important;
+  border-radius: 20px !important;
+  box-shadow: 0 12px 36px rgba(11, 59, 36, 0.18) !important;
+  border: 1px solid rgba(11, 59, 36, 0.12) !important;
+  overflow: hidden !important;
+  font-family: inherit !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-popup-tip {
+  background: #ffffff !important;
+  border: 1px solid rgba(11, 59, 36, 0.12) !important;
+}
+
+.custom-map-marker {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+@keyframes mapMarkerPulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(62, 166, 53, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 14px rgba(62, 166, 53, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(62, 166, 53, 0);
+  }
+}
+
+.marker-pulse {
+  animation: mapMarkerPulse 2s infinite ease-in-out;
+}
+

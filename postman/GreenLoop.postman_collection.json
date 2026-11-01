@@ -1,0 +1,438 @@
+{
+  "info": {
+    "_postman_id": "c1f79a90-8d54-4a2e-b61e-19bf12e9b812",
+    "name": "GreenLoop API Collection",
+    "description": "Complete REST API collection for GreenLoop — AI-Powered Waste-to-Resource Platform. Covers authentication, listings, media uploads, reuse proposals, recommendations, and health endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5001/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "listingId",
+      "value": "e43b6791-c6f9-467f-9ce0-496e62551e3f",
+      "type": "string"
+    },
+    {
+      "key": "interestId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. System Health",
+      "item": [
+        {
+          "name": "Check Backend Health & DB Probe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Probe database connectivity, PostgreSQL version, memory usage, and server uptime."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Authentication & User Profile",
+      "item": [
+        {
+          "name": "Register New User (Donor / Recipient)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Priya Patel\",\n  \"email\": \"priya.patel@designstudio.org\",\n  \"password\": \"Password123!\",\n  \"role\": \"recipient\",\n  \"city\": \"Bengaluru\",\n  \"preferred_categories\": [\"textile\", \"wood\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login (Generate JWT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set('token', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"anita.sharma@bengaluru-crafts.org\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User Profile (Me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Update User Preferences & City",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"city\": \"Bengaluru\",\n  \"preferred_categories\": [\"cardboard\", \"wood\", \"glass\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Material Listings",
+      "item": [
+        {
+          "name": "Browse Listings (Search, Filter, Pagination)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/listings?category=cardboard&city=Bengaluru&search=shipping&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["listings"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "cardboard"
+                },
+                {
+                  "key": "city",
+                  "value": "Bengaluru"
+                },
+                {
+                  "key": "search",
+                  "value": "shipping"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Single Listing By UUID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/listings/{{listingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["listings", "{{listingId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Material Listing (Donor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Surplus Pine Wood Offcuts\",\n  \"material_category\": \"wood\",\n  \"material_type\": \"Pine Battens\",\n  \"condition\": \"Good\",\n  \"quantity_description\": \"20 pieces of 1-meter lengths\",\n  \"description\": \"Clean dry untreated pine wood scraps from architectural model making workshop.\",\n  \"city\": \"Bengaluru\",\n  \"image_url\": \"https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=600&q=80\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/listings",
+              "host": ["{{baseUrl}}"],
+              "path": ["listings"]
+            }
+          }
+        },
+        {
+          "name": "Update Material Listing (Owner Only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity_description\": \"15 pieces remaining\",\n  \"condition\": \"Like New\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/listings/{{listingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["listings", "{{listingId}}"]
+            }
+          }
+        },
+        {
+          "name": "Soft Archive Listing (Owner Only)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/listings/{{listingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["listings", "{{listingId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Current Donor's Listings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/listings/my/all",
+              "host": ["{{baseUrl}}"],
+              "path": ["listings", "my", "all"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Media Uploads",
+      "item": [
+        {
+          "name": "Upload Listing Image (Multipart Form)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/uploads/image",
+              "host": ["{{baseUrl}}"],
+              "path": ["uploads", "image"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Reuse Proposals & Workflow",
+      "item": [
+        {
+          "name": "Express Interest in Listing (Recipient)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Hello Anita! I run an art studio for underprivileged children and we would love to reuse these boxes for storage and school painting projects. Can collect this Saturday.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/listings/{{listingId}}/interests",
+              "host": ["{{baseUrl}}"],
+              "path": ["listings", "{{listingId}}", "interests"]
+            }
+          }
+        },
+        {
+          "name": "Get Interests for Listing (Donor Only)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/listings/{{listingId}}/interests",
+              "host": ["{{baseUrl}}"],
+              "path": ["listings", "{{listingId}}", "interests"]
+            }
+          }
+        },
+        {
+          "name": "Get User's Sent & Received Interests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/interests/my",
+              "host": ["{{baseUrl}}"],
+              "path": ["interests", "my"]
+            }
+          }
+        },
+        {
+          "name": "Update Interest Status (Accept / Decline)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"accepted\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/interests/{{interestId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["interests", "{{interestId}}", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Explainable AI Recommendations",
+      "item": [
+        {
+          "name": "Get Recommendations for Recipient",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recommendations?top_n=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["recommendations"],
+              "query": [
+                {
+                  "key": "top_n",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Returns top ranked listings scored via 100-point rule-based formula or Python scikit-learn TF-IDF matcher with human-readable explanation reason."
+          }
+        }
+      ]
+    }
+  ]
+}

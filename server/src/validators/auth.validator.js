@@ -19,6 +19,7 @@ export const loginSchema = z.object({
 export const updateProfileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(120).optional(),
   city: z.string().min(2, 'City must be at least 2 characters').max(100).optional(),
+  role: z.enum(['donor', 'recipient', 'admin']).optional(),
   preferred_categories: z.array(
     z.enum(['cardboard', 'plastic', 'glass', 'wood', 'textile', 'metal', 'other'])
   ).optional(),

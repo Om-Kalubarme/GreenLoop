@@ -30,7 +30,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
         <p className="text-sm text-[#5A524C] mb-6">
           This section is exclusively for {allowedRoles.join(' or ')} accounts. Your current role is <strong>{user.role}</strong>.
         </p>
-        <Navigate to="/dashboard" replace />
+        <Navigate to="/" replace />
       </div>
     );
   }

@@ -1,5 +1,5 @@
 # Technical Design Report (TDR)
-## ReSource AI — AI-Powered Waste-to-Resource Platform
+## GreenLoop — AI-Powered Waste-to-Resource Platform
 
 ---
 

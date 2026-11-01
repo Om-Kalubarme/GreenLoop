@@ -1,25 +1,25 @@
-# ReSource AI — Production Deployment & Cloud Architecture Guide
+# GreenLoop — Production Deployment & Cloud Architecture Guide
 
 ## 1. Deployment Topology & Overview
 
-ReSource AI is designed as a decoupled, multi-tier cloud application:
+GreenLoop is designed as a decoupled, multi-tier cloud application:
 
 ```
 ┌─────────────────────────────────┐
 │     Client Single-Page App      │  ── Vercel (Global Edge CDN)
-│     React 18 + Vite + Tailwind  │     URL: https://resource-ai.vercel.app
+│     React 18 + Vite + Tailwind  │     URL: https://greenloop.vercel.app
 └────────────────┬────────────────┘
                  │ (HTTPS REST API / JSON)
                  ▼
 ┌─────────────────────────────────┐
 │     Backend Application API     │  ── Render / Railway
-│     Node.js + Express.js        │     URL: https://resource-ai-api.onrender.com
+│     Node.js + Express.js        │     URL: https://greenloop-api.onrender.com
 └───────┬─────────────────┬───────┘
         │                 │ (Internal HTTP / 1500ms circuit breaker)
         │                 ▼
         │        ┌─────────────────────────────────┐
         │        │   Optional Python ML Matcher    │ ── Render / Railway Service
-        │        │   FastAPI + scikit-learn        │    URL: https://resource-ai-matcher.onrender.com
+        │        │   FastAPI + scikit-learn        │    URL: https://greenloop-matcher.onrender.com
         │        └─────────────────────────────────┘
         ▼
 ┌─────────────────────────────────┐
@@ -35,20 +35,20 @@ ReSource AI is designed as a decoupled, multi-tier cloud application:
 ### Frontend (`client/.env.production`)
 | Variable | Description | Example Value |
 | :--- | :--- | :--- |
-| `VITE_API_URL` | Base URL of deployed Express API | `https://resource-ai-api.onrender.com/api` |
+| `VITE_API_URL` | Base URL of deployed Express API | `https://greenloop-api.onrender.com/api` |
 
 ### Backend (`server/.env.production`)
 | Variable | Required? | Description | Example Value |
 | :--- | :---: | :--- | :--- |
 | `NODE_ENV` | Yes | Node runtime environment | `production` |
 | `PORT` | Yes | Server listening port | `5001` (or `$PORT` assigned by host) |
-| `DATABASE_URL` | Yes | PostgreSQL connection URI | `postgresql://user:pass@ep-cool-db.us-east-2.aws.neon.tech/resource_ai?sslmode=require` |
+| `DATABASE_URL` | Yes | PostgreSQL connection URI | `postgresql://user:pass@ep-cool-db.us-east-2.aws.neon.tech/greenloop?sslmode=require` |
 | `JWT_SECRET` | Yes | Cryptographic secret for signing tokens | `min-32-char-high-entropy-random-string` |
-| `CLIENT_URL` | Yes | Whitelisted frontend domain for CORS | `https://resource-ai.vercel.app` |
-| `CLOUDINARY_CLOUD_NAME` | Optional | Cloudinary account name | `resource-ai-prod` |
+| `CLIENT_URL` | Yes | Whitelisted frontend domain for CORS | `https://greenloop.vercel.app` |
+| `CLOUDINARY_CLOUD_NAME` | Optional | Cloudinary account name | `greenloop-prod` |
 | `CLOUDINARY_API_KEY` | Optional | Cloudinary API key | `123456789012345` |
 | `CLOUDINARY_API_SECRET` | Optional | Cloudinary API secret | `abcdefghijklmnopqrstuv` |
-| `MATCHER_SERVICE_URL` | Optional | Python microservice URL | `http://resource-ai-matcher:8000` |
+| `MATCHER_SERVICE_URL` | Optional | Python microservice URL | `http://greenloop-matcher:8000` |
 | `MATCHER_TIMEOUT_MS` | Optional | Circuit breaker timeout in ms | `1500` |
 
 ### Python Matcher (`matcher/.env`)
@@ -134,7 +134,7 @@ npm test
 
 | Issue | Root Cause | Solution |
 | :--- | :--- | :--- |
-| **CORS Blocked Error** | `CLIENT_URL` does not match the exact Vercel frontend origin | In Render dashboard, set `CLIENT_URL` to exact URL (e.g., `https://resource-ai.vercel.app` without trailing slash). |
+| **CORS Blocked Error** | `CLIENT_URL` does not match the exact Vercel frontend origin | In Render dashboard, set `CLIENT_URL` to exact URL (e.g., `https://greenloop.vercel.app` without trailing slash). |
 | **PostgreSQL SSL Error (`self-signed certificate`)** | Cloud DB providers (Neon, Supabase) require TLS encryption | Set `ssl: { rejectUnauthorized: false }` in `server/src/config/db.js`. |
 | **Vercel 404 on Refresh** | Client-side routing not redirected to `index.html` | Ensure `client/vercel.json` contains `{ "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }`. |
 | **Render Cold Start Latency** | Free tier spins down after 15 minutes of inactivity | The system probe on the landing page monitors connection and informs the user while the server wakes up. |
@@ -145,7 +145,7 @@ npm test
 ## 6. Live Deployment Placeholders
 
 When live deployment credentials are provided:
-- **Frontend App:** `https://resource-ai.vercel.app`
-- **Backend API:** `https://resource-ai-api.onrender.com`
-- **API Health Check:** `https://resource-ai-api.onrender.com/api/health`
-- **Python Matcher:** `https://resource-ai-matcher.onrender.com`
+- **Frontend App:** `https://greenloop.vercel.app`
+- **Backend API:** `https://greenloop-api.onrender.com`
+- **API Health Check:** `https://greenloop-api.onrender.com/api/health`
+- **Python Matcher:** `https://greenloop-matcher.onrender.com`

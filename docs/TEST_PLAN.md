@@ -1,8 +1,8 @@
-# ReSource AI — Comprehensive Test Plan & Quality Assurance Matrix
+# GreenLoop — Comprehensive Test Plan & Quality Assurance Matrix
 
 ## 1. Quality Assurance Strategy
 
-The ReSource AI verification strategy combines multi-layered automated integration testing, unit testing, schema boundary checks, accessibility audits (WCAG 2.1 AA), and end-to-end user journey validation.
+The GreenLoop verification strategy combines multi-layered automated integration testing, unit testing, schema boundary checks, accessibility audits (WCAG 2.1 AA), and end-to-end user journey validation.
 
 ```
                       ┌────────────────────────────┐

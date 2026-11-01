@@ -1,5 +1,5 @@
 """
-ReSource AI — Content-Based Recommendation Module
+GreenLoop — Content-Based Recommendation Module
 ==================================================
 
 Overview:

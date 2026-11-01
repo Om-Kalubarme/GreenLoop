@@ -22,7 +22,7 @@ export const createListingSchema = z.object({
   quantity_description: z.string().min(2, 'Quantity description is required').max(100),
   description: z.string().min(10, 'Description must be at least 10 characters'),
   city: z.string().min(2, 'City is required').max(100),
-  image_url: z.string().url('Must be a valid image URL').optional().or(z.literal('')),
+  image_url: z.string().optional().or(z.literal('')),
   cloudinary_public_id: z.string().optional(),
 });
 

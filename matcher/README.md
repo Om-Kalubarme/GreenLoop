@@ -1,4 +1,4 @@
-# ReSource AI — Recommendation Matcher Microservice (Python)
+# GreenLoop — Recommendation Matcher Microservice (Python)
 
 This service provides content-based recommendation ranking using **scikit-learn**, **TF-IDF vectorization**, and **Cosine Similarity**.
 

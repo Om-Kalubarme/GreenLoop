@@ -44,7 +44,7 @@ async function seedDatabase() {
         quantity_description: '45 large boxes',
         description: 'Clean, flattened brown shipping boxes from electronic equipment delivery. Tape removed, no moisture damage. Perfect for warehouse storage, student installations, or moving.',
         city: 'Bengaluru',
-        image_url: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=800&auto=format&fit=crop&q=80',
+        image_url: '/thumb-cardboard.jpg',
         status: 'available',
         days_ago: 1
       },
@@ -58,7 +58,7 @@ async function seedDatabase() {
         quantity_description: '18 dismantled pallet planks',
         description: 'Heat-treated (HT), chemical-free pine pallet planks. Nails removed. Ideal for carpentry students, planters, and rustic shelving.',
         city: 'Bengaluru',
-        image_url: 'https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?w=800&auto=format&fit=crop&q=80',
+        image_url: '/thumb-wood.jpg',
         status: 'available',
         days_ago: 2
       },
@@ -72,7 +72,7 @@ async function seedDatabase() {
         quantity_description: '60 jars (300ml & 500ml)',
         description: 'Sanitized glass jars from organic fruit canning. Metal twist-off lids included. Great for candle pouring, spice storage, and craft centers.',
         city: 'Mumbai',
-        image_url: 'https://images.unsplash.com/photo-1589365278144-c9e705f843ba?w=800&auto=format&fit=crop&q=80',
+        image_url: '/thumb-glass.jpg',
         status: 'available',
         days_ago: 2
       },
@@ -86,7 +86,7 @@ async function seedDatabase() {
         quantity_description: '15 kg bundled rolls',
         description: 'Surplus offcuts from an eco-friendly apparel line. High grade cotton, linen, and indigo denim. Excellent for patchwork, quilting, and tote bag fabrication.',
         city: 'Mumbai',
-        image_url: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=800&auto=format&fit=crop&q=80',
+        image_url: '/thumb-textile.jpg',
         status: 'available',
         days_ago: 3
       },
@@ -100,7 +100,7 @@ async function seedDatabase() {
         quantity_description: '12 containers',
         description: 'Food-safe plastic pails from bakery ingredients (icing and syrup). Rinsed thoroughly with hot water. Sturdy handles and snap-on lids.',
         city: 'Bengaluru',
-        image_url: 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=800&auto=format&fit=crop&q=80',
+        image_url: '/thumb-plastic.jpg',
         status: 'available',
         days_ago: 4
       },
@@ -114,7 +114,7 @@ async function seedDatabase() {
         quantity_description: '8 kg assorted profiles',
         description: 'Clean architectural framing offcuts. Non-magnetic, corrosion-free alloy. Suitable for robotics clubs, mechanical prototyping, or foundry casting.',
         city: 'Mumbai',
-        image_url: 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?w=800&auto=format&fit=crop&q=80',
+        image_url: '/thumb-metal.jpg',
         status: 'available',
         days_ago: 5
       },
@@ -128,7 +128,7 @@ async function seedDatabase() {
         quantity_description: '4 large continuous rolls',
         description: 'Unprinted clean brown packaging paper rolls. Heavyweight biodegradable paper suitable for art sketching, parcel padding, or pattern drafting.',
         city: 'Bengaluru',
-        image_url: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=800&auto=format&fit=crop&q=80',
+        image_url: '/thumb-cardboard.jpg',
         status: 'available',
         days_ago: 6
       },
@@ -142,7 +142,7 @@ async function seedDatabase() {
         quantity_description: '25 sq ft offcuts',
         description: 'Short planks from a boutique renovation. Tongue and groove edges intact, unfinished natural wood grain. Perfect for woodturners and mosaic wood art.',
         city: 'Pune',
-        image_url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800&auto=format&fit=crop&q=80',
+        image_url: '/thumb-wood.jpg',
         status: 'available',
         days_ago: 7
       },
@@ -156,7 +156,7 @@ async function seedDatabase() {
         quantity_description: '20 nesting crates',
         description: 'Heavy duty stackable plastic trays. Clean and durable. Great for urban seed starting, nursery seedlings, or small hardware sorting.',
         city: 'Delhi',
-        image_url: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&auto=format&fit=crop&q=80',
+        image_url: '/thumb-plastic.jpg',
         status: 'reserved',
         days_ago: 9
       },
@@ -170,7 +170,7 @@ async function seedDatabase() {
         quantity_description: '35 bottles',
         description: 'Labels soaked off and cleaned. Mix of deep green and olive tones. Excellent for stained glass works, upcycled bottle cutting, and decorative lighting.',
         city: 'Pune',
-        image_url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&auto=format&fit=crop&q=80',
+        image_url: '/thumb-glass.jpg',
         status: 'available',
         days_ago: 10
       }

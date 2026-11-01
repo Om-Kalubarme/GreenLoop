@@ -1,18 +1,13 @@
 -- ========================================================
--- ReSource AI — PostgreSQL Relational Database Schema DDL
+-- GreenLoop — PostgreSQL Relational Database Schema DDL
+-- Production-Ready Idempotent Schema
 -- ========================================================
 
 -- Enable pgcrypto for UUID generation if needed
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Clean drop tables for fresh migrations (child tables first)
-DROP TABLE IF EXISTS match_results CASCADE;
-DROP TABLE IF EXISTS interests CASCADE;
-DROP TABLE IF EXISTS listings CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
-
 -- 1. USERS TABLE
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(120) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -24,11 +19,11 @@ CREATE TABLE users (
 );
 
 -- Index on users email for fast authentication lookups
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_city ON users(city);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_city ON users(city);
 
 -- 2. LISTINGS TABLE
-CREATE TABLE listings (
+CREATE TABLE IF NOT EXISTS listings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title VARCHAR(200) NOT NULL,
@@ -46,15 +41,15 @@ CREATE TABLE listings (
 );
 
 -- Indexes for listings search, category, location, and status queries
-CREATE INDEX idx_listings_owner ON listings(owner_id);
-CREATE INDEX idx_listings_status ON listings(status);
-CREATE INDEX idx_listings_category ON listings(material_category);
-CREATE INDEX idx_listings_city ON listings(city);
-CREATE INDEX idx_listings_city_category ON listings(city, material_category);
-CREATE INDEX idx_listings_created_at ON listings(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_listings_owner ON listings(owner_id);
+CREATE INDEX IF NOT EXISTS idx_listings_status ON listings(status);
+CREATE INDEX IF NOT EXISTS idx_listings_category ON listings(material_category);
+CREATE INDEX IF NOT EXISTS idx_listings_city ON listings(city);
+CREATE INDEX IF NOT EXISTS idx_listings_city_category ON listings(city, material_category);
+CREATE INDEX IF NOT EXISTS idx_listings_created_at ON listings(created_at DESC);
 
 -- 3. INTERESTS TABLE
-CREATE TABLE interests (
+CREATE TABLE IF NOT EXISTS interests (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     listing_id UUID NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
     recipient_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -64,12 +59,12 @@ CREATE TABLE interests (
     CONSTRAINT uq_listing_recipient UNIQUE (listing_id, recipient_id)
 );
 
-CREATE INDEX idx_interests_listing ON interests(listing_id);
-CREATE INDEX idx_interests_recipient ON interests(recipient_id);
-CREATE INDEX idx_interests_status ON interests(status);
+CREATE INDEX IF NOT EXISTS idx_interests_listing ON interests(listing_id);
+CREATE INDEX IF NOT EXISTS idx_interests_recipient ON interests(recipient_id);
+CREATE INDEX IF NOT EXISTS idx_interests_status ON interests(status);
 
 -- 4. MATCH RESULTS TABLE (Auditing & Recommendation Cache)
-CREATE TABLE match_results (
+CREATE TABLE IF NOT EXISTS match_results (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     listing_id UUID NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -78,5 +73,5 @@ CREATE TABLE match_results (
     generated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_match_results_user ON match_results(user_id);
-CREATE INDEX idx_match_results_score ON match_results(score DESC);
+CREATE INDEX IF NOT EXISTS idx_match_results_user ON match_results(user_id);
+CREATE INDEX IF NOT EXISTS idx_match_results_score ON match_results(score DESC);

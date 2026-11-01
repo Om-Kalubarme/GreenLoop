@@ -1,8 +1,8 @@
-# ReSource AI — Recommendation System Specification & ML Design Report
+# GreenLoop — Recommendation System Specification & ML Design Report
 
 ## 1. System Overview
 
-ReSource AI features an **Explainable Hybrid Recommendation Architecture** designed specifically for a circular waste-to-resource marketplace. The engine matches surplus material listings posted by donors (e.g., discarded corrugated cardboard, industrial wood pallets, sanitized glass containers, fabric remnants) with prospective recipients (students, makers, NGOs, schools, and circular artisans).
+GreenLoop features an **Explainable Hybrid Recommendation Architecture** designed specifically for a circular waste-to-resource marketplace. The engine matches surplus material listings posted by donors (e.g., discarded corrugated cardboard, industrial wood pallets, sanitized glass containers, fabric remnants) with prospective recipients (students, makers, NGOs, schools, and circular artisans).
 
 The recommendation system is structured into two complementary layers:
 1. **Tier 1 (Mandatory Baseline): Explainable 100-Point Rule-Based Engine (Node.js/Express)**
@@ -18,7 +18,7 @@ The recommendation system is structured into two complementary layers:
 
 ## 2. Why Content-Based Recommendation Instead of a Supervised Predictive Model?
 
-In university capstones and production machine learning evaluations, justifying model selection is crucial. ReSource AI intentionally uses **Content-Based Filtering (Unsupervised Vector Space Model)** rather than a supervised classifier (e.g., Logistic Regression, Random Forest, XGBoost, or Deep Neural Networks):
+In university capstones and production machine learning evaluations, justifying model selection is crucial. GreenLoop intentionally uses **Content-Based Filtering (Unsupervised Vector Space Model)** rather than a supervised classifier (e.g., Logistic Regression, Random Forest, XGBoost, or Deep Neural Networks):
 
 ### A. The Cold-Start Dilemma
 - **Supervised models require labeled target variables** (e.g., $Y \in \{0, 1\}$ denoting whether user $U$ completed a material pickup for listing $L$).

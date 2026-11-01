@@ -19,7 +19,7 @@ const poolConfig = process.env.DATABASE_URL
   : {
       host: process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.DB_PORT || '5432', 10),
-      database: process.env.DB_NAME || 'resource_ai',
+      database: process.env.DB_NAME || 'greenloop',
       user: process.env.DB_USER || 'postgres',
       password: process.env.DB_PASSWORD || 'postgres',
       ssl: useSSL ? { rejectUnauthorized: false } : false,

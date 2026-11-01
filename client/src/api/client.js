@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5001/api');
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -13,7 +13,7 @@ const apiClient = axios.create({
 // Request interceptor: attach JWT bearer token if available
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('resource_ai_token');
+    const token = localStorage.getItem('greenloop_token') || localStorage.getItem('resource_ai_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -28,8 +28,10 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       // Optional auto-logout on expired token
-      if (localStorage.getItem('resource_ai_token')) {
+      if (localStorage.getItem('greenloop_token') || localStorage.getItem('resource_ai_token')) {
         console.warn('Session expired or unauthorized. Clearing credentials.');
+        localStorage.removeItem('greenloop_token');
+        localStorage.removeItem('greenloop_user');
         localStorage.removeItem('resource_ai_token');
         localStorage.removeItem('resource_ai_user');
       }

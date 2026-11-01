@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GreenLoop - Comprehensive Project Documentation</title>
+  <style>
+    /* ========================================================= */
+    /* GLOBAL RESETS & TYPOGRAPHY MATCHING REFERENCE PDF        */
+    /* ========================================================= */
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap');
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1A261D;
+      background-color: #F8FAF7;
+      line-height: 1.6;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .doc-page {
+      background: #FFFFFF;
+      width: 100%;
+      max-width: 860px;
+      margin: 24px auto;
+      padding: 56px 64px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      border: 1px solid #E5E7EB;
+      position: relative;
+      min-height: 1120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Print Specific Page Breaks & Styling */
+    @media print {
+      body {
+        background: #FFFFFF;
+      }
+      .doc-page {
+        margin: 0;
+        padding: 44px 50px;
+        box-shadow: none;
+        border: none;
+        width: 100%;
+        max-width: 100%;
+        page-break-after: always;
+        break-after: page;
+        min-height: 100vh;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    /* Header & Footer on each page */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #6B7280;
+      padding-bottom: 12px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #F3F4F6;
+    }
+
+    .page-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #9CA3AF;
+      padding-top: 14px;
+      margin-top: 32px;
+      border-top: 1px solid #F3F4F6;
+    }
+
+    .page-body {
+      flex: 1;
+    }
+
+    /* Section Headings with Vertical Bar */
+    .section-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #111827;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-bar {
+      width: 5px;
+      height: 28px;
+      background: #0B3B24;
+      border-radius: 4px;
+      display: inline-block;
+      shrink-0: 0;
+    }
+
+    .section-bar.purple {
+      background: #6366F1;
+    }
+
+    /* Feature Item Block with Left Border */
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .feature-item {
+      border-left: 3px solid #0B3B24;
+      padding-left: 14px;
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: #4B5563;
+    }
+
+    .feature-item.purple-border {
+      border-left-color: #6366F1;
+    }
+
+    .feature-item strong {
+      color: #111827;
+      font-weight: 700;
+      font-size: 14px;
+      margin-right: 4px;
+    }
+
+    /* Sub-section Heading */
+    .sub-heading {
+      font-size: 18px;
+      font-weight: 800;
+      color: #1F2937;
+      margin: 24px 0 16px 0;
+      letter-spacing: -0.01em;
+    }
+
+    /* Diagram Containers */
+    .diagram-container {
+      width: 100%;
+      background: #FAFAF9;
+      border: 1px solid #E5E7EB;
+      border-radius: 12px;
+      padding: 24px 16px;
+      margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .diagram-caption {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #6B7280;
+      margin-top: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Cover Styling */
+    .cover-title {
+      font-size: 44px;
+      font-weight: 800;
+      color: #0B3B24;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .cover-subtitle {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1F2937;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .cover-tagline {
+      font-size: 14px;
+      font-weight: 500;
+      color: #4B5563;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .cover-meta {
+      font-size: 12px;
+      color: #6B7280;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .cover-divider {
+      height: 4px;
+      width: 100%;
+      background: linear-gradient(90deg, #0B3B24 0%, #3EA635 50%, #A3E5B9 100%);
+      border-radius: 2px;
+      margin-bottom: 40px;
+    }
+
+    /* Summary Paragraph */
+    .summary-text {
+      font-size: 14px;
+      color: #374151;
+      line-height: 1.7;
+      margin-bottom: 18px;
+      text-align: justify;
+    }
+
+    /* Benefit Grid */
+    .benefit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 16px;
+    }
+
+    .benefit-card {
+      background: #F9FAF8;
+      border: 1px solid #E5E7EB;
+      border-radius: 12px;
+      padding: 18px 20px;
+    }
+
+    .benefit-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #0B3B24;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #E5E7EB;
+      padding-bottom: 8px;
+    }
+
+    .benefit-list {
+      list-style: none;
+      font-size: 12.5px;
+      color: #4B5563;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .benefit-list li::before {
+      content: "•";
+      color: #3EA635;
+      font-weight: bold;
+      display: inline-block;
+      width: 1em;
+      margin-left: -1em;
+    }
+
+    /* Tech Stack Grid */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 16px;
+    }
+
+    .tech-box h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .tech-box ul {
+      list-style: none;
+      padding-left: 14px;
+      font-size: 13px;
+      color: #4B5563;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .tech-box ul li::before {
+      content: "•";
+      color: #0B3B24;
+      font-weight: bold;
+      display: inline-block;
+      width: 1em;
+      margin-left: -1em;
+    }
+
+    /* Action Banner */
+    .print-actions {
+      max-width: 860px;
+      margin: 16px auto 0 auto;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 0 16px;
+    }
+
+    .btn-print {
+      background: #0B3B24;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-print:hover {
+      background: #14532D;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Print Button Bar (Hidden in Print) -->
+  <div class="print-actions no-print">
+    <button class="btn-print" onclick="window.print()">
+      🖨️ Print / Save as PDF
+    </button>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PAGE 1: TITLE, EXECUTIVE SUMMARY & SYSTEM ARCHITECTURE    -->
+  <!-- ========================================================= -->
+  <div class="doc-page">
+    <div class="page-header">
+      <span>10/31/26, 1:00 PM</span>
+      <span>GreenLoop - Comprehensive Project Document</span>
+    </div>
+
+    <div class="page-body">
+      <div style="text-align: center; padding-top: 12px;">
+        <h1 class="cover-title">GreenLoop</h1>
+        <h2 class="cover-subtitle">Comprehensive Project Documentation</h2>
+        <p class="cover-tagline">AI-Powered Waste-to-Resource &amp; Circular Economy Platform</p>
+        <p class="cover-meta">Generated on: October 31, 2026</p>
+        <div class="cover-divider"></div>
+      </div>
+
+      <div class="section-title">
+        <span class="section-bar"></span>
+        <span>Executive Summary</span>
+      </div>
+
+      <p class="summary-text">
+        <strong>GreenLoop</strong> is an intelligent, multi-role circular economy platform designed to eliminate industrial and urban material waste by connecting material donors with creative recyclers, artisans, students, and circular makers. The platform bridges the systemic void where valuable surplus discards—corrugated packaging, clean timber pallets, studio glassware, fabric scraps, engineering plastics, and metals—are routinely sent to municipal landfills.
+      </p>
+
+      <p class="summary-text">
+        Built with modern web technologies, scalable PostgreSQL persistence, and dual-layer explainable AI, GreenLoop provides an end-to-end circular pipeline: from surplus inventory listing and computer vision scrap classification to automated geographic matching, bilateral proposal negotiation, verified drop depot navigation via OpenStreetMap India, and real-time donor monetization analytics.
+      </p>
+
+      <div class="section-title" style="margin-top: 28px;">
+        <span class="section-bar"></span>
+        <span>System Architecture</span>
+      </div>
+
+      <div class="diagram-container">
+        <!-- SVG System Architecture Diagram -->
+        <svg width="680" height="150" viewBox="0 0 680 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Top Tier: Client -->
+          <rect x="230" y="5" width="220" height="34" rx="6" fill="#0B3B24" />
+          <text x="340" y="26" text-anchor="middle" fill="#FFFFFF" font-size="11.5" font-weight="700">React.js + Vite Client SPA</text>
+
+          <!-- Vertical Connector Line -->
+          <line x1="340" y1="39" x2="340" y2="58" stroke="#0B3B24" stroke-width="2" />
+          <polygon points="340,64 336,56 344,56" fill="#0B3B24" />
+
+          <!-- Middle Tier: API Gateway -->
+          <rect x="200" y="64" width="280" height="34" rx="6" fill="#15803D" />
+          <text x="340" y="85" text-anchor="middle" fill="#FFFFFF" font-size="11.5" font-weight="700">Node.js + Express REST API Gateway</text>
+
+          <!-- Fan-out Connectors -->
+          <path d="M 230 98 L 230 115 L 75 115 L 75 125" stroke="#6B7280" stroke-width="1.5" fill="none" />
+          <path d="M 280 98 L 280 115 L 210 115 L 210 125" stroke="#6B7280" stroke-width="1.5" fill="none" />
+          <path d="M 340 98 L 340 125" stroke="#6B7280" stroke-width="1.5" fill="none" />
+          <path d="M 400 98 L 400 115 L 470 115 L 470 125" stroke="#6B7280" stroke-width="1.5" fill="none" />
+          <path d="M 450 98 L 450 115 L 605 115 L 605 125" stroke="#6B7280" stroke-width="1.5" fill="none" />
+
+          <!-- Subsystems Bottom Tier -->
+          <rect x="15" y="125" width="120" height="24" rx="4" fill="#3B82F6" />
+          <text x="75" y="141" text-anchor="middle" fill="#FFFFFF" font-size="9" font-weight="600">PostgreSQL DB</text>
+
+          <rect x="150" y="125" width="120" height="24" rx="4" fill="#8B5CF6" />
+          <text x="210" y="141" text-anchor="middle" fill="#FFFFFF" font-size="9" font-weight="600">Dual-Layer AI Matcher</text>
+
+          <rect x="280" y="125" width="120" height="24" rx="4" fill="#F59E0B" />
+          <text x="340" y="141" text-anchor="middle" fill="#FFFFFF" font-size="9" font-weight="600">Vision Waste Classifier</text>
+
+          <rect x="410" y="125" width="120" height="24" rx="4" fill="#10B981" />
+          <text x="470" y="141" text-anchor="middle" fill="#FFFFFF" font-size="9" font-weight="600">OpenStreetMap.in Hubs</text>
+
+          <rect x="545" y="125" width="120" height="24" rx="4" fill="#EC4899" />
+          <text x="605" y="141" text-anchor="middle" fill="#FFFFFF" font-size="9" font-weight="600">Cloudinary CDN</text>
+        </svg>
+        <div class="diagram-caption">Figure 1.1: GreenLoop Multi-Tier Decoupled Architecture</div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>GreenLoop Project Documentation</span>
+      <span>1/14</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PAGE 2: AUTHENTICATION & USER MANAGEMENT                  -->
+  <!-- ========================================================= -->
+  <div class="doc-page">
+    <div class="page-header">
+      <span>10/31/26, 1:00 PM</span>
+      <span>GreenLoop - Comprehensive Project Document</span>
+    </div>
+
+    <div class="page-body">
+      <div class="section-title">
+        <span class="section-bar"></span>
+        <span>1. Authentication &amp; User Management</span>
+      </div>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <strong>Multi-role authentication system</strong> – Dedicated support for Industrial Donors, Creative Recipients (Makers, Students, Artisans), and Administrative Overseers.
+        </div>
+        <div class="feature-item">
+          <strong>JWT-based secure authorization</strong> – Cryptographically signed JSON Web Tokens (HMAC-SHA256) governing endpoint authorization with automatic session persistence.
+        </div>
+        <div class="feature-item">
+          <strong>Bcrypt password hashing</strong> – High-entropy password encryption utilizing adaptive salted work factors to protect user credentials.
+        </div>
+        <div class="feature-item">
+          <strong>Role-based access control (RBAC)</strong> – Granular Express middleware guards enforcing role segregation across surplus posting, proposal approval, and financial ledger data.
+        </div>
+        <div class="feature-item">
+          <strong>Geographic &amp; material preference profiling</strong> – User onboarding captures operational city (Bengaluru, Mumbai, Pune, Delhi NCR, Hyderabad) and material categories for instant localized matching.
+        </div>
+      </div>
+
+      <h3 class="sub-heading">Authentication &amp; Role Access Flow</h3>
+
+      <div class="diagram-container">
+        <!-- SVG Authentication Flow Diagram -->
+        <svg width="680" height="280" viewBox="0 0 680 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Start Node -->
+          <rect x="20" y="115" width="100" height="40" rx="20" fill="#0B3B24" />
+          <text x="70" y="139" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="700">User Login</text>
+
+          <!-- Arrow to Decision -->
+          <line x1="120" y1="135" x2="175" y2="135" stroke="#0B3B24" stroke-width="2" />
+          <polygon points="180,135 172,130 172,140" fill="#0B3B24" />
+
+          <!-- Decision Diamond: Role Check -->
+          <polygon points="250,95 320,135 250,175 180,135" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2" />
+          <text x="250" y="132" text-anchor="middle" fill="#92400E" font-size="10" font-weight="700">Role Verification</text>
+          <text x="250" y="145" text-anchor="middle" fill="#92400E" font-size="8.5">(JWT Token)</text>
+
+          <!-- Branch 1: Donor -->
+          <path d="M 285 115 L 340 70 L 400 70" stroke="#0B3B24" stroke-width="1.8" fill="none" />
+          <polygon points="405,70 397,66 397,74" fill="#0B3B24" />
+          <text x="340" y="62" text-anchor="middle" fill="#0B3B24" font-size="9.5" font-weight="700">role = 'donor'</text>
+
+          <rect x="405" y="50" width="180" height="40" rx="8" fill="#EAF5ED" stroke="#CEEAD8" stroke-width="1.5" />
+          <text x="495" y="68" text-anchor="middle" fill="#0B3B24" font-size="10.5" font-weight="700">Donor Control Portal</text>
+          <text x="495" y="82" text-anchor="middle" fill="#586A5E" font-size="8.5">Listings • Monetization • Inquiries</text>
+
+          <!-- Branch 2: Recipient -->
+          <path d="M 320 135 L 400 135" stroke="#15803D" stroke-width="1.8" fill="none" />
+          <polygon points="405,135 397,131 397,139" fill="#15803D" />
+          <text x="360" y="128" text-anchor="middle" fill="#15803D" font-size="9.5" font-weight="700">role = 'recipient'</text>
+
+          <rect x="405" y="115" width="180" height="40" rx="8" fill="#F0FDF4" stroke="#BBF7D0" stroke-width="1.5" />
+          <text x="495" y="133" text-anchor="middle" fill="#15803D" font-size="10.5" font-weight="700">Maker / Recipient Portal</text>
+          <text x="495" y="147" text-anchor="middle" fill="#4B5563" font-size="8.5">Catalog • AI Matcher • Drop Hubs</text>
+
+          <!-- Branch 3: Admin -->
+          <path d="M 285 155 L 340 200 L 400 200" stroke="#6366F1" stroke-width="1.8" fill="none" />
+          <polygon points="405,200 397,196 397,204" fill="#6366F1" />
+          <text x="340" y="215" text-anchor="middle" fill="#6366F1" font-size="9.5" font-weight="700">role = 'admin'</text>
+
+          <rect x="405" y="180" width="180" height="40" rx="8" fill="#EEF2FF" stroke="#C7D2FE" stroke-width="1.5" />
+          <text x="495" y="198" text-anchor="middle" fill="#4338CA" font-size="10.5" font-weight="700">Administrator Console</text>
+          <text x="495" y="212" text-anchor="middle" fill="#6B7280" font-size="8.5">Audit Trails • User &amp; Waste Logs</text>
+
+          <!-- Bottom Session Security Bar -->
+          <rect x="80" y="245" width="520" height="26" rx="6" fill="#F3F4F6" stroke="#E5E7EB" />
+          <text x="340" y="262" text-anchor="middle" fill="#4B5563" font-size="9.5" font-weight="600">
+            Security Layer: Token Revocation • Role Middleware Guard • Password Encryption
+          </text>
+        </svg>
+        <div class="diagram-caption">Figure 2.1: Role-Based Authentication &amp; Dispatch Workflow</div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>GreenLoop Project Documentation</span>
+      <span>2/14</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PAGE 3: CORE CIRCULAR MARKETPLACE ENGINE                  -->
+  <!-- ========================================================= -->
+  <div class="doc-page">
+    <div class="page-header">
+      <span>10/31/26, 1:00 PM</span>
+      <span>GreenLoop - Comprehensive Project Document</span>
+    </div>
+
+    <div class="page-body">
+      <div class="section-title">
+        <span class="section-bar"></span>
+        <span>2. Core Circular Marketplace Engine</span>
+      </div>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <strong>Surplus material listing interface</strong> – Intuitive, responsive creation UI allowing donors to declare titles, material streams, quantity metrics, and physical conditions.
+        </div>
+        <div class="feature-item">
+          <strong>Seven-stream taxonomy management</strong> – Standardized classification across Cardboard &amp; Paper, Wood &amp; Timber, Glass, Textiles &amp; Fabrics, Plastics, Metals, and Electronics.
+        </div>
+        <div class="feature-item">
+          <strong>Condition grading standards</strong> – Strict 5-level condition attributes (Brand New, Like New, Good, Fair, Salvage) establishing quality benchmarks for maker safety.
+        </div>
+        <div class="feature-item">
+          <strong>Cloudinary media pipeline</strong> – Automated client-side image processing, multipart upload streaming, CDN transformation, and permanent cloud storage.
+        </div>
+        <div class="feature-item">
+          <strong>Material state-machine lifecycle</strong> – ACID state transitions ensuring listings transition dynamically through <code>available</code> &rarr; <code>reserved</code> &rarr; <code>collected</code> &rarr; <code>archived</code>.
+        </div>
+        <div class="feature-item">
+          <strong>High-performance multi-attribute search</strong> – PostgreSQL multi-column indexation enabling sub-10ms queries filtered by city, stream, and keywords.
+        </div>
+      </div>
+
+      <h3 class="sub-heading">Listing Lifecycle State Machine</h3>
+
+      <div class="diagram-container">
+        <!-- SVG Listing Lifecycle Diagram -->
+        <svg width="680" height="210" viewBox="0 0 680 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- State 1: Available -->
+          <rect x="30" y="80" width="120" height="46" rx="8" fill="#EAF5ED" stroke="#0B3B24" stroke-width="2" />
+          <text x="90" y="102" text-anchor="middle" fill="#0B3B24" font-size="11" font-weight="700">Available</text>
+          <text x="90" y="117" text-anchor="middle" fill="#586A5E" font-size="8.5">Public on Marketplace</text>
+
+          <!-- Transition 1 -> 2 -->
+          <line x1="150" y1="103" x2="225" y2="103" stroke="#0B3B24" stroke-width="2" />
+          <polygon points="230,103 222,99 222,107" fill="#0B3B24" />
+          <text x="190" y="93" text-anchor="middle" fill="#0B3B24" font-size="8.5" font-weight="600">Proposal Accepted</text>
+
+          <!-- State 2: Reserved -->
+          <rect x="230" y="80" width="130" height="46" rx="8" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2" />
+          <text x="295" y="102" text-anchor="middle" fill="#92400E" font-size="11" font-weight="700">Reserved</text>
+          <text x="295" y="117" text-anchor="middle" fill="#B45309" font-size="8.5">Locked for Handover</text>
+
+          <!-- Transition 2 -> 3 -->
+          <line x1="360" y1="103" x2="435" y2="103" stroke="#0B3B24" stroke-width="2" />
+          <polygon points="440,103 432,99 432,107" fill="#0B3B24" />
+          <text x="400" y="93" text-anchor="middle" fill="#0B3B24" font-size="8.5" font-weight="600">Pickup Confirmed</text>
+
+          <!-- State 3: Collected -->
+          <rect x="440" y="80" width="130" height="46" rx="8" fill="#ECFDF5" stroke="#10B981" stroke-width="2" />
+          <text x="505" y="102" text-anchor="middle" fill="#065F46" font-size="11" font-weight="700">Collected</text>
+          <text x="505" y="117" text-anchor="middle" fill="#047857" font-size="8.5">Diverted to Reuser</text>
+
+          <!-- Optional State 4: Archived -->
+          <path d="M 90 80 L 90 35 L 505 35 L 505 80" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
+          <text x="297" y="27" text-anchor="middle" fill="#6B7280" font-size="8.5" font-weight="600">Donor Archival / Cancel (Any Stage)</text>
+
+          <!-- Impact Metrics Computation Trigger -->
+          <path d="M 505 126 L 505 165" stroke="#10B981" stroke-width="2" />
+          <polygon points="505,170 501,162 509,162" fill="#10B981" />
+
+          <rect x="420" y="170" width="170" height="30" rx="6" fill="#0B3B24" />
+          <text x="505" y="189" text-anchor="middle" fill="#FFFFFF" font-size="9" font-weight="700">🏆 Carbon &amp; Landfill Metric Logged</text>
+        </svg>
+        <div class="diagram-caption">Figure 2.2: Material Listing State Transitions &amp; Impact Trigger</div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>GreenLoop Project Documentation</span>
+      <span>3/14</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PAGE 4: MATERIAL LIFECYCLE & INQUIRY FLOW (PART 1)        -->
+  <!-- ========================================================= -->
+  <div class="doc-page">
+    <div class="page-header">
+      <span>10/31/26, 1:00 PM</span>
+      <span>GreenLoop - Comprehensive Project Document</span>
+    </div>
+
+    <div class="page-body">
+      <h2 style="font-size: 24px; font-weight: 800; color: #111827; margin-bottom: 20px;">
+        Circular Material Reuse Handover Flow
+      </h2>
+
+      <p class="summary-text">
+        The circular reuse workflow governs the interaction between material donors and recipients. It transforms potential solid waste into creative input through five stages: Discovery, Proposal Submission, Donor Review, Bilateral Contact Exchange, and Physical Handover with Certified Landfill Diversion.
+      </p>
+
+      <div class="diagram-container" style="padding: 30px 10px;">
+        <!-- Flowchart Part 1 -->
+        <svg width="400" height="480" viewBox="0 0 400 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Step 1: Donor Posts -->
+          <rect x="100" y="10" width="200" height="42" rx="8" fill="#0B3B24" />
+          <text x="200" y="32" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="700">Donor Lists Surplus Stream</text>
+          <text x="200" y="44" text-anchor="middle" fill="#A3E5B9" font-size="8.5">Cardboard, Timber, Glass, Metals</text>
+
+          <line x1="200" y1="52" x2="200" y2="78" stroke="#0B3B24" stroke-width="2" />
+          <polygon points="200,84 196,76 204,76" fill="#0B3B24" />
+
+          <!-- Step 2: Verification -->
+          <rect x="110" y="84" width="180" height="38" rx="8" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1.5" />
+          <text x="200" y="102" text-anchor="middle" fill="#1F2937" font-size="10" font-weight="600">Vision AI Classification</text>
+          <text x="200" y="114" text-anchor="middle" fill="#6B7280" font-size="8">Image CDN Upload &amp; Validation</text>
+
+          <line x1="200" y1="122" x2="200" y2="148" stroke="#0B3B24" stroke-width="2" />
+          <polygon points="200,154 196,146 204,146" fill="#0B3B24" />
+
+          <!-- Step 3: Marketplace Publication -->
+          <rect x="100" y="154" width="200" height="40" rx="8" fill="#EAF5ED" stroke="#0B3B24" stroke-width="1.5" />
+          <text x="200" y="174" text-anchor="middle" fill="#0B3B24" font-size="10.5" font-weight="700">Live Marketplace Feed</text>
+          <text x="200" y="186" text-anchor="middle" fill="#586A5E" font-size="8">Status: Available • Indexed</text>
+
+          <line x1="200" y1="194" x2="200" y2="220" stroke="#0B3B24" stroke-width="2" />
+          <polygon points="200,226 196,218 204,218" fill="#0B3B24" />
+
+          <!-- Step 4: AI Recommendations -->
+          <rect x="100" y="226" width="200" height="40" rx="8" fill="#EEF2FF" stroke="#6366F1" stroke-width="1.5" />
+          <text x="200" y="246" text-anchor="middle" fill="#4338CA" font-size="10.5" font-weight="700">Dual-Layer AI Matching</text>
+          <text x="200" y="258" text-anchor="middle" fill="#6366F1" font-size="8">Rule Engine + TF-IDF Vectorizer</text>
+
+          <line x1="200" y1="266" x2="200" y2="292" stroke="#0B3B24" stroke-width="2" />
+          <polygon points="200,298 196,290 204,290" fill="#0B3B24" />
+
+          <!-- Step 5: Recipient Submits Inquiry -->
+          <rect x="100" y="298" width="200" height="42" rx="8" fill="#0B3B24" />
+          <text x="200" y="318" text-anchor="middle" fill="#FFFFFF" font-size="10.5" font-weight="700">Recipient Submits Proposal</text>
+          <text x="200" y="331" text-anchor="middle" fill="#A3E5B9" font-size="8">Declares Upcycling Intent &amp; Qty</text>
+
+          <line x1="200" y1="340" x2="200" y2="366" stroke="#0B3B24" stroke-width="2" />
+          <polygon points="200,372 196,364 204,364" fill="#0B3B24" />
+
+          <!-- Step 6: Decision Diamond -->
+          <polygon points="200,372 260,405 200,438 140,405" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2" />
+          <text x="200" y="403" text-anchor="middle" fill="#92400E" font-size="9.5" font-weight="700">Donor Reviews</text>
+          <text x="200" y="414" text-anchor="middle" fill="#92400E" font-size="8">Proposal &amp; Profile</text>
+
+          <!-- Downward Connector to next page -->
+          <line x1="200" y1="438" x2="200" y2="475" stroke="#0B3B24" stroke-width="2" stroke-dasharray="4 4" />
+        </svg>
+        <div class="diagram-caption">Figure 4.1: Reuse Discovery, Proposal Submission &amp; Review (Phase 1)</div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>GreenLoop Project Documentation</span>
+      <span>4/14</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PAGE 5: MATERIAL LIFECYCLE & INQUIRY FLOW (PART 2)        -->
+  <!-- ========================================================= -->
+  <div class="doc-page">
+    <div class="page-header">
+      <span>10/31/26, 1:00 PM</span>
+      <span>GreenLoop - Comprehensive Project Document</span>
+    </div>
+
+    <div class="page-body">
+      <div class="diagram-container" style="padding: 30px 10px; margin-top: 10px;">
+        <!-- Flowchart Part 2 -->
+        <svg width="460" height="480" viewBox="0 0 460 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Incoming Line -->
+          <line x1="230" y1="0" x2="230" y2="30" stroke="#0B3B24" stroke-width="2" stroke-dasharray="4 4" />
+          <polygon points="230,36 226,28 234,28" fill="#0B3B24" />
+
+          <!-- Branching Decisions -->
+          <!-- Decision Box: Accept or Decline -->
+          <polygon points="230,36 300,72 230,108 160,72" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2" />
+          <text x="230" y="68" text-anchor="middle" fill="#92400E" font-size="10" font-weight="700">Donor Decision</text>
+          <text x="230" y="80" text-anchor="middle" fill="#92400E" font-size="8.5">Accept / Decline</text>
+
+          <!-- Branch NO: Decline -->
+          <path d="M 160 72 L 80 72 L 80 130" stroke="#EF4444" stroke-width="2" fill="none" />
+          <polygon points="80,135 76,127 84,127" fill="#EF4444" />
+          <text x="115" y="64" text-anchor="middle" fill="#EF4444" font-size="9" font-weight="700">Decline</text>
+
+          <rect x="20" y="135" width="120" height="40" rx="8" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1.5" />
+          <text x="80" y="154" text-anchor="middle" fill="#991B1B" font-size="9.5" font-weight="700">Proposal Declined</text>
+          <text x="80" y="166" text-anchor="middle" fill="#7F1D1D" font-size="7.5">Item stays available</text>
+
+          <!-- Branch YES: Accept -->
+          <path d="M 300 72 L 360 72 L 360 130" stroke="#10B981" stroke-width="2" fill="none" />
+          <polygon points="360,135 356,127 364,127" fill="#10B981" />
+          <text x="335" y="64" text-anchor="middle" fill="#10B981" font-size="9" font-weight="700">Accept</text>
+
+          <rect x="290" y="135" width="140" height="40" rx="8" fill="#EAF5ED" stroke="#0B3B24" stroke-width="1.5" />
+          <text x="360" y="154" text-anchor="middle" fill="#0B3B24" font-size="10" font-weight="700">Proposal Accepted</text>
+          <text x="360" y="166" text-anchor="middle" fill="#586A5E" font-size="7.5">Listing status: Reserved</text>
+
+          <!-- Merge into Handover -->
+          <line x1="360" y1="175" x2="360" y2="215" stroke="#10B981" stroke-width="2" />
+          <polygon points="360,220 356,212 364,212" fill="#10B981" />
+
+          <!-- Bilateral Contact Reveal -->
+          <rect x="270" y="220" width="180" height="42" rx="8" fill="#0B3B24" />
+          <text x="360" y="240" text-anchor="middle" fill="#FFFFFF" font-size="10" font-weight="700">Bilateral Contact Unlock</text>
+          <text x="360" y="253" text-anchor="middle" fill="#A3E5B9" font-size="8">Phone • Email • Pickup Address</text>
+
+          <line x1="360" y1="262" x2="360" y2="295" stroke="#0B3B24" stroke-width="2" />
+          <polygon points="360,300 356,292 364,292" fill="#0B3B24" />
+
+          <!-- Pickup & Transfer -->
+          <rect x="270" y="300" width="180" height="42" rx="8" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1.5" />
+          <text x="360" y="320" text-anchor="middle" fill="#1F2937" font-size="10" font-weight="700">Physical Material Handover</text>
+          <text x="360" y="333" text-anchor="middle" fill="#6B7280" font-size="8">Recipient receives physical stock</text>
+
+          <line x1="360" y1="342" x2="360" y2="375" stroke="#0B3B24" stroke-width="2" />
+          <polygon points="360,380 356,372 364,372" fill="#0B3B24" />
+
+          <!-- Final Milestone: Certified Diversion -->
+          <rect x="250" y="380" width="220" height="46" rx="8" fill="#10B981" stroke="#047857" stroke-width="2" />
+          <text x="360" y="402" text-anchor="middle" fill="#FFFFFF" font-size="10.5" font-weight="800">Certified Landfill Diversion</text>
+          <text x="360" y="416" text-anchor="middle" fill="#D1FAE5" font-size="8.5">CO2e Offset &amp; Trees Saved Updated</text>
+        </svg>
+        <div class="diagram-caption">Figure 4.2: Handover Negotiation, Contact Unlock &amp; Impact Accounting (Phase 2)</div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>GreenLoop Project Documentation</span>
+      <span>5/14</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PAGE 6: STAKEHOLDER PORTALS (RECIPIENT & DONOR)           -->
+  <!-- ========================================================= -->
+  <div class="doc-page">
+    <div class="page-header">
+      <span>10/31/26, 1:00 PM</span>
+      <span>GreenLoop - Comprehensive Project Document</span>
+    </div>
+
+    <div class="page-body">
+      <div class="section-title">
+        <span class="section-bar"></span>
+        <span>3. Recipient / Maker Portal</span>
+      </div>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <strong>Centralized circular marketplace</strong> – Live catalog of active regional industrial discards with real-time availability filters.
+        </div>
+        <div class="feature-item">
+          <strong>Smart AI recommendation engine</strong> – Personalized relevance recommendations powered by TF-IDF text matching and categorical scoring.
+        </div>
+        <div class="feature-item">
+          <strong>Explainable match transparency</strong> – Every recommendation highlights why it was matched (e.g., <em>"Matches your category preference in Bengaluru"</em>).
+        </div>
+        <div class="feature-item">
+          <strong>Structured reuse proposal submission</strong> – One-click workflow to declare planned repurposing projects and required volumetric allocation.
+        </div>
+        <div class="feature-item">
+          <strong>Proposals tracking center</strong> – Live status dashboard tracking pending, accepted, and completed proposals with direct donor communication.
+        </div>
+        <div class="feature-item">
+          <strong>Disposal hubs map navigation</strong> – Spatial access to certified collection centers across five cities for secondary salvage.
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top: 32px;">
+        <span class="section-bar"></span>
+        <span>4. Donor Portal</span>
+      </div>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <strong>Surplus inventory publishing suite</strong> – Rapid material listing form with title auto-detection, stream classification, and condition tagging.
+        </div>
+        <div class="feature-item">
+          <strong>Real-time inquiries review hub</strong> – Complete inbox of incoming maker requests with applicant profile credentials and intended usage notes.
+        </div>
+        <div class="feature-item">
+          <strong>Instant Accept / Decline workflows</strong> – Secure single-click decision handling that immediately reserves listings upon agreement.
+        </div>
+        <div class="feature-item">
+          <strong>Annual sales &amp; monetization graph</strong> – Month-wise revenue trajectory (₹) and reclaimed volume area chart inspired by clean vector analytics.
+        </div>
+        <div class="feature-item">
+          <strong>Financial ledger export</strong> – Single-click CSV export of historical transaction values, weight records, and settlement tags.
+        </div>
+        <div class="feature-item">
+          <strong>Verified drop depot locator</strong> – Direct access to OpenStreetMap India spatial network to offload bulk surplus.
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>GreenLoop Project Documentation</span>
+      <span>6/14</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PAGE 7: AI CLASSIFIER & DUAL-LAYER MATCHING ENGINE       -->
+  <!-- ========================================================= -->
+  <div class="doc-page">
+    <div class="page-header">
+      <span>10/31/26, 1:00 PM</span>
+      <span>GreenLoop - Comprehensive Project Document</span>
+    </div>
+
+    <div class="page-body">
+      <div class="section-title">
+        <span class="section-bar"></span>
+        <span>5. Computer Vision &amp; ML Matching Engine</span>
+      </div>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <strong>4-Class CNN scrap classification</strong> – Deep convolutional model categorizing waste items into Glass, Metal, Cardboard, and Plastic with confidence scoring.
+        </div>
+        <div class="feature-item">
+          <strong>Instant image ingestion</strong> – Drag-and-drop and camera snapshot upload pipeline analyzing material textures and visual features.
+        </div>
+        <div class="feature-item">
+          <strong>Dual-layer matching architecture</strong> – 100-point deterministic heuristic rule engine coupled with content-based TF-IDF scikit-learn machine learning.
+        </div>
+        <div class="feature-item">
+          <strong>Multi-attribute scoring criteria</strong> – Proximity matching (40 pts), target category overlap (35 pts), keyword cosine similarity (15 pts), and freshness decay (10 pts).
+        </div>
+        <div class="feature-item">
+          <strong>Defensive degradation fallback</strong> – Automated 1.5-second timeout circuit breaker falling back gracefully to the heuristic scorer if Python microservice is unreachable.
+        </div>
+      </div>
+
+      <h3 class="sub-heading">Recommendation Engine Data Pipeline</h3>
+
+      <div class="diagram-container">
+        <!-- SVG AI Recommendation Pipeline -->
+        <svg width="680" height="210" viewBox="0 0 680 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Inputs -->
+          <rect x="20" y="30" width="140" height="34" rx="6" fill="#F3F4F6" stroke="#D1D5DB" />
+          <text x="90" y="51" text-anchor="middle" fill="#1F2937" font-size="10" font-weight="700">Active Listings Stream</text>
+
+          <rect x="20" y="80" width="140" height="34" rx="6" fill="#F3F4F6" stroke="#D1D5DB" />
+          <text x="90" y="101" text-anchor="middle" fill="#1F2937" font-size="10" font-weight="700">Recipient Profile</text>
+
+          <!-- Merge Lines -->
+          <path d="M 160 47 L 220 72" stroke="#0B3B24" stroke-width="1.8" />
+          <path d="M 160 97 L 220 72" stroke="#0B3B24" stroke-width="1.8" />
+          <polygon points="225,72 217,68 217,76" fill="#0B3B24" />
+
+          <!-- Layer 1: Rule Engine -->
+          <rect x="225" y="50" width="170" height="44" rx="8" fill="#EAF5ED" stroke="#0B3B24" stroke-width="1.5" />
+          <text x="310" y="70" text-anchor="middle" fill="#0B3B24" font-size="10" font-weight="700">100-Pt Heuristic Engine</text>
+          <text x="310" y="83" text-anchor="middle" fill="#586A5E" font-size="8">City (40) + Category (35) + Freshness (10)</text>
+
+          <!-- Branch to ML Layer -->
+          <line x1="395" y1="72" x2="445" y2="72" stroke="#0B3B24" stroke-width="1.8" />
+          <polygon points="450,72 442,68 442,76" fill="#0B3B24" />
+
+          <!-- Layer 2: ML TF-IDF -->
+          <rect x="450" y="50" width="190" height="44" rx="8" fill="#EEF2FF" stroke="#6366F1" stroke-width="1.5" />
+          <text x="545" y="70" text-anchor="middle" fill="#4338CA" font-size="10" font-weight="700">TF-IDF &amp; Cosine Similarity</text>
+          <text x="545" y="83" text-anchor="middle" fill="#6366F1" font-size="8">scikit-learn Text Matching (15 pts)</text>
+
+          <!-- Down to Output -->
+          <path d="M 545 94 L 545 135 L 350 135" stroke="#0B3B24" stroke-width="1.8" fill="none" />
+          <polygon points="345,135 353,131 353,139" fill="#0B3B24" />
+
+          <!-- Explainable Output Box -->
+          <rect x="180" y="115" width="165" height="40" rx="8" fill="#0B3B24" />
+          <text x="262" y="134" text-anchor="middle" fill="#FFFFFF" font-size="10" font-weight="700">Explainable Output</text>
+          <text x="262" y="146" text-anchor="middle" fill="#A3E5B9" font-size="8">Ranked Score + Explicit Reasons</text>
+
+          <!-- Defensive Degradation Callout -->
+          <rect x="180" y="170" width="370" height="24" rx="4" fill="#FEF3C7" stroke="#F59E0B" stroke-dasharray="3 3" />
+          <text x="365" y="186" text-anchor="middle" fill="#92400E" font-size="8.5" font-weight="600">
+            🛡️ Circuit Breaker: 1.5s timeout triggers zero-downtime heuristic fallback
+          </text>
+        </svg>
+        <div class="diagram-caption">Figure 5.1: Dual-Layer Explainable Recommendation Pipeline</div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>GreenLoop Project Documentation</span>
+      <span>7/14</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PAGE 8: GEOSPATIAL DISPOSAL HUBS & OPENSTREETMAP INDIA    -->
+  <!-- ========================================================= -->
+  <div class="doc-page">
+    <div class="page-header">
+      <span>10/31/26, 1:00 PM</span>
+      <span>GreenLoop - Comprehensive Project Document</span>
+    </div>
+
+    <div class="page-body">
+      <div class="section-title">
+        <span class="section-bar"></span>
+        <span>6. Geospatial Disposal Hubs &amp; OpenStreetMap India</span>
+      </div>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <strong>Official OpenStreetMap India integration</strong> – Map visualization powered by OpenStreetMap India standard tiles (<a href="https://www.openstreetmap.in/" style="color:#0B3B24;text-decoration:none;font-weight:bold;">openstreetmap.in</a>) adhering to national cartographic boundaries.
+        </div>
+        <div class="feature-item">
+          <strong>Interactive spatial Leaflet canvas</strong> – Custom vector marker layer plotting certified circular collection centers across Bengaluru, Mumbai, Pune, Delhi NCR, and Hyderabad.
+        </div>
+        <div class="feature-item">
+          <strong>Pulsing animated radar pins</strong> – Custom SVG emerald nodes with radar animations highlighting active and selected drop centers.
+        </div>
+        <div class="feature-item">
+          <strong>Dual-mode exploration switcher</strong> – Seamless toggle between <em>"Marked Depots (OSM)"</em> and <em>"OpenStreetMap.in Live Portal"</em> embed with 3D buildings and transit routes.
+        </div>
+        <div class="feature-item">
+          <strong>HTML5 browser geolocation</strong> – "Locate Me" automated positioning plotting user proximity and sorting nearest drop stations.
+        </div>
+        <div class="feature-item">
+          <strong>Turn-by-turn routing dispatch</strong> – Direct launch of Google Maps GPS coordinates and openstreetmap.in zoom coordinates for instant physical navigation.
+        </div>
+      </div>
+
+      <h3 class="sub-heading">Spatial Routing &amp; Depot Dispatch Architecture</h3>
+
+      <div class="diagram-container">
+        <!-- SVG Map Dispatch Flow -->
+        <svg width="680" height="200" viewBox="0 0 680 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Step 1: User requests map -->
+          <rect x="20" y="70" width="130" height="44" rx="8" fill="#F3F4F6" stroke="#D1D5DB" />
+          <text x="85" y="91" text-anchor="middle" fill="#1F2937" font-size="10" font-weight="700">Click Disposal Centers</text>
+          <text x="85" y="104" text-anchor="middle" fill="#6B7280" font-size="8">Home or Dashboard</text>
+
+          <line x1="150" y1="92" x2="195" y2="92" stroke="#0B3B24" stroke-width="2" />
+          <polygon points="200,92 192,88 192,96" fill="#0B3B24" />
+
+          <!-- Step 2: Modal Opens -->
+          <rect x="200" y="65" width="160" height="54" rx="8" fill="#EAF5ED" stroke="#0B3B24" stroke-width="1.5" />
+          <text x="280" y="86" text-anchor="middle" fill="#0B3B24" font-size="10.5" font-weight="700">DisposalCentersModal</text>
+          <text x="280" y="99" text-anchor="middle" fill="#586A5E" font-size="8">City Sync • Stream Filter</text>
+          <text x="280" y="110" text-anchor="middle" fill="#3EA635" font-size="7.5">Bengaluru, Mumbai, Pune, Delhi</text>
+
+          <!-- Branch to Leaflet vs Live Portal -->
+          <path d="M 360 82 L 415 50 L 460 50" stroke="#0B3B24" stroke-width="1.8" fill="none" />
+          <polygon points="465,50 457,46 457,54" fill="#0B3B24" />
+
+          <path d="M 360 102 L 415 134 L 460 134" stroke="#6366F1" stroke-width="1.8" fill="none" />
+          <polygon points="465,134 457,130 457,138" fill="#6366F1" />
+
+          <!-- Target A: Leaflet OSM Map -->
+          <rect x="465" y="30" width="180" height="40" rx="6" fill="#0B3B24" />
+          <text x="555" y="49" text-anchor="middle" fill="#FFFFFF" font-size="10" font-weight="700">Marked Pins (OSM Tiles)</text>
+          <text x="555" y="61" text-anchor="middle" fill="#A3E5B9" font-size="8">Popups • Radar Rings • flyTo()</text>
+
+          <!-- Target B: openstreetmap.in Live Embed -->
+          <rect x="465" y="114" width="180" height="40" rx="6" fill="#4338CA" />
+          <text x="555" y="133" text-anchor="middle" fill="#FFFFFF" font-size="10" font-weight="700">openstreetmap.in Portal</text>
+          <text x="555" y="145" text-anchor="middle" fill="#C7D2FE" font-size="8">3D Buildings • Transit • Boundaries</text>
+
+          <!-- Bottom Footer Navigation -->
+          <rect x="180" y="165" width="340" height="24" rx="4" fill="#F3F4F6" stroke="#E5E7EB" />
+          <text x="350" y="181" text-anchor="middle" fill="#4B5563" font-size="8.5" font-weight="600">
+            Action: One-Click GPS Navigation + Direct Dial Phone Hub Link
+          </text>
+        </svg>
+        <div class="diagram-caption">Figure 6.1: OpenStreetMap India Geospatial Hub Architecture</div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>GreenLoop Project Documentation</span>
+      <span>8/14</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PAGE 9: DONOR MONETIZATION & SALES ANALYTICS             -->
+  <!-- ========================================================= -->
+  <div class="doc-page">
+    <div class="page-header">
+      <span>10/31/26, 1:00 PM</span>
+      <span>GreenLoop - Comprehensive Project Document</span>
+    </div>
+
+    <div class="page-body">
+      <div class="section-title">
+        <span class="section-bar"></span>
+        <span>7. Donor Monetization &amp; Financial Analytics</span>
+      </div>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <strong>Exclusive donor role access</strong> – Strict authorization restricting revenue metrics exclusively to verified Donor accounts.
+        </div>
+        <div class="feature-item">
+          <strong>Month-wise sales revenue trajectory</strong> – Vibrant line chart displaying monthly monetization across May to October with Indian Rupee (₹) axis calibration.
+        </div>
+        <div class="feature-item">
+          <strong>Reclaimed batches volume area graph</strong> – Elegant purple gradient area chart showing unit volumes diverted and monetized throughout the annual cycle.
+        </div>
+        <div class="feature-item">
+          <strong>Synchronized dual-axis overview</strong> – Combined visualization enabling simultaneous analysis of value per unit weight and bulk transaction counts.
+        </div>
+        <div class="feature-item">
+          <strong>Executive KPI dashboard cards</strong> – Real-time cards summarizing Total Annual Sales, Monthly Average Revenue, Monetized Batches, and Peak Revenue Month.
+        </div>
+        <div class="feature-item">
+          <strong>Single-click CSV ledger export</strong> – Complete audit extraction exporting monthly performance, material categories, and settlement status.
+        </div>
+      </div>
+
+      <h3 class="sub-heading">Donor Revenue &amp; Batches Visualization</h3>
+
+      <div class="diagram-container">
+        <!-- SVG Chart Reproduction from User Reference -->
+        <svg width="680" height="200" viewBox="0 0 680 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="docPurpleGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.45" />
+              <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.0" />
+            </linearGradient>
+          </defs>
+
+          <!-- Y-Axis Line -->
+          <line x1="60" y1="20" x2="60" y2="160" stroke="#CBD5E1" stroke-width="1.5" />
+          <!-- X-Axis Line -->
+          <line x1="60" y1="160" x2="640" y2="160" stroke="#CBD5E1" stroke-width="1.5" />
+
+          <!-- Y Ticks -->
+          <text x="50" y="25" text-anchor="end" fill="#6B7280" font-size="9" font-weight="600">₹16000</text>
+          <text x="50" y="58" text-anchor="end" fill="#6B7280" font-size="9" font-weight="600">₹12000</text>
+          <text x="50" y="92" text-anchor="end" fill="#6B7280" font-size="9" font-weight="600">₹8000</text>
+          <text x="50" y="126" text-anchor="end" fill="#6B7280" font-size="9" font-weight="600">₹4000</text>
+          <text x="50" y="160" text-anchor="end" fill="#6B7280" font-size="9" font-weight="600">₹0</text>
+
+          <!-- X Ticks -->
+          <text x="100" y="176" text-anchor="middle" fill="#6B7280" font-size="9.5" font-weight="600">May</text>
+          <text x="200" y="176" text-anchor="middle" fill="#6B7280" font-size="9.5" font-weight="600">Jun</text>
+          <text x="300" y="176" text-anchor="middle" fill="#6B7280" font-size="9.5" font-weight="600">Jul</text>
+          <text x="400" y="176" text-anchor="middle" fill="#6B7280" font-size="9.5" font-weight="600">Aug</text>
+          <text x="500" y="176" text-anchor="middle" fill="#6B7280" font-size="9.5" font-weight="600">Sep</text>
+          <text x="600" y="176" text-anchor="middle" fill="#6B7280" font-size="9.5" font-weight="600">Oct</text>
+
+          <!-- Purple Area Fill (Image 2 style) -->
+          <path d="M 100 110 L 600 110 L 600 160 L 100 160 Z" fill="url(#docPurpleGrad)" />
+          <line x1="100" y1="110" x2="600" y2="110" stroke="#8B5CF6" stroke-width="2.5" />
+
+          <!-- Orange Trajectory Line (Image 1 style) -->
+          <path d="M 100 126 L 200 112 L 300 98 L 400 82 L 500 62 L 600 40" stroke="#EA580C" stroke-width="3" fill="none" />
+
+          <!-- Data Points on Orange Line -->
+          <circle cx="100" cy="126" r="5" fill="#EA580C" stroke="#FFFFFF" stroke-width="2" />
+          <circle cx="200" cy="112" r="5" fill="#EA580C" stroke="#FFFFFF" stroke-width="2" />
+          <circle cx="300" cy="98" r="5" fill="#EA580C" stroke="#FFFFFF" stroke-width="2" />
+          <circle cx="400" cy="82" r="5" fill="#EA580C" stroke="#FFFFFF" stroke-width="2" />
+          <circle cx="500" cy="62" r="5" fill="#EA580C" stroke="#FFFFFF" stroke-width="2" />
+          <circle cx="600" cy="40" r="6" fill="#EA580C" stroke="#FFFFFF" stroke-width="2" />
+
+          <!-- Legend Top Right -->
+          <circle cx="480" cy="22" r="4" fill="#EA580C" />
+          <text x="490" y="25" fill="#1F2937" font-size="9" font-weight="600">Revenue (₹)</text>
+
+          <rect x="560" y="18" width="10" height="8" fill="#8B5CF6" rx="2" />
+          <text x="575" y="25" fill="#1F2937" font-size="9" font-weight="600">Volume (Batches)</text>
+        </svg>
+        <div class="diagram-caption">Figure 7.1: Month-wise Revenue Trajectory &amp; Monetized Batches</div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>GreenLoop Project Documentation</span>
+      <span>9/14</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PAGE 10: ENVIRONMENTAL IMPACT & CARBON ACCOUNTING         -->
+  <!-- ========================================================= -->
+  <div class="doc-page">
+    <div class="page-header">
+      <span>10/31/26, 1:00 PM</span>
+      <span>GreenLoop - Comprehensive Project Document</span>
+    </div>
+
+    <div class="page-body">
+      <div class="section-title">
+        <span class="section-bar"></span>
+        <span>8. Environmental Impact &amp; Carbon Accounting</span>
+      </div>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <strong>Certified landfill diversion ledger</strong> – Precise volumetric calculations computing kilograms of solid discarded materials redirected into productive second-life cycles.
+        </div>
+        <div class="feature-item">
+          <strong>Carbon emission abatement algorithms</strong> – Material-specific emission coefficients calculating net CO2 equivalent savings prevented from open decomposition or incineration.
+        </div>
+        <div class="feature-item">
+          <strong>Tree preservation equivalence metrics</strong> – Algorithmic translation of diverted paper and timber offcuts into mature tree equivalents saved from deforestation.
+        </div>
+        <div class="feature-item">
+          <strong>Interactive SVG impact breakdown</strong> – Circular donut chart and stream-by-stream progress indicators depicting diversion ratios across all seven material classes.
+        </div>
+        <div class="feature-item">
+          <strong>Eco milestone achievement badges</strong> – Gamified milestone credentials honoring high-volume circular donors and creative reusers.
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top: 32px;">
+        <span class="section-bar"></span>
+        <span>9. Admin &amp; Environmental Oversight Portal</span>
+      </div>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <strong>Institutional sustainability command center</strong> – Aggregated institutional metrics tracking macro diversion tonnage and cross-regional circular transactions.
+        </div>
+        <div class="feature-item">
+          <strong>Platform-wide user management</strong> – Administrative oversight across registered accounts, verifying donor credentials and institutional roles.
+        </div>
+        <div class="feature-item">
+          <strong>Comprehensive audit logging</strong> – Timestamped audit trails documenting every listing creation, proposal review, and bilateral agreement.
+        </div>
+        <div class="feature-item">
+          <strong>System health monitoring</strong> – Diagnostic telemetry verifying database connection pool health, Cloudinary CDN uptime, and ML microservice latency.
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>GreenLoop Project Documentation</span>
+      <span>10/14</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PAGE 11: COMPLETE SYSTEM DATA FLOW                        -->
+  <!-- ========================================================= -->
+  <div class="doc-page">
+    <div class="page-header">
+      <span>10/31/26, 1:00 PM</span>
+      <span>GreenLoop - Comprehensive Project Document</span>
+    </div>
+
+    <div class="page-body">
+      <div class="section-title">
+        <span class="section-bar"></span>
+        <span>Complete System Data Flow</span>
+      </div>
+
+      <div class="diagram-container" style="padding: 24px 10px;">
+        <!-- SVG Complete System Data Flow Diagram -->
+        <svg width="680" height="340" viewBox="0 0 680 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Client Tier Container -->
+          <rect x="15" y="15" width="650" height="60" rx="8" fill="#F9FAF8" stroke="#E5E7EB" stroke-width="1.5" />
+          <text x="30" y="32" fill="#586A5E" font-size="9" font-weight="700">PRESENTATION LAYER (React.js + Tailwind CSS)</text>
+
+          <rect x="40" y="38" width="130" height="28" rx="6" fill="#0B3B24" />
+          <text x="105" y="55" text-anchor="middle" fill="#FFFFFF" font-size="9.5" font-weight="700">Donor Interface</text>
+
+          <rect x="190" y="38" width="140" height="28" rx="6" fill="#15803D" />
+          <text x="260" y="55" text-anchor="middle" fill="#FFFFFF" font-size="9.5" font-weight="700">Recipient Interface</text>
+
+          <rect x="350" y="38" width="140" height="28" rx="6" fill="#0284C7" />
+          <text x="420" y="55" text-anchor="middle" fill="#FFFFFF" font-size="9.5" font-weight="700">OpenStreetMap View</text>
+
+          <rect x="510" y="38" width="130" height="28" rx="6" fill="#4338CA" />
+          <text x="575" y="55" text-anchor="middle" fill="#FFFFFF" font-size="9.5" font-weight="700">Admin Console</text>
+
+          <!-- Connecting Bus to API Gateway -->
+          <line x1="340" y1="75" x2="340" y2="105" stroke="#0B3B24" stroke-width="2" />
+          <polygon points="340,110 336,102 344,102" fill="#0B3B24" />
+
+          <!-- API Gateway Tier -->
+          <rect x="15" y="110" width="650" height="70" rx="8" fill="#EAF5ED" stroke="#0B3B24" stroke-width="1.5" />
+          <text x="30" y="127" fill="#0B3B24" font-size="9" font-weight="700">APPLICATION &amp; ROUTING LAYER (Express.js API Gateway)</text>
+
+          <rect x="35" y="136" width="105" height="32" rx="6" fill="#FFFFFF" stroke="#CEEAD8" />
+          <text x="87" y="155" text-anchor="middle" fill="#1F2937" font-size="9" font-weight="600">Auth / JWT Guard</text>
+
+          <rect x="150" y="136" width="115" height="32" rx="6" fill="#FFFFFF" stroke="#CEEAD8" />
+          <text x="207" y="155" text-anchor="middle" fill="#1F2937" font-size="9" font-weight="600">Listings Controller</text>
+
+          <rect x="275" y="136" width="115" height="32" rx="6" fill="#FFFFFF" stroke="#CEEAD8" />
+          <text x="332" y="155" text-anchor="middle" fill="#1F2937" font-size="9" font-weight="600">Interests Workflow</text>
+
+          <rect x="400" y="136" width="120" height="32" rx="6" fill="#FFFFFF" stroke="#CEEAD8" />
+          <text x="460" y="155" text-anchor="middle" fill="#1F2937" font-size="9" font-weight="600">Recommendation Svc</text>
+
+          <rect x="530" y="136" width="115" height="32" rx="6" fill="#FFFFFF" stroke="#CEEAD8" />
+          <text x="587" y="155" text-anchor="middle" fill="#1F2937" font-size="9" font-weight="600">Sales Analytics API</text>
+
+          <!-- Fan-out to Backend & External Services -->
+          <line x1="207" y1="180" x2="110" y2="215" stroke="#6B7280" stroke-width="1.5" />
+          <line x1="207" y1="180" x2="245" y2="215" stroke="#6B7280" stroke-width="1.5" />
+          <line x1="460" y1="180" x2="385" y2="215" stroke="#6B7280" stroke-width="1.5" />
+          <line x1="460" y1="180" x2="525" y2="215" stroke="#6B7280" stroke-width="1.5" />
+
+          <!-- Persistence & External Layer -->
+          <rect x="15" y="215" width="650" height="90" rx="8" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.5" />
+          <text x="30" y="233" fill="#64748B" font-size="9" font-weight="700">PERSISTENCE, INTELLIGENCE &amp; EXTERNAL SERVICES</text>
+
+          <rect x="40" y="244" width="140" height="46" rx="6" fill="#1E293B" />
+          <text x="110" y="263" text-anchor="middle" fill="#FFFFFF" font-size="9.5" font-weight="700">PostgreSQL Database</text>
+          <text x="110" y="277" text-anchor="middle" fill="#94A3B8" font-size="8">Users • Listings • Interests</text>
+
+          <rect x="195" y="244" width="140" height="46" rx="6" fill="#0284C7" />
+          <text x="265" y="263" text-anchor="middle" fill="#FFFFFF" font-size="9.5" font-weight="700">Cloudinary Media CDN</text>
+          <text x="265" y="277" text-anchor="middle" fill="#BAE6FD" font-size="8">Optimized Image Delivery</text>
+
+          <rect x="350" y="244" width="140" height="46" rx="6" fill="#6366F1" />
+          <text x="420" y="263" text-anchor="middle" fill="#FFFFFF" font-size="9.5" font-weight="700">scikit-learn Matcher</text>
+          <text x="420" y="277" text-anchor="middle" fill="#DDD6FE" font-size="8">TF-IDF Vector Space</text>
+
+          <rect x="505" y="244" width="140" height="46" rx="6" fill="#10B981" />
+          <text x="575" y="263" text-anchor="middle" fill="#FFFFFF" font-size="9.5" font-weight="700">OpenStreetMap India</text>
+          <text x="575" y="277" text-anchor="middle" fill="#D1FAE5" font-size="8">Tile &amp; Geospatial Network</text>
+        </svg>
+        <div class="diagram-caption">Figure 11.1: Complete End-to-End System Data Flow Pipeline</div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>GreenLoop Project Documentation</span>
+      <span>11/14</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PAGE 12: TECHNOLOGY STACK                                 -->
+  <!-- ========================================================= -->
+  <div class="doc-page">
+    <div class="page-header">
+      <span>10/31/26, 1:00 PM</span>
+      <span>GreenLoop - Comprehensive Project Document</span>
+    </div>
+
+    <div class="page-body">
+      <div class="section-title">
+        <span class="section-bar"></span>
+        <span>Technology Stack</span>
+      </div>
+
+      <div class="tech-grid">
+        <div class="tech-box">
+          <h4>Frontend Architecture</h4>
+          <ul>
+            <li><strong>React.js (v18.3)</strong> – Component-based reactive SPA</li>
+            <li><strong>Vite (v6.4)</strong> – Ultra-fast build tool and HMR dev server</li>
+            <li><strong>Tailwind CSS</strong> – Utility-first responsive design tokens</li>
+            <li><strong>Lucide React</strong> – Clean accessible iconography library</li>
+            <li><strong>Leaflet (v1.9.4)</strong> – Hardware-accelerated spatial mapping</li>
+          </ul>
+        </div>
+
+        <div class="tech-box">
+          <h4>Backend Architecture</h4>
+          <ul>
+            <li><strong>Node.js (v20+ LTS)</strong> – High-concurrency event-driven runtime</li>
+            <li><strong>Express.js (v4.19)</strong> – RESTful routing &amp; middleware pipeline</li>
+            <li><strong>JSON Web Tokens (JWT)</strong> – Stateless session authentication</li>
+            <li><strong>Bcrypt.js</strong> – Salted cryptographic password hashing</li>
+            <li><strong>Zod</strong> – Strict compile-time schema validation</li>
+          </ul>
+        </div>
+
+        <div class="tech-box" style="margin-top: 16px;">
+          <h4>Database &amp; Storage</h4>
+          <ul>
+            <li><strong>PostgreSQL 15+</strong> – ACID-compliant relational persistence</li>
+            <li><strong>pg (node-postgres)</strong> – Native pooled connection client</li>
+            <li><strong>Cloudinary API</strong> – Cloud media storage and image optimization</li>
+            <li><strong>Supabase Integration</strong> – Optional managed DB &amp; realtime sync</li>
+          </ul>
+        </div>
+
+        <div class="tech-box" style="margin-top: 16px;">
+          <h4>Machine Learning &amp; Cartography</h4>
+          <ul>
+            <li><strong>scikit-learn</strong> – TF-IDF vectorizer &amp; Cosine Similarity</li>
+            <li><strong>Python 3.10+ / FastAPI</strong> – Asynchronous ML ranking microservice</li>
+            <li><strong>MobileNet / CNN</strong> – 4-class visual waste classification</li>
+            <li><strong>OpenStreetMap India</strong> – Boundary-compliant tile rendering</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>GreenLoop Project Documentation</span>
+      <span>12/14</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PAGE 13: KEY BENEFITS                                     -->
+  <!-- ========================================================= -->
+  <div class="doc-page">
+    <div class="page-header">
+      <span>10/31/26, 1:00 PM</span>
+      <span>GreenLoop - Comprehensive Project Document</span>
+    </div>
+
+    <div class="page-body">
+      <div class="section-title">
+        <span class="section-bar"></span>
+        <span>Key Stakeholder Benefits</span>
+      </div>
+
+      <div class="benefit-grid">
+        <div class="benefit-card">
+          <div class="benefit-header">
+            <span>🏭</span>
+            <span>For Industrial &amp; Retail Donors</span>
+          </div>
+          <ul class="benefit-list">
+            <li>Zero-cost disposal of non-hazardous surplus inventory</li>
+            <li>Direct monetization through circular scrap batch sales</li>
+            <li>Automated ESG &amp; CSR sustainability reporting compliance</li>
+            <li>Clean, verified handovers with trusted local makers</li>
+            <li>Reduced storage footprint and warehouse overheads</li>
+          </ul>
+        </div>
+
+        <div class="benefit-card">
+          <div class="benefit-header">
+            <span>🎨</span>
+            <span>For Artisans, Students &amp; Makers</span>
+          </div>
+          <ul class="benefit-list">
+            <li>Free or deeply subsidized high-quality raw materials</li>
+            <li>AI-assisted matching based on personal project intent</li>
+            <li>Access to clean timber, studio glass, and packaging scrap</li>
+            <li>Direct connection with verified commercial donors</li>
+            <li>Local pickup within their immediate urban radius</li>
+          </ul>
+        </div>
+
+        <div class="benefit-card" style="margin-top: 12px;">
+          <div class="benefit-header">
+            <span>🌍</span>
+            <span>For the Environment &amp; Society</span>
+          </div>
+          <ul class="benefit-list">
+            <li>Significant landfill volume reduction in urban centers</li>
+            <li>Measurable carbon footprint abatement (CO2e offset)</li>
+            <li>Preservation of virgin forestry through wood &amp; paper reuse</li>
+            <li>Transition from linear discard models to circular cycles</li>
+            <li>Community empowerment through resource democratization</li>
+          </ul>
+        </div>
+
+        <div class="benefit-card" style="margin-top: 12px;">
+          <div class="benefit-header">
+            <span>🏛️</span>
+            <span>For Municipalities &amp; Institutions</span>
+          </div>
+          <ul class="benefit-list">
+            <li>Reduced municipal solid waste collection burdens</li>
+            <li>Transparent digital audit trail of material movement</li>
+            <li>Real-time data telemetry on regional waste streams</li>
+            <li>Integration with national OpenStreetMap cartography</li>
+            <li>Scalable model applicable across universities and smart cities</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>GreenLoop Project Documentation</span>
+      <span>13/14</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PAGE 14: CONCLUSION & METADATA SIGN-OFF                   -->
+  <!-- ========================================================= -->
+  <div class="doc-page">
+    <div class="page-header">
+      <span>10/31/26, 1:00 PM</span>
+      <span>GreenLoop - Comprehensive Project Document</span>
+    </div>
+
+    <div class="page-body">
+      <div class="section-title">
+        <span class="section-bar"></span>
+        <span>Conclusion</span>
+      </div>
+
+      <p class="summary-text">
+        <strong>GreenLoop</strong> represents a transformative, production-ready solution to urban material waste challenges. By seamlessly synthesizing multi-role role-based workflows, explainable machine learning recommendation models, computer vision scrap recognition, verified spatial routing via OpenStreetMap India, and real-time financial monetization analytics, the platform converts solid waste management from an operational liability into a sustainable, community-empowered asset.
+      </p>
+
+      <p class="summary-text">
+        The system achieves rigorous software engineering excellence: decoupled React and Express architecture, sub-second query latency through indexed PostgreSQL persistence, defensive circuit-breaker fallback resilience, and an intuitive user interface tailored for households, workshops, and commercial enterprises. GreenLoop establishes an extensible blueprint for circular economies capable of serving universities, metropolitan cities, and industrial clusters globally.
+      </p>
+
+      <div style="margin-top: 80px; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 40px;">
+        <h3 style="font-size: 16px; font-weight: 800; color: #0B3B24; margin-bottom: 4px;">
+          GreenLoop — AI-Powered Waste-to-Resource Platform
+        </h3>
+        <p style="font-size: 13px; color: #4B5563; margin-bottom: 8px;">
+          Comprehensive Project Documentation &amp; Technical System Manual
+        </p>
+        <p style="font-size: 11px; color: #9CA3AF;">
+          &copy; 2026 GreenLoop Core Engineering Team &bull; All Rights Reserved
+        </p>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>GreenLoop Project Documentation</span>
+      <span>14/14</span>
+    </div>
+  </div>
+
+</body>
+</html>

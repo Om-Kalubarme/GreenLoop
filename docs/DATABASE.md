@@ -1,4 +1,4 @@
-# ReSource AI — Database Architecture & Schema Specification
+# GreenLoop — Database Architecture & Schema Specification
 
 ---
 
@@ -6,7 +6,7 @@
 
 * **Database Engine:** PostgreSQL (v14+)
 * **Connection Layer:** `pg` (node-postgres) with connection pooling (`pg.Pool`)
-* **Default Database Name:** `resource_ai`
+* **Default Database Name:** `greenloop`
 * **Schema Integrity:** Strict Foreign Key constraints with `ON DELETE CASCADE`, composite checks, and optimized B-Tree indexes.
 * **UUID Strategy:** Primary keys use Version 4 UUIDs generated via `gen_random_uuid()` (or `pgcrypto`).
 

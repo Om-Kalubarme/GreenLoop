@@ -1,4 +1,4 @@
-# ReSource AI — REST API Documentation
+# GreenLoop — REST API Documentation
 
 Base URL: `http://localhost:5001/api`
 
@@ -14,7 +14,7 @@ Checks overall server status, PostgreSQL database connectivity, and recommendati
 ```json
 {
   "status": "ok",
-  "service": "ReSource AI Backend API",
+  "service": "GreenLoop Backend API",
   "uptimeSeconds": 120,
   "timestamp": "2026-10-26T10:30:00.000Z",
   "database": {

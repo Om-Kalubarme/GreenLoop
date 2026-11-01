@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 const CATEGORY_STYLES = {
@@ -33,15 +33,21 @@ const CATEGORY_STYLES = {
   },
 };
 
-export default function ListingCard({ listing, showScore = false }) {
-  const fallbackImage = 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=800&auto=format&fit=crop&q=80';
+export default function ListingCard({ listing, showScore = false, onRequest }) {
+  const navigate = useNavigate();
+  const catKey = (listing.material_category || 'cardboard').toLowerCase();
+  const fallbackImage = `/thumb-${catKey}.jpg`;
   const categoryConfig = CATEGORY_STYLES[listing.material_category] || CATEGORY_STYLES.other;
 
   return (
     <div className="group rounded-3xl bg-[#FDFBF7] border border-[#EAE3D2] overflow-hidden hover:shadow-luxury transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between p-3.5 sm:p-4">
       
-      {/* Top Image Frame with Soft Inset */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[#F3ECE0]">
+      {/* Top Image Frame - Clickable to Details */}
+      <Link
+        to={`/listings/${listing.id}`}
+        className="block relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[#F3ECE0] cursor-pointer"
+        aria-label={`View details for ${listing.title}`}
+      >
         <img
           src={listing.image_url || fallbackImage}
           alt={listing.title}
@@ -54,11 +60,11 @@ export default function ListingCard({ listing, showScore = false }) {
 
         {/* Top Badges */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-          <span className={`px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase border shadow-sm backdrop-blur-md ${categoryConfig.bg}`}>
+          <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase border shadow-sm backdrop-blur-md ${categoryConfig.bg}`}>
             {listing.material_category}
           </span>
 
-          <span className="px-3 py-1 rounded-full text-[11px] font-medium bg-[#0A5C36]/90 text-white shadow-sm backdrop-blur-sm flex items-center gap-1">
+          <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#0A5C36]/90 text-white shadow-sm backdrop-blur-sm flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-[#CEEAD8]" />
             {listing.status === 'available' ? 'Available' : listing.status}
           </span>
@@ -66,15 +72,15 @@ export default function ListingCard({ listing, showScore = false }) {
 
         {/* Optional AI Match Score Pill */}
         {showScore && listing.score !== undefined && (
-          <div className="absolute bottom-3 left-3 px-3 py-1.5 rounded-full bg-[#0A5C36]/95 text-[#CEEAD8] border border-[#0D7A47] text-xs font-bold shadow-lg backdrop-blur-md flex items-center gap-1.5">
+          <div className="absolute bottom-3 left-3 px-3 py-1.5 rounded-full bg-[#0A5C36]/95 text-[#CEEAD8] border border-[#0D7A47] text-xs font-bold shadow-lg backdrop-blur-md flex items-center gap-1.5 pointer-events-none">
             <Sparkles className="w-3.5 h-3.5 text-[#D9381E]" />
             <span>{Math.round(listing.score)}% Match</span>
           </div>
         )}
-      </div>
+      </Link>
 
       {/* Card Body */}
-      <div className="pt-4 px-1 flex-1 flex flex-col justify-between space-y-3">
+      <div className="pt-3.5 flex-1 flex flex-col justify-between space-y-3">
         
         <div className="space-y-1.5">
           {/* Dot Swatches (Emerald, Vermillion & Warm Ivory) */}
@@ -91,43 +97,52 @@ export default function ListingCard({ listing, showScore = false }) {
             </span>
           </div>
 
-          <h3 className="text-base font-serif font-bold text-[#1A261D] line-clamp-1 group-hover:text-[#0A5C36] transition-colors">
-            {listing.title}
-          </h3>
+          {/* Product Name - Clickable to Details */}
+          <Link
+            to={`/listings/${listing.id}`}
+            className="block group/title cursor-pointer"
+          >
+            <h3 className="text-base font-serif font-bold text-[#1A261D] line-clamp-1 group-hover/title:text-[#0A5C36] hover:underline transition-colors">
+              {listing.title}
+            </h3>
+          </Link>
 
           <p className="text-xs text-[#586A5E] line-clamp-2 leading-relaxed">
             {listing.description}
           </p>
         </div>
 
-        {/* Recommendation Reason Pill */}
-        {listing.reason && (
-          <div className="p-2.5 rounded-xl bg-[#E1F2E8]/70 border border-[#C5E5D1] text-[11px] text-[#0A5C36] font-medium leading-snug">
-            {listing.reason}
-          </div>
-        )}
 
         {/* Card Footer: Metadata & Action Button */}
-        <div className="pt-3 border-t border-[#EAE3D2] flex items-center justify-between gap-2">
-          <div className="text-[11px] text-[#586A5E] flex items-center gap-1">
-            <MapPin className="w-3.5 h-3.5 text-[#0A5C36]" />
-            <span className="truncate max-w-[100px]">{listing.city}</span>
+        <div className="pt-3 border-t border-[#EAE3D2] flex items-center justify-between gap-1.5 min-w-0">
+          <div className="text-[11px] text-[#586A5E] flex items-center gap-1 min-w-0 flex-1 mr-1">
+            <MapPin className="w-3.5 h-3.5 text-[#0A5C36] shrink-0" />
+            <span className="truncate">{listing.city}</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 shrink-0">
             <Link
               to={`/listings/${listing.id}`}
-              className="text-xs font-semibold text-[#1A261D] hover:text-[#0A5C36] px-2 py-1 transition-colors"
+              className="text-xs font-semibold text-[#1A261D] hover:text-[#0A5C36] px-1.5 py-1 rounded-lg hover:bg-[#EAE3D2]/40 transition-colors shrink-0 whitespace-nowrap"
             >
               Details
             </Link>
 
-            <Link
-              to={`/listings/${listing.id}`}
-              className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#0A5C36] text-white hover:bg-[#0D7A47] shadow-emerald-glow transition-all hover:scale-105 active:scale-95"
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (onRequest) {
+                  onRequest(listing);
+                } else {
+                  navigate(`/listings/${listing.id}?request=1`);
+                }
+              }}
+              className="inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-[#0A5C36] text-white hover:bg-[#0D7A47] shadow-sm transition-all hover:scale-105 active:scale-95 shrink-0 whitespace-nowrap cursor-pointer"
             >
               <span>+ Request</span>
-            </Link>
+            </button>
           </div>
         </div>
 

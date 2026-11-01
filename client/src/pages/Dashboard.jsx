@@ -237,7 +237,7 @@ export default function Dashboard() {
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-4 h-4 text-[#0A5C36] shrink-0 mt-0.5" />
-                <span><strong className="text-[#1A261D]">Phase 2:</strong> PostgreSQL DDL schema &amp; 10 demo listings seeded.</span>
+                <span><strong className="text-[#1A261D]">Phase 2:</strong> PostgreSQL DDL schema &amp; marketplace catalog initialized.</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-4 h-4 text-[#0A5C36] shrink-0 mt-0.5" />

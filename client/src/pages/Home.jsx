@@ -1,673 +1,1699 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { fetchListings } from '../api/listings.api';
-import { fetchHealthStatus } from '../api/health.api';
+import { fetchListings, fetchMyListings } from '../api/listings.api';
 import ListingCard from '../components/ListingCard';
-import { 
-  Leaf, 
-  Sparkles, 
-  ArrowRight, 
-  ArrowUpRight, 
-  MapPin, 
-  Star, 
-  RefreshCw, 
-  CheckCircle2, 
-  ShieldCheck, 
-  Package, 
-  TreePine, 
-  Wine, 
-  Scissors, 
-  Box, 
-  Layers, 
-  Heart,
-  Quote
+import InterestModal from '../components/InterestModal';
+import ImpactModal from '../components/ImpactModal';
+import DisposalCentersModal from '../components/DisposalCentersModal';
+import DonorSalesChart from '../components/DonorSalesChart';
+import {
+  Home as HomeIcon,
+  Scan,
+  HeartHandshake,
+  Store,
+  Trophy,
+  Users,
+  Settings,
+  LogOut,
+  Search,
+  Bell,
+  Trash2,
+  Clock,
+  ShoppingCart,
+  Camera,
+  MapPin,
+  Menu,
+  X,
+  Sparkles,
+  ArrowRight,
+  CheckCircle2,
+  Upload,
+  ExternalLink,
+  Award,
+  ChevronRight,
+  Layers,
+  Leaf,
+  Plus,
+  PlusCircle,
+  Package,
+  Inbox,
+  Sliders,
+  Check,
+  RefreshCw,
+  Edit3,
+  Eye,
+  Tag,
+  Shield,
+  TrendingUp
 } from 'lucide-react';
 
+const ALL_CATEGORIES = [
+  { id: 'cardboard', label: 'Cardboard & Paper' },
+  { id: 'wood', label: 'Wood & Timber' },
+  { id: 'glass', label: 'Glass Jars & Bottles' },
+  { id: 'textile', label: 'Textile & Fabrics' },
+  { id: 'plastic', label: 'Plastics & Containers' },
+  { id: 'metal', label: 'Metals & Hardware' },
+];
+
 export default function Home() {
-  const [featuredListings, setFeaturedListings] = useState([]);
-  const [healthData, setHealthData] = useState(null);
-  const [connectionStatus, setConnectionStatus] = useState('checking');
-  const [latency, setLatency] = useState(null);
-  const [emailSubscribed, setEmailSubscribed] = useState(false);
-  const [subscribeEmail, setSubscribeEmail] = useState('');
-  const { isAuthenticated, isDonor } = useAuth();
+  const { user, isAuthenticated, isDonor, isRecipient, isAdmin, login, logout, updateProfile } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [listings, setListings] = useState([]);
+  const [loadingListings, setLoadingListings] = useState(true);
+
+  // Modals state
+  const [showScanModal, setShowScanModal] = useState(false);
+  const [showImpactModal, setShowImpactModal] = useState(false);
+  const [showCentersModal, setShowCentersModal] = useState(false);
+  const [showRewardsModal, setShowRewardsModal] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showMyListingsModal, setShowMyListingsModal] = useState(false);
+  const [selectedListingForInterest, setSelectedListingForInterest] = useState(null);
+  const [showInterestModal, setShowInterestModal] = useState(false);
+
+  // Donor listings state
+  const [myListings, setMyListings] = useState([]);
+  const [loadingMyListings, setLoadingMyListings] = useState(false);
+
+  // Settings & Preferences state
+  const [prefCity, setPrefCity] = useState(user?.city || 'Bengaluru');
+  const [prefCategories, setPrefCategories] = useState(user?.preferred_categories || []);
+  const [savingPrefs, setSavingPrefs] = useState(false);
+  const [prefSuccess, setPrefSuccess] = useState(false);
+  const [prefError, setPrefError] = useState(null);
+
+  // Scan simulation state
+  const [scanning, setScanning] = useState(false);
+  const [scanResult, setScanResult] = useState(null);
+  const [scanFile, setScanFile] = useState(null);
+
+  // Sync settings when user changes
   useEffect(() => {
-    const init = async () => {
-      // 1. Health probe
-      const start = performance.now();
-      try {
-        const h = await fetchHealthStatus();
-        setLatency(Math.round(performance.now() - start));
-        setHealthData(h);
-        setConnectionStatus('connected');
-      } catch (err) {
-        setConnectionStatus('error');
-      }
+    if (user) {
+      setPrefCity(user.city || 'Bengaluru');
+      setPrefCategories(user.preferred_categories || []);
+    }
+  }, [user]);
 
-      // 2. Fetch real active listings from PostgreSQL
+  // Read URL query params (?modal=settings or ?view=my-listings)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('modal') === 'settings') {
+      setShowSettingsModal(true);
+    }
+    if (params.get('view') === 'my-listings') {
+      setShowMyListingsModal(true);
+    }
+  }, [location.search]);
+
+  // Load public marketplace listings
+  useEffect(() => {
+    const loadListings = async () => {
       try {
         const res = await fetchListings({ limit: 4, page: 1 });
         if (res.success && res.listings?.length > 0) {
-          setFeaturedListings(res.listings);
+          setListings(res.listings);
         }
       } catch (err) {
-        console.warn('Could not load live listings for home page showcase.');
+        console.warn('Could not load listings:', err);
+      } finally {
+        setLoadingListings(false);
       }
     };
 
-    init();
+    loadListings();
   }, []);
 
-  const handleSubscribe = (e) => {
-    e.preventDefault();
-    if (subscribeEmail.trim()) {
-      setEmailSubscribed(true);
-      setTimeout(() => setEmailSubscribed(false), 5000);
-      setSubscribeEmail('');
+  // Load donor's own listings
+  const loadMyListingsData = async () => {
+    setLoadingMyListings(true);
+    try {
+      const res = await fetchMyListings();
+      if (res.success && res.listings) {
+        setMyListings(res.listings);
+      }
+    } catch (err) {
+      console.warn('Could not load donor listings:', err);
+    } finally {
+      setLoadingMyListings(false);
     }
   };
 
-  const defaultShowcaseItems = [
-    {
-      id: 'a1111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
-      title: 'Clean Heavy-Duty Corrugated Shipping Boxes',
-      material_category: 'cardboard',
-      material_type: 'Double-Wall Boxes',
-      condition: 'Like New',
-      quantity_description: '45 large boxes',
-      city: 'Bengaluru',
-      image_url: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=800&auto=format&fit=crop&q=80',
-      status: 'available',
-      description: 'Clean flattened brown shipping boxes from electronics delivery. Tape removed, moisture-free.',
-    },
-    {
-      id: 'a2222222-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
-      title: 'Solid Pine Pallet Wood Planks & Blocks',
-      material_category: 'wood',
-      material_type: 'Untreated Pine',
-      condition: 'Good',
-      quantity_description: '18 dismantled planks',
-      city: 'Bengaluru',
-      image_url: 'https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?w=800&auto=format&fit=crop&q=80',
-      status: 'available',
-      description: 'Heat-treated chemical-free pine pallet planks. Nails removed, perfect for student planters.',
-    },
-    {
-      id: 'a3333333-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
-      title: 'Clear Sanitized Glass Food Jars with Lids',
-      material_category: 'glass',
-      material_type: 'Mason & Jam Jars',
-      condition: 'Like New',
-      quantity_description: '36 assorted jars',
-      city: 'Mumbai',
-      image_url: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&auto=format&fit=crop&q=80',
-      status: 'available',
-      description: 'Sterilized glass jars with airtight twist lids. Suitable for soy candle making or seed saving.',
-    },
-    {
-      id: 'a4444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
-      title: 'Heavyweight Denim & Cotton Fabric Rolls',
-      material_category: 'textile',
-      material_type: 'Denim Offcuts',
-      condition: 'Like New',
-      quantity_description: '15 kg bundled rolls',
-      city: 'Bengaluru',
-      image_url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&auto=format&fit=crop&q=80',
-      status: 'available',
-      description: 'Dark indigo denim offcuts from boutique tailor. Clean selvage edges ideal for accessories.',
-    },
-  ];
-
-  const showcaseListings = featuredListings.length > 0 ? featuredListings : defaultShowcaseItems;
-
-  const categories = [
-    {
-      title: 'Cardboard & Paper',
-      exploreName: 'Explore CardboardEco',
-      desc: 'Moving boxes, tubes, packaging cartons',
-      img: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=800&auto=format&fit=crop&q=80',
-      filter: 'cardboard'
-    },
-    {
-      title: 'Wood & Timber',
-      exploreName: 'Explore TimberCraft',
-      desc: 'Heat-treated pallets, pine battens, planks',
-      img: 'https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?w=800&auto=format&fit=crop&q=80',
-      filter: 'wood'
-    },
-    {
-      title: 'Glass Containers',
-      exploreName: 'Explore NatureGlass',
-      desc: 'Sanitized food jars, beverage bottles, vials',
-      img: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&auto=format&fit=crop&q=80',
-      filter: 'glass'
-    },
-    {
-      title: 'Textiles & Scraps',
-      exploreName: 'Explore FabricRemnants',
-      desc: 'Denim rolls, cotton bolts, tailoring offcuts',
-      img: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&auto=format&fit=crop&q=80',
-      filter: 'textile'
+  useEffect(() => {
+    if (showMyListingsModal && isDonor) {
+      loadMyListingsData();
     }
-  ];
+  }, [showMyListingsModal, isDonor]);
 
-  const galleryItems = [
-    {
-      title: 'Architectural Scale Model',
-      material: 'Warehouse Corrugated Cardboard',
-      maker: 'Ananya Iyer • Architecture BCS Student',
-      img: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=600&auto=format&fit=crop&q=80'
-    },
-    {
-      title: 'Grain Slice Board Duo',
-      material: 'Untreated Pine Pallet Offcuts',
-      maker: 'Ramesh Woodcrafts • Artisan Studio',
-      img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&auto=format&fit=crop&q=80'
-    },
-    {
-      title: 'Eco Bamboo & Utensil Holder',
-      material: 'Salvaged Hardwood Blocks',
-      maker: 'GreenHome Studio • Circular Maker',
-      img: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=600&auto=format&fit=crop&q=80'
-    },
-    {
-      title: 'Soy Wax Hand-Poured Candle',
-      material: 'Sanitized Glass Preserve Jars',
-      maker: 'Priya Studio • Eco Candlemaker',
-      img: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?w=600&auto=format&fit=crop&q=80'
-    },
-    {
-      title: 'Upcycled Denim Workshop Apron',
-      material: 'Tailor Denim Offcuts',
-      maker: 'Urban Stitchers NGO • Vocational Guild',
-      img: 'https://images.unsplash.com/photo-1543087903-1ac2ec7aa8c5?w=600&auto=format&fit=crop&q=80'
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/browse?search=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      navigate('/browse');
     }
-  ];
+  };
 
-  const reviews = [
-    {
-      quote: "ReSource AI's cardboard boxes and timber offcuts are a blessing for architecture students. Immediate local coordination and zero landfill waste!",
-      author: "Jane Cooper",
-      role: "Architecture Student & Maker",
-      rating: 5
-    },
-    {
-      quote: "Fantastic materials and clean pickup timelines. Our NGO student workshops feel so much more sustainable and affordable without buying new plastic.",
-      author: "Darlene Robertson",
-      role: "Director, EcoArts Foundation",
-      rating: 5
-    },
-    {
-      quote: "Love the explainable AI recommendations! The engine correctly identified that our studio needed sanitized glass jars and alerted us right away.",
-      author: "Jacob Jones",
-      role: "Sustainable Artisan & Food Blogger",
-      rating: 5
-    },
-    {
-      quote: "The denim and canvas remnants were clean, sorted, and ready to stitch. Diverted over 80kg of cloth in a single month of student projects.",
-      author: "Esther Howard",
-      role: "Textile Upcycling Guild Lead",
-      rating: 5
+  const handleSimulateScan = (materialName, category, recyclability, co2) => {
+    setScanning(true);
+    setScanResult(null);
+    setTimeout(() => {
+      setScanning(false);
+      setScanResult({
+        name: materialName,
+        category,
+        recyclability,
+        co2,
+      });
+    }, 1200);
+  };
+
+  const handleSavePreferences = async (e) => {
+    e.preventDefault();
+    setSavingPrefs(true);
+    setPrefSuccess(false);
+    setPrefError(null);
+    try {
+      await updateProfile({
+        city: prefCity,
+        preferred_categories: prefCategories,
+      });
+      setPrefSuccess(true);
+      setTimeout(() => setPrefSuccess(false), 4000);
+    } catch (err) {
+      setPrefError(err.response?.data?.error || 'Failed to save preferences');
+    } finally {
+      setSavingPrefs(false);
     }
-  ];
+  };
+
+  const toggleCategory = (catId) => {
+    setPrefCategories((prev) =>
+      prev.includes(catId) ? prev.filter((c) => c !== catId) : [...prev, catId]
+    );
+  };
+
+
+  const displayName = user?.name || (isAuthenticated ? 'Active User' : 'Welcome Guest');
+  const displayFirstName = user?.name ? user.name.split(' ')[0] : (isAuthenticated ? 'User' : 'Guest');
+  const displayRole = isDonor 
+    ? 'Donor • Circular Contributor' 
+    : isRecipient 
+      ? 'Maker • Circular Designer' 
+      : user?.role 
+        ? (user.role.charAt(0).toUpperCase() + user.role.slice(1)) 
+        : 'Member';
+  const displayCity = user?.city || 'Bengaluru';
+
+  const avatarSrc = user?.avatar_url || (isDonor ? '/rahul-avatar.jpg' : '/ananya-avatar.jpg');
 
   return (
-    <div className="bg-[#FAF6EE] text-[#1A261D] min-h-screen">
+    <div className="min-h-screen flex bg-[#F4F6F0] font-sans text-[#1A261D]">
       
-      {/* 1. HERO SECTION — Warm Ivory, Emerald Green & Vermillion */}
-      <section className="px-4 sm:px-6 lg:px-8 pt-4 pb-12 sm:pb-20 max-w-7xl mx-auto">
-        <div className="relative rounded-3xl overflow-hidden min-h-[520px] sm:min-h-[580px] lg:min-h-[620px] flex items-center shadow-luxury">
+      {/* ========================================================= */}
+      {/* 1. LEFT SIDEBAR (Dark Forest Green matching Reference)     */}
+      {/* ========================================================= */}
+      <aside className={`
+        fixed inset-y-0 left-0 z-40 w-64 xl:w-72 bg-[#0B3B24] text-white flex flex-col justify-between p-6 transition-transform duration-300 ease-in-out
+        ${mobileSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        
+        {/* Top: Brand Logo & Navigation */}
+        <div className="space-y-8">
           
-          {/* Ambient Workshop Photography Background */}
-          <img
-            src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1800&q=85"
-            alt="Warm sustainable workshop with clean reusable materials"
-            className="absolute inset-0 w-full h-full object-cover object-center"
-          />
+          {/* Brand Header */}
+          <div className="flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-3 group">
+              <img
+                src="/logo-icon.png"
+                alt="GreenLoop"
+                className="w-10 h-10 object-contain drop-shadow-sm group-hover:scale-105 transition-transform"
+              />
+              <div className="flex flex-col">
+                <span className="text-xl font-bold tracking-tight text-white flex items-center leading-none">
+                  Green<span className="text-[#3EA635]">Loop</span>
+                </span>
+                <span className="text-[9px] tracking-wider uppercase font-semibold text-[#A3E5B9] mt-1">
+                  AI Waste-to-Resource Platform
+                </span>
+              </div>
+            </Link>
 
-          {/* Emerald Green Ambient Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#063D23]/95 via-[#0A5C36]/80 to-transparent sm:to-[#0A5C36]/30" />
+            {/* Mobile Close Button */}
+            <button
+              type="button"
+              onClick={() => setMobileSidebarOpen(false)}
+              className="lg:hidden w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:text-white"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
 
-          {/* Hero Content */}
-          <div className="relative z-10 max-w-2xl px-6 sm:px-12 lg:px-16 py-12 text-white space-y-6">
+          {/* Navigation Links */}
+          <nav className="space-y-1.5">
             
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-[#E1F2E8] text-xs font-semibold tracking-wide">
-              <Leaf className="w-3.5 h-3.5 text-[#CEEAD8]" />
-              AI-Powered Waste-to-Resource Platform
-            </div>
+            {/* Home (Active) */}
+            <Link
+              to="/"
+              className="flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-white/15 text-white font-semibold text-sm shadow-sm transition-all"
+            >
+              <HomeIcon className="w-5 h-5 text-white" />
+              <span>Home</span>
+            </Link>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-white leading-[1.1] tracking-tight">
-              Eco-Friendly <br />
-              <span className="font-serif italic font-normal text-[#CEEAD8]">Clean Materials</span> for <br />
-              a greener world
-            </h1>
-
-            <p className="text-sm sm:text-base text-white/85 font-normal leading-relaxed max-w-lg">
-              The waste-to-resource platform connecting households, workshops, and packaging centers offering clean discarded cardboard, timber, and glass directly to makers, students, and NGOs.
-            </p>
-
-            <div className="pt-2 flex flex-wrap items-center gap-3">
-              <Link
-                to="/browse"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-wider bg-[#FAF6EE] text-[#0A5C36] hover:bg-[#E1F2E8] shadow-md transition-all hover:scale-105 active:scale-95"
-              >
-                Explore Materials
-                <ArrowRight className="w-3.5 h-3.5 text-[#D9381E]" />
-              </Link>
-
-              {isDonor ? (
+            {/* Role-Specific Actions: Donor */}
+            {isDonor && (
+              <>
                 <Link
                   to="/create-listing"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-wider bg-transparent border border-white/40 text-white hover:bg-white/10 transition-all"
+                  onClick={() => setMobileSidebarOpen(false)}
+                  className="flex items-center justify-between px-4 py-3 rounded-2xl bg-[#165B37] hover:bg-[#1C7345] text-white text-sm font-semibold transition-all shadow-sm group"
                 >
-                  Post Surplus
+                  <div className="flex items-center gap-3.5">
+                    <PlusCircle className="w-5 h-5 text-[#A3E5B9]" />
+                    <span>Post Material</span>
+                  </div>
+                  <span className="text-[10px] bg-[#A3E5B9] text-[#0B3B24] px-2 py-0.5 rounded-full font-bold">
+                    + New
+                  </span>
                 </Link>
-              ) : (
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowMyListingsModal(true);
+                    setMobileSidebarOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 text-sm font-medium transition-all text-left"
+                >
+                  <Package className="w-5 h-5 text-white/80" />
+                  <span>My Listings</span>
+                </button>
+
                 <Link
-                  to="/recommendations"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-wider bg-[#D9381E] text-white hover:bg-[#B72B15] shadow-vermillion-glow transition-all hover:scale-105 active:scale-95"
+                  to="/interests?tab=received"
+                  onClick={() => setMobileSidebarOpen(false)}
+                  className="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 text-sm font-medium transition-all"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-white" />
-                  AI Matches
+                  <Inbox className="w-5 h-5 text-white/80" />
+                  <span>Inquiries &amp; Requests</span>
                 </Link>
+
+                <a
+                  href="#sales-analytics"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMobileSidebarOpen(false);
+                    const el = document.getElementById('sales-analytics');
+                    if (el) {
+                      el.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className="flex items-center justify-between px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 text-sm font-medium transition-all group"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <TrendingUp className="w-5 h-5 text-[#A3E5B9]" />
+                    <span>Sales Analytics</span>
+                  </div>
+                  <span className="text-[10px] bg-[#EA580C]/20 text-[#FF9E66] border border-[#EA580C]/30 px-2 py-0.5 rounded-full font-bold">
+                    ₹ Sales
+                  </span>
+                </a>
+              </>
+            )}
+
+            {/* Role-Specific Actions: Recipient */}
+            {isRecipient && (
+              <Link
+                to="/interests?tab=sent"
+                onClick={() => setMobileSidebarOpen(false)}
+                className="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 text-sm font-medium transition-all"
+              >
+                <HeartHandshake className="w-5 h-5 text-white/80" />
+                <span>My Proposals</span>
+              </Link>
+            )}
+
+            {/* AI Matcher - Visible to all users */}
+            <Link
+              to="/recommendations"
+              onClick={() => setMobileSidebarOpen(false)}
+              className="flex items-center justify-between px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 text-sm font-medium transition-all group"
+            >
+              <div className="flex items-center gap-3.5">
+                <Sparkles className="w-5 h-5 text-[#A3E5B9]" />
+                <span>AI Matcher</span>
+              </div>
+              <span className="text-[10px] bg-[#A3E5B9] text-[#0B3B24] px-2 py-0.5 rounded-full font-bold">
+                AI
+              </span>
+            </Link>
+
+            {/* My Impact */}
+            <button
+              type="button"
+              onClick={() => {
+                setShowImpactModal(true);
+                setMobileSidebarOpen(false);
+              }}
+              className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 text-sm font-medium transition-all text-left"
+            >
+              <HeartHandshake className="w-5 h-5 text-white/80" />
+              <span>My Impact</span>
+            </button>
+
+            {/* Marketplace */}
+            <Link
+              to="/browse"
+              onClick={() => setMobileSidebarOpen(false)}
+              className="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 text-sm font-medium transition-all"
+            >
+              <Store className="w-5 h-5 text-white/80" />
+              <span>Marketplace</span>
+            </Link>
+
+            {/* Rewards */}
+            <button
+              type="button"
+              onClick={() => {
+                setShowRewardsModal(true);
+                setMobileSidebarOpen(false);
+              }}
+              className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 text-sm font-medium transition-all text-left"
+            >
+              <Trophy className="w-5 h-5 text-white/80" />
+              <span>Rewards</span>
+            </button>
+
+          </nav>
+
+        </div>
+
+        {/* Bottom User Profile Section with Direct Settings Page Trigger */}
+        <div className="pt-6 border-t border-white/10 flex items-center justify-between">
+          <Link
+            to="/settings"
+            onClick={() => setMobileSidebarOpen(false)}
+            title="Account & Settings"
+            className="flex items-center gap-3 group overflow-hidden text-left flex-1 p-2 -ml-2 rounded-2xl hover:bg-white/10 transition-all text-white/90"
+          >
+            <img
+              src={avatarSrc}
+              alt={displayName}
+              className="w-10 h-10 rounded-full object-cover border-2 border-[#3EA635]/50 group-hover:border-[#3EA635] group-hover:scale-105 transition-all shrink-0"
+            />
+            <div className="overflow-hidden flex-1">
+              <div className="text-xs font-bold text-white truncate group-hover:text-[#A3E5B9] transition-colors flex items-center justify-between">
+                <span className="truncate">{displayName}</span>
+                <Settings className="w-3.5 h-3.5 text-white/60 group-hover:text-white transition-colors shrink-0 ml-1" />
+              </div>
+              <div className="text-[11px] text-white/60 truncate">
+                {displayRole}
+              </div>
+              <div className="text-[10px] text-[#A3E5B9] flex items-center gap-0.5 mt-0.5">
+                <MapPin className="w-2.5 h-2.5 inline" />
+                <span>{displayCity}</span>
+              </div>
+            </div>
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => {
+              if (isAuthenticated) {
+                logout();
+              } else {
+                navigate('/login');
+              }
+            }}
+            title={isAuthenticated ? 'Log Out' : 'Sign In'}
+            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/80 hover:text-white transition-colors shrink-0"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </div>
+
+      </aside>
+
+      {/* Backdrop for mobile sidebar */}
+      {mobileSidebarOpen && (
+        <div
+          onClick={() => setMobileSidebarOpen(false)}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
+        />
+      )}
+
+      {/* ========================================================= */}
+      {/* 2. MAIN DASHBOARD CONTENT AREA                            */}
+      {/* ========================================================= */}
+      <div className="flex-1 lg:pl-64 xl:pl-72 flex flex-col min-h-screen">
+        
+        {/* Top Header Bar matching Reference */}
+        <header className="sticky top-0 z-20 bg-[#F4F6F0]/90 backdrop-blur-md px-4 sm:px-8 py-4 flex items-center justify-between gap-4">
+          
+          <div className="flex items-center gap-3 flex-1">
+            {/* Mobile Hamburger Button */}
+            <button
+              type="button"
+              onClick={() => setMobileSidebarOpen(true)}
+              className="lg:hidden w-11 h-11 rounded-2xl bg-white border border-gray-200 flex items-center justify-center text-[#1A261D] shadow-sm"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+
+            {/* Search Bar matching Reference (Expanded Horizontally) */}
+            <form onSubmit={handleSearchSubmit} className="relative flex-1 w-full">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search here..."
+                className="w-full pl-5 pr-12 py-3 bg-[#EAECE4]/70 hover:bg-white focus:bg-white border border-transparent focus:border-gray-300 rounded-2xl text-xs sm:text-sm text-[#1A261D] placeholder-[#6D7A70] focus:outline-none transition-all shadow-inner"
+              />
+              <button
+                type="submit"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-[#6D7A70] hover:text-[#0B3B24] transition-colors"
+              >
+                <Search className="w-4 h-4" />
+              </button>
+            </form>
+          </div>
+
+          {/* Right Header Actions: User Badge & Notification Bell */}
+          <div className="flex items-center gap-3">
+            {/* If not authenticated, show Sign In button */}
+            {!isAuthenticated && (
+              <Link
+                to="/login"
+                className="px-4 py-2 rounded-2xl bg-[#0B3B24] hover:bg-[#125838] text-white text-xs font-bold shadow-sm transition-all"
+              >
+                Sign In
+              </Link>
+            )}
+
+            {/* Notification Bell */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="w-11 h-11 rounded-2xl bg-white border border-gray-200/90 flex items-center justify-center text-[#1A261D] shadow-sm hover:bg-gray-50 transition-all relative"
+              >
+                <Bell className="w-4 h-4 text-[#1A261D]" />
+                <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#3EA635] ring-2 ring-white" />
+              </button>
+
+              {/* Notification Popover */}
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-3xl shadow-2xl border border-gray-100 p-4 z-50 animate-in fade-in">
+                  <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+                    <span className="font-bold text-xs text-[#1A261D]">Notifications</span>
+                    <span className="text-[10px] text-[#0B3B24] font-semibold bg-[#E8F5E9] px-2 py-0.5 rounded-full">2 New</span>
+                  </div>
+                  <div className="mt-2 space-y-2 text-xs">
+                    {isDonor ? (
+                      <>
+                        <div 
+                          onClick={() => {
+                            setShowNotifications(false);
+                            navigate('/interests?tab=received');
+                          }}
+                          className="p-2.5 rounded-xl bg-[#F9FAF8] hover:bg-[#F0F4EE] transition-colors cursor-pointer"
+                        >
+                          <div className="font-semibold text-[#0B3B24] flex items-center justify-between">
+                            <span>New Reuse Proposal!</span>
+                            <span className="text-[10px] text-[#3EA635] font-bold">Just now</span>
+                          </div>
+                          <div className="text-[11px] text-[#586A5E] mt-0.5">
+                            Ananya Iyer submitted a proposal for 15 kg corrugated boxes in Bengaluru.
+                          </div>
+                        </div>
+                        <div 
+                          onClick={() => {
+                            setShowNotifications(false);
+                            setShowMyListingsModal(true);
+                          }}
+                          className="p-2.5 rounded-xl bg-[#F9FAF8] hover:bg-[#F0F4EE] transition-colors cursor-pointer"
+                        >
+                          <div className="font-semibold text-[#0B3B24]">Listing Verified</div>
+                          <div className="text-[11px] text-[#586A5E] mt-0.5">
+                            Eco Logistics untreated pine offcuts listing verified by circular vision model.
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div 
+                          onClick={() => {
+                            setShowNotifications(false);
+                            navigate('/recommendations');
+                          }}
+                          className="p-2.5 rounded-xl bg-[#F9FAF8] hover:bg-[#F0F4EE] transition-colors cursor-pointer"
+                        >
+                          <div className="font-semibold text-[#0B3B24] flex items-center justify-between">
+                            <span>New Surplus Match!</span>
+                            <span className="text-[10px] text-[#3EA635] font-bold">10m ago</span>
+                          </div>
+                          <div className="text-[11px] text-[#586A5E] mt-0.5">
+                            Rahul Sharma posted 15 kg corrugated boxes in Bengaluru matching your preferences.
+                          </div>
+                        </div>
+                        <div 
+                          onClick={() => {
+                            setShowNotifications(false);
+                            navigate('/interests?tab=sent');
+                          }}
+                          className="p-2.5 rounded-xl bg-[#F9FAF8] hover:bg-[#F0F4EE] transition-colors cursor-pointer"
+                        >
+                          <div className="font-semibold text-[#0B3B24]">Proposal Accepted!</div>
+                          <div className="text-[11px] text-[#586A5E] mt-0.5">
+                            Your reuse request for untreated pine offcuts was approved by Eco Logistics.
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
 
           </div>
 
-          {/* Floating Metric Badge (Warm Ivory & Emerald Glass Pill) */}
-          <div className="hidden sm:block absolute bottom-8 right-8 z-10 p-5 rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-2xl max-w-xs animate-in fade-in duration-500">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="text-3xl font-serif font-bold text-[#FAF6EE]">96%</div>
-                <div className="text-xs text-[#CEEAD8] font-medium mt-0.5">Verified Resource Diversion</div>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-[#0A5C36]/80 flex items-center justify-center">
-                <Leaf className="w-4 h-4 text-[#CEEAD8]" />
-              </div>
-            </div>
-            <div className="mt-3 pt-3 border-t border-white/20 flex items-center justify-between text-[10px] text-white/90 font-medium tracking-wide">
-              <span>Natural</span>
-              <span className="text-[#D9381E] font-bold">•</span>
-              <span>Non-Toxic</span>
-              <span className="text-[#D9381E] font-bold">•</span>
-              <span>Explainable AI</span>
-            </div>
-          </div>
+        </header>
 
-        </div>
-      </section>
-
-      {/* 2. FEATURED PRODUCTS SECTION — Bestselling ◇ Materials */}
-      <section className="px-4 sm:px-6 lg:px-8 py-10 sm:py-16 max-w-7xl mx-auto">
-        
-        {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 border-b border-[#EAE3D2]">
-          <div>
-            <div className="text-xs uppercase font-semibold tracking-widest text-[#D9381E] mb-1">
-              Eco Essentials Planet-Friendly
-            </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#1A261D]">
-              Bestselling <span className="font-serif italic font-normal text-[#D9381E]">◇ Materials</span>
-            </h2>
-          </div>
-
-          <Link
-            to="/browse"
-            className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#0A5C36] hover:text-[#0D7A47] group"
-          >
-            <span>More products</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-[#D9381E]" />
-          </Link>
-        </div>
-
-        {/* 4 Tall Luxury Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-8">
-          {showcaseListings.slice(0, 4).map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
-          ))}
-        </div>
-
-      </section>
-
-      {/* 3. FULL-WIDTH EDITORIAL STORY BANNER */}
-      <section className="px-4 sm:px-6 lg:px-8 py-8 max-w-7xl mx-auto">
-        <div className="relative rounded-3xl overflow-hidden min-h-[380px] sm:min-h-[420px] flex items-end shadow-luxury">
+        {/* Dashboard Main Scroll Area */}
+        <main className="p-4 sm:p-8 space-y-8 flex-1">
           
-          <img
-            src="https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1600&q=80"
-            alt="Eco friendly kitchen and circular workshop"
-            className="absolute inset-0 w-full h-full object-cover object-center"
-          />
-
-          <div className="absolute inset-0 bg-gradient-to-t from-[#063D23]/95 via-[#0A5C36]/60 to-transparent" />
-
-          <div className="relative z-10 p-8 sm:p-12 lg:p-16 max-w-3xl text-white space-y-4">
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-medium leading-snug text-white">
-              We curate clean surplus materials you can trust for years to come — through everyday student workshops, artisan studios, and evolving sustainable lifestyles.
-            </h3>
-            <p className="text-xs uppercase tracking-widest text-[#CEEAD8] font-semibold">
-              Each piece is thoughtfully salvaged with zero harmful chemicals
-            </p>
-          </div>
-
-        </div>
-      </section>
-
-      {/* 4. TRIO BENEFIT PILLS — Warm Ivory with Emerald & Vermillion */}
-      <section className="px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          
-          <div className="p-6 rounded-3xl bg-[#FDFBF7] border border-[#EAE3D2] shadow-sm flex items-center justify-center gap-3.5 text-center group hover:bg-[#F3ECE0] transition-all">
-            <div className="w-10 h-10 rounded-full bg-[#E1F2E8] text-[#0A5C36] flex items-center justify-center flex-shrink-0">
-              <Leaf className="w-5 h-5 text-[#0A5C36]" />
-            </div>
-            <div className="text-left">
-              <div className="font-serif font-bold text-sm text-[#1A261D]">Natural Finish</div>
-              <div className="text-[11px] text-[#586A5E]">Clean, non-toxic reusable discards</div>
-            </div>
-          </div>
-
-          <div className="p-6 rounded-3xl bg-[#FDFBF7] border border-[#EAE3D2] shadow-sm flex items-center justify-center gap-3.5 text-center group hover:bg-[#F3ECE0] transition-all">
-            <div className="w-10 h-10 rounded-full bg-[#FCEBE6] text-[#D9381E] flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-5 h-5 text-[#D9381E]" />
-            </div>
-            <div className="text-left">
-              <div className="font-serif font-bold text-sm text-[#1A261D]">Eco Innovation</div>
-              <div className="text-[11px] text-[#586A5E]">Explainable 100-pt AI match scoring</div>
-            </div>
-          </div>
-
-          <div className="p-6 rounded-3xl bg-[#FDFBF7] border border-[#EAE3D2] shadow-sm flex items-center justify-center gap-3.5 text-center group hover:bg-[#F3ECE0] transition-all">
-            <div className="w-10 h-10 rounded-full bg-[#E1F2E8] text-[#0A5C36] flex items-center justify-center flex-shrink-0">
-              <ShieldCheck className="w-5 h-5 text-[#0A5C36]" />
-            </div>
-            <div className="text-left">
-              <div className="font-serif font-bold text-sm text-[#1A261D]">Sustainable Materials</div>
-              <div className="text-[11px] text-[#586A5E]">100% diverted from city landfills</div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* 5. CATEGORIES SHOWCASE */}
-      <section id="categories" className="px-4 sm:px-6 lg:px-8 py-12 sm:py-20 max-w-7xl mx-auto">
-        
-        <div className="text-center max-w-2xl mx-auto space-y-2 mb-12">
-          <div className="text-xs uppercase font-semibold tracking-widest text-[#586A5E]">
-            Explore our thoughtful and planet-first
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-[#1A261D]">
-            Categories <span className="font-serif italic font-normal text-[#D9381E]">◇ Reusable Discards</span>
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((cat, idx) => (
-            <Link
-              key={idx}
-              to={`/browse?category=${cat.filter}`}
-              className="group relative rounded-3xl overflow-hidden aspect-[3/4] flex flex-col justify-end p-6 shadow-luxury hover:shadow-luxury-hover transition-all duration-300 hover:-translate-y-1"
-            >
-              <img
-                src={cat.img}
-                alt={cat.title}
-                className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-              />
-
-              <div className="absolute inset-0 bg-gradient-to-t from-[#063D23]/95 via-[#0A5C36]/40 to-transparent" />
-
-              <div className="relative z-10 text-white space-y-3">
-                <div>
-                  <div className="text-xs text-[#CEEAD8] uppercase tracking-wider font-semibold">
-                    {cat.title}
-                  </div>
-                  <h3 className="text-xl font-serif font-bold text-white mt-0.5">
-                    {cat.exploreName}
-                  </h3>
-                  <p className="text-[11px] text-white/80 line-clamp-1 mt-1">
-                    {cat.desc}
+          {/* ========================================================= */}
+          {/* TOP SECTION: Welcome Banner + "Your Impact" Card           */}
+          {/* ========================================================= */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Welcome Banner Card (Span 2) matching Reference */}
+            <div className="lg:col-span-2 bg-white rounded-[28px] sm:rounded-[32px] p-6 sm:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-gray-100 flex flex-col">
+              
+              {/* Top Row: Greeting & Cute Plants Illustration */}
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6">
+                <div className="space-y-2 max-w-sm sm:max-w-md pt-0.5">
+                  <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[#1A261D] tracking-tight leading-tight flex items-center gap-2">
+                    <span>Hello, {displayFirstName}!</span>
+                    <span className="text-3xl sm:text-4xl inline-block -mt-1 select-none">👋</span>
+                  </h1>
+                  <p className="text-xs sm:text-sm text-[#2C3A30] font-normal leading-relaxed">
+                    {isDonor 
+                      ? 'Manage industrial surplus streams & coordinate with verified local makers.' 
+                      : isRecipient 
+                        ? 'Discover surplus reclaimed materials for circular design & sustainable projects.' 
+                        : 'Small actions make a big impact!'}
                   </p>
                 </div>
 
-                <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md text-white border border-white/30 group-hover:bg-[#D9381E] group-hover:border-[#D9381E] transition-all">
-                  <span>Explore</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-      </section>
-
-      {/* 6. INSPIRATION CIRCULAR GALLERY */}
-      <section id="gallery" className="px-4 sm:px-6 lg:px-8 py-12 sm:py-20 bg-[#F3ECE0] border-y border-[#EAE3D2]">
-        <div className="max-w-7xl mx-auto space-y-10">
-          
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div>
-              <div className="text-xs uppercase font-semibold tracking-widest text-[#0A5C36] mb-1">
-                Thoughtful, Planet-Prioritizing Ideas
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-serif font-bold text-[#1A261D]">
-                Inspiration <span className="font-serif italic font-normal text-[#D9381E]">◇ Circular Gallery</span>
-              </h2>
-            </div>
-            <p className="text-xs text-[#586A5E] max-w-sm">
-              Real creations fabricated by students, makers, and artisans using reclaimed materials from ReSource AI donors.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {galleryItems.map((item, idx) => (
-              <div
-                key={idx}
-                className="group rounded-2xl overflow-hidden bg-[#FDFBF7] border border-[#EAE3D2] shadow-sm flex flex-col justify-between"
-              >
-                <div className="relative aspect-square w-full overflow-hidden bg-[#FAF6EE]">
+                <div className="w-48 sm:w-56 lg:w-64 h-28 sm:h-32 rounded-2xl overflow-hidden shrink-0 self-start sm:self-auto shadow-sm">
                   <img
-                    src={item.img}
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    src="/plants-banner.jpg"
+                    alt="Eco plants & recycling illustration"
+                    className="w-full h-full object-cover object-center"
                   />
                 </div>
-                <div className="p-3.5 space-y-1">
-                  <h4 className="text-xs font-serif font-bold text-[#1A261D] line-clamp-1">
-                    {item.title}
-                  </h4>
-                  <div className="text-[10px] text-[#0A5C36] font-medium line-clamp-1">
-                    {item.material}
+              </div>
+
+              {/* Horizontal Divider Line matching Reference */}
+              <div className="border-t border-gray-100/90 my-5 sm:my-6" />
+
+              {/* Bottom Metrics Row (3 rounded cards) matching Reference */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                
+                {/* Metric 1: Materials Posted / Total Waste Recycled */}
+                <div className="p-4 sm:p-4.5 rounded-2xl bg-[#F9FAF8] border border-gray-100 flex items-center gap-3.5 hover:bg-white hover:shadow-sm transition-all">
+                  <div className="w-12 h-12 rounded-2xl bg-[#EAF5ED] text-[#0B3B24] flex items-center justify-center shrink-0">
+                    <Trash2 className="w-5 h-5 text-[#0B3B24]" />
                   </div>
-                  <div className="text-[10px] text-[#586A5E] pt-1 line-clamp-1 border-t border-[#EAE3D2]/60">
-                    {item.maker}
+                  <div>
+                    <div className="text-[11px] text-[#586A5E] font-medium leading-tight">
+                      {isDonor ? (
+                        <>Materials<br />Posted</>
+                      ) : (
+                        <>Total Waste<br />Recycled</>
+                      )}
+                    </div>
+                    <div className="text-xl sm:text-2xl font-extrabold text-[#1A261D] mt-1 tracking-tight">
+                      {isDonor ? '45.0 kg' : isRecipient ? '18.5 kg' : '12.5 kg'}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
 
-        </div>
-      </section>
+                {/* Metric 2: CO2 Saved */}
+                <div className="p-4 sm:p-4.5 rounded-2xl bg-[#F9FAF8] border border-gray-100 flex items-center gap-3.5 hover:bg-white hover:shadow-sm transition-all">
+                  <div className="w-12 h-12 rounded-2xl bg-[#EAF5ED] text-[#0B3B24] flex items-center justify-center shrink-0">
+                    <Clock className="w-5 h-5 text-[#0B3B24]" />
+                  </div>
+                  <div>
+                    <div className="text-[11px] text-[#586A5E] font-medium leading-tight">
+                      CO2 Saved
+                    </div>
+                    <div className="text-xl sm:text-2xl font-extrabold text-[#1A261D] mt-1 tracking-tight">
+                      {isDonor ? '72.4 kg' : isRecipient ? '34.2 kg' : '28.3 kg'}
+                    </div>
+                  </div>
+                </div>
 
-      {/* 7. REVIEWS & COMMUNITY IMPACT */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 max-w-7xl mx-auto space-y-12">
-        
-        {/* Rating Header */}
-        <div className="p-8 rounded-3xl bg-[#E1F2E8]/60 border border-[#C5E5D1] flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="text-5xl font-serif font-bold text-[#0A5C36]">4.9<span className="text-2xl text-[#586A5E]">/5</span></div>
-            <div>
-              <div className="flex items-center gap-1 text-[#D9381E]">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-[#D9381E] text-[#D9381E]" />
-                ))}
+                {/* Metric 3: Inquiries Received / Points Earned */}
+                <div className="p-4 sm:p-4.5 rounded-2xl bg-[#F9FAF8] border border-gray-100 flex items-center gap-3.5 hover:bg-white hover:shadow-sm transition-all">
+                  <div className="w-12 h-12 rounded-2xl bg-[#EAF5ED] text-[#0B3B24] flex items-center justify-center shrink-0">
+                    {isDonor ? (
+                      <Inbox className="w-5 h-5 text-[#0B3B24]" />
+                    ) : isRecipient ? (
+                      <Sparkles className="w-5 h-5 text-[#0B3B24]" />
+                    ) : (
+                      <ShoppingCart className="w-5 h-5 text-[#0B3B24]" />
+                    )}
+                  </div>
+                  <div>
+                    <div className="text-[11px] text-[#586A5E] font-medium leading-tight">
+                      {isDonor ? (
+                        <>Inquiries<br />Received</>
+                      ) : isRecipient ? (
+                        <>AI Matches<br />Found</>
+                      ) : (
+                        <>Points<br />Earned</>
+                      )}
+                    </div>
+                    <div className="text-xl sm:text-2xl font-extrabold text-[#1A261D] mt-1 tracking-tight">
+                      {isDonor ? '3 Active' : isRecipient ? '12 Active' : '1,250'}
+                    </div>
+                  </div>
+                </div>
+
               </div>
-              <div className="text-xs font-bold text-[#1A261D] mt-1">
-                More than 25,000 kg Reused
+
+              {/* Quick Actions inside Container matching Reference */}
+              <div className="mt-6 space-y-3 sm:space-y-3.5">
+                <h2 className="text-base sm:text-lg font-bold text-[#1A261D] tracking-tight">
+                  Quick Actions
+                </h2>
+
+                {/* 2x2 Grid of Actions matching Reference */}
+                {isDonor ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    
+                    {/* Action 1: Post Material */}
+                    <Link
+                      to="/create-listing"
+                      className="p-4 sm:p-4.5 rounded-2xl bg-white hover:bg-[#F9FAF8] border border-gray-200/80 hover:border-[#0B3B24]/40 flex items-center gap-3.5 sm:gap-4 transition-all group shadow-sm hover:shadow"
+                    >
+                      <div className="w-12 h-12 rounded-2xl bg-[#EAF5ED] text-[#0B3B24] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <PlusCircle className="w-5 h-5 text-[#0B3B24]" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm sm:text-base text-[#1A261D] group-hover:text-[#0B3B24] transition-colors leading-tight">
+                          Post Material
+                        </div>
+                        <div className="text-xs text-[#586A5E] mt-1 leading-tight">
+                          List surplus stream
+                        </div>
+                      </div>
+                    </Link>
+
+                    {/* Action 2: My Surplus Listings */}
+                    <div
+                      onClick={() => setShowMyListingsModal(true)}
+                      className="p-4 sm:p-4.5 rounded-2xl bg-white hover:bg-[#F9FAF8] border border-gray-200/80 hover:border-[#0B3B24]/40 flex items-center gap-3.5 sm:gap-4 transition-all group cursor-pointer shadow-sm hover:shadow"
+                    >
+                      <div className="w-12 h-12 rounded-2xl bg-[#EAF5ED] text-[#0B3B24] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <Package className="w-5 h-5 text-[#0B3B24]" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm sm:text-base text-[#1A261D] group-hover:text-[#0B3B24] transition-colors leading-tight">
+                          My Surplus Listings
+                        </div>
+                        <div className="text-xs text-[#586A5E] mt-1 leading-tight">
+                          Track &amp; edit active items
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action 3: Review Inquiries */}
+                    <Link
+                      to="/interests?tab=received"
+                      className="p-4 sm:p-4.5 rounded-2xl bg-white hover:bg-[#F9FAF8] border border-gray-200/80 hover:border-[#0B3B24]/40 flex items-center gap-3.5 sm:gap-4 transition-all group shadow-sm hover:shadow"
+                    >
+                      <div className="w-12 h-12 rounded-2xl bg-[#EAF5ED] text-[#0B3B24] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <Inbox className="w-5 h-5 text-[#0B3B24]" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm sm:text-base text-[#1A261D] group-hover:text-[#0B3B24] transition-colors leading-tight">
+                          Review Inquiries
+                        </div>
+                        <div className="text-xs text-[#586A5E] mt-1 leading-tight">
+                          Maker requests &amp; pickup
+                        </div>
+                      </div>
+                    </Link>
+
+                    {/* Action 4: Marketplace */}
+                    <Link
+                      to="/browse"
+                      className="p-4 sm:p-4.5 rounded-2xl bg-white hover:bg-[#F9FAF8] border border-gray-200/80 hover:border-[#0B3B24]/40 flex items-center gap-3.5 sm:gap-4 transition-all group shadow-sm hover:shadow"
+                    >
+                      <div className="w-12 h-12 rounded-2xl bg-[#EAF5ED] text-[#0B3B24] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <Store className="w-5 h-5 text-[#0B3B24]" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm sm:text-base text-[#1A261D] group-hover:text-[#0B3B24] transition-colors leading-tight">
+                          Marketplace
+                        </div>
+                        <div className="text-xs text-[#586A5E] mt-1 leading-tight">
+                          Live regional bank
+                        </div>
+                      </div>
+                    </Link>
+
+                  </div>
+                ) : isRecipient ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    
+                    {/* Recipient Action 1: Scan Waste */}
+                    <div
+                      onClick={() => setShowScanModal(true)}
+                      className="p-4 sm:p-4.5 rounded-2xl bg-white hover:bg-[#F9FAF8] border border-gray-200/80 hover:border-[#0B3B24]/40 flex items-center gap-3.5 sm:gap-4 transition-all group cursor-pointer shadow-sm hover:shadow"
+                    >
+                      <div className="w-12 h-12 rounded-2xl bg-[#EAF5ED] text-[#0B3B24] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <Camera className="w-5 h-5 text-[#0B3B24]" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm sm:text-base text-[#1A261D] group-hover:text-[#0B3B24] transition-colors leading-tight">
+                          Scan Waste
+                        </div>
+                        <div className="text-xs text-[#586A5E] mt-1 leading-tight">
+                          Identify &amp; sort vision AI
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Recipient Action 2: AI Recommendations */}
+                    <Link
+                      to="/recommendations"
+                      className="p-4 sm:p-4.5 rounded-2xl bg-white hover:bg-[#F9FAF8] border border-gray-200/80 hover:border-[#0B3B24]/40 flex items-center gap-3.5 sm:gap-4 transition-all group shadow-sm hover:shadow"
+                    >
+                      <div className="w-12 h-12 rounded-2xl bg-[#EAF5ED] text-[#0B3B24] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <Sparkles className="w-5 h-5 text-[#0B3B24]" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm sm:text-base text-[#1A261D] group-hover:text-[#0B3B24] transition-colors leading-tight">
+                          AI Recommendations
+                        </div>
+                        <div className="text-xs text-[#586A5E] mt-1 leading-tight">
+                          Smart matching engine
+                        </div>
+                      </div>
+                    </Link>
+
+                    {/* Recipient Action 3: My Proposals */}
+                    <Link
+                      to="/interests?tab=sent"
+                      className="p-4 sm:p-4.5 rounded-2xl bg-white hover:bg-[#F9FAF8] border border-gray-200/80 hover:border-[#0B3B24]/40 flex items-center gap-3.5 sm:gap-4 transition-all group shadow-sm hover:shadow"
+                    >
+                      <div className="w-12 h-12 rounded-2xl bg-[#EAF5ED] text-[#0B3B24] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <HeartHandshake className="w-5 h-5 text-[#0B3B24]" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm sm:text-base text-[#1A261D] group-hover:text-[#0B3B24] transition-colors leading-tight">
+                          My Proposals
+                        </div>
+                        <div className="text-xs text-[#586A5E] mt-1 leading-tight">
+                          Track status &amp; contact
+                        </div>
+                      </div>
+                    </Link>
+
+                    {/* Recipient Action 4: Disposal Centers */}
+                    <div
+                      onClick={() => setShowCentersModal(true)}
+                      className="p-4 sm:p-4.5 rounded-2xl bg-white hover:bg-[#F9FAF8] border border-gray-200/80 hover:border-[#0B3B24]/40 flex items-center gap-3.5 sm:gap-4 transition-all group cursor-pointer shadow-sm hover:shadow"
+                    >
+                      <div className="w-12 h-12 rounded-2xl bg-[#EAF5ED] text-[#0B3B24] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <MapPin className="w-5 h-5 text-[#0B3B24]" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm sm:text-base text-[#1A261D] group-hover:text-[#0B3B24] transition-colors leading-tight">
+                          Disposal Centers
+                        </div>
+                        <div className="text-xs text-[#586A5E] mt-1 leading-tight">
+                          Map &amp; verified drop-off
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    
+                    {/* Default Action 1: Scan Waste */}
+                    <div
+                      onClick={() => setShowScanModal(true)}
+                      className="p-4 sm:p-4.5 rounded-2xl bg-white hover:bg-[#F9FAF8] border border-gray-200/80 hover:border-[#0B3B24]/40 flex items-center gap-3.5 sm:gap-4 transition-all group cursor-pointer shadow-sm hover:shadow"
+                    >
+                      <div className="w-12 h-12 rounded-2xl bg-[#EAF5ED] text-[#0B3B24] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <Camera className="w-5 h-5 text-[#0B3B24]" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm sm:text-base text-[#1A261D] group-hover:text-[#0B3B24] transition-colors leading-tight">
+                          Scan Waste
+                        </div>
+                        <div className="text-xs text-[#586A5E] mt-1 leading-tight">
+                          Identify &amp; Sort
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Default Action 2: Find Disposal Centers */}
+                    <div
+                      onClick={() => setShowCentersModal(true)}
+                      className="p-4 sm:p-4.5 rounded-2xl bg-white hover:bg-[#F9FAF8] border border-gray-200/80 hover:border-[#0B3B24]/40 flex items-center gap-3.5 sm:gap-4 transition-all group cursor-pointer shadow-sm hover:shadow"
+                    >
+                      <div className="w-12 h-12 rounded-2xl bg-[#EAF5ED] text-[#0B3B24] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <MapPin className="w-5 h-5 text-[#0B3B24]" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm sm:text-base text-[#1A261D] group-hover:text-[#0B3B24] transition-colors leading-tight">
+                          Find Disposal Centers
+                        </div>
+                        <div className="text-xs text-[#586A5E] mt-1 leading-tight">
+                          Map &amp; locations
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Default Action 3: Explore Marketplace */}
+                    <Link
+                      to="/browse"
+                      className="p-4 sm:p-4.5 rounded-2xl bg-white hover:bg-[#F9FAF8] border border-gray-200/80 hover:border-[#0B3B24]/40 flex items-center gap-3.5 sm:gap-4 transition-all group shadow-sm hover:shadow"
+                    >
+                      <div className="w-12 h-12 rounded-2xl bg-[#EAF5ED] text-[#0B3B24] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <ShoppingCart className="w-5 h-5 text-[#0B3B24]" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm sm:text-base text-[#1A261D] group-hover:text-[#0B3B24] transition-colors leading-tight">
+                          Explore Marketplace
+                        </div>
+                        <div className="text-xs text-[#586A5E] mt-1 leading-tight">
+                          Buy/Sell Recycled
+                        </div>
+                      </div>
+                    </Link>
+
+                    {/* Default Action 4: AI Recommendations */}
+                    <Link
+                      to="/recommendations"
+                      className="p-4 sm:p-4.5 rounded-2xl bg-white hover:bg-[#F9FAF8] border border-gray-200/80 hover:border-[#0B3B24]/40 flex items-center gap-3.5 sm:gap-4 transition-all group shadow-sm hover:shadow"
+                    >
+                      <div className="w-12 h-12 rounded-2xl bg-[#EAF5ED] text-[#0B3B24] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <Sparkles className="w-5 h-5 text-[#0B3B24]" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm sm:text-base text-[#1A261D] group-hover:text-[#0B3B24] transition-colors leading-tight">
+                          AI Recommendations
+                        </div>
+                        <div className="text-xs text-[#586A5E] mt-1 leading-tight">
+                          Smart matching engine
+                        </div>
+                      </div>
+                    </Link>
+
+                  </div>
+                )}
               </div>
-              <div className="text-[11px] text-[#586A5E]">
-                5-Star Community Verified Waste Diversions
-              </div>
+
             </div>
+
+            {/* Eco Impact Report with Data Science Visualization matching Reference */}
+            <div className="bg-white rounded-[28px] sm:rounded-[32px] p-6 sm:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-gray-100 flex flex-col justify-between space-y-5">
+              
+              {/* Top Header */}
+              <div className="text-center">
+                <h2 className="text-base sm:text-lg font-bold text-[#1A261D] flex items-center justify-center gap-1.5 font-sans">
+                  <span>Eco Impact Report</span>
+                  <span className="text-lg">🏆</span>
+                </h2>
+              </div>
+
+              {/* Main Total Metric inside Donut Shape */}
+              <div 
+                onClick={() => setShowImpactModal(true)}
+                className="flex flex-col items-center justify-center py-1 cursor-pointer group/donut"
+                title="Click to view full animated breakdown"
+              >
+                <div className="relative flex items-center justify-center w-[140px] h-[140px]">
+                  <svg
+                    width="140"
+                    height="140"
+                    viewBox="0 0 140 140"
+                    className="transform -rotate-90 drop-shadow-sm group-hover/donut:scale-105 transition-transform duration-300"
+                  >
+                    <circle
+                      cx="70"
+                      cy="70"
+                      r="56"
+                      fill="transparent"
+                      stroke="#F1EADF"
+                      strokeWidth="12"
+                      className="opacity-70"
+                    />
+                    <circle
+                      cx="70"
+                      cy="70"
+                      r="56"
+                      fill="transparent"
+                      stroke="#0B3B24"
+                      strokeWidth="12"
+                      strokeDasharray={`${351.86 * 0.544 - 3} 351.86`}
+                      strokeDashoffset="0"
+                      strokeLinecap="round"
+                    />
+                    <circle
+                      cx="70"
+                      cy="70"
+                      r="56"
+                      fill="transparent"
+                      stroke="#3EA635"
+                      strokeWidth="12"
+                      strokeDasharray={`${351.86 * 0.28 - 3} 351.86`}
+                      strokeDashoffset={`${-(351.86 * 0.544)}`}
+                      strokeLinecap="round"
+                    />
+                    <circle
+                      cx="70"
+                      cy="70"
+                      r="56"
+                      fill="transparent"
+                      stroke="#A3E5B9"
+                      strokeWidth="12"
+                      strokeDasharray={`${351.86 * 0.176 - 3} 351.86`}
+                      strokeDashoffset={`${-(351.86 * (0.544 + 0.28))}`}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+                    <div className="text-2xl font-extrabold text-[#0B3B24] tracking-tight flex items-baseline gap-0.5 font-sans">
+                      <span>{isDonor ? '45.0' : '12.5'}</span>
+                      <span className="text-xs font-bold text-[#3EA635]">kg</span>
+                    </div>
+                    <div className="text-[9px] font-bold text-[#586A5E] uppercase tracking-wider">
+                      Diverted
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-xs text-[#586A5E] font-medium mt-1.5 group-hover/donut:text-[#0B3B24] transition-colors flex items-center gap-1">
+                  <span>Verified Diversion from Landfill</span>
+                  <span className="text-[10px] text-[#3EA635]">↗</span>
+                </div>
+              </div>
+
+              {/* Data Science Diversion Breakdown Chart */}
+              <div className="space-y-2.5">
+                <div className="font-bold text-xs sm:text-sm text-[#1A261D]">
+                  Diversion Breakdown
+                </div>
+
+                <div className="relative pt-1 pb-1">
+                  
+                  {/* Grid Lines Overlay */}
+                  <div className="absolute inset-y-0 left-20 right-0 flex justify-between pointer-events-none pb-5">
+                    <div className="w-px h-full bg-gray-200/80" />
+                    <div className="w-px h-full bg-gray-200/80" />
+                    <div className="w-px h-full bg-gray-200/80" />
+                    <div className="w-px h-full bg-gray-200/80" />
+                    <div className="w-px h-full bg-gray-200/80" />
+                  </div>
+
+                  {/* Horizontal Bars */}
+                  <div className="space-y-3 relative z-10">
+                    
+                    {/* Bar 1: Corrugated Cardboard */}
+                    <div className="flex items-center">
+                      <div className="w-20 text-[10.5px] font-medium text-[#1A261D] leading-tight text-right pr-2.5 shrink-0">
+                        Corrugated<br />Cardboard
+                      </div>
+                      <div className="flex-1 relative flex items-center h-7">
+                        <div 
+                          className="h-full bg-[#8D5A36] rounded-r-md flex items-center justify-end pr-2 transition-all duration-700 shadow-sm"
+                          style={{ width: '85%' }}
+                        >
+                          <span className="text-[10px] font-bold text-white whitespace-nowrap drop-shadow-sm">
+                            {isDonor ? '24.5 kg (54.4%)' : '6.8 kg (54.4%)'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bar 2: Reusable Pine Pallets */}
+                    <div className="flex items-center">
+                      <div className="w-20 text-[10.5px] font-medium text-[#1A261D] leading-tight text-right pr-2.5 shrink-0">
+                        Reusable<br />Pine Pallets
+                      </div>
+                      <div className="flex-1 relative flex items-center h-7">
+                        <div 
+                          className="h-full bg-[#D98E4B] rounded-r-md transition-all duration-700 shadow-sm"
+                          style={{ width: '43.75%' }}
+                        />
+                        <span className="text-[10px] font-semibold text-[#1A261D] pl-2 whitespace-nowrap">
+                          {isDonor ? '12.6 kg (28.0%)' : '3.5 kg (28.0%)'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Bar 3: Sanitized Glass Jars */}
+                    <div className="flex items-center">
+                      <div className="w-20 text-[10.5px] font-medium text-[#1A261D] leading-tight text-right pr-2.5 shrink-0">
+                        Sanitized<br />Glass Jars
+                      </div>
+                      <div className="flex-1 relative flex items-center h-7">
+                        <div 
+                          className="h-full bg-[#62778D] rounded-r-md transition-all duration-700 shadow-sm"
+                          style={{ width: '27.5%' }}
+                        />
+                        <span className="text-[10px] font-semibold text-[#1A261D] pl-2 whitespace-nowrap">
+                          {isDonor ? '7.9 kg (17.6%)' : '2.2 kg (17.6%)'}
+                        </span>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* X-Axis Ticks */}
+                  <div className="flex justify-between text-[10px] text-gray-500 font-medium pl-20 pt-2">
+                    <span>{isDonor ? '0 kg' : '0 kg'}</span>
+                    <span>{isDonor ? '8 kg' : '2 kg'}</span>
+                    <span>{isDonor ? '15 kg' : '4 kg'}</span>
+                    <span>{isDonor ? '22 kg' : '6 kg'}</span>
+                    <span>{isDonor ? '30 kg' : '8 kg'}</span>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Planet Milestone Callout Box */}
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-[#EAF6ED] border border-[#D5EEDB] text-left space-y-1">
+                <div className="text-xs sm:text-sm font-bold text-[#14532D]">
+                  Planet Milestone
+                </div>
+                <div className="text-[11px] sm:text-xs text-[#2E6B47] leading-relaxed">
+                  Milestone: You saved <strong className="font-bold">{isDonor ? '72.4 kg' : '28.3 kg'} CO2e</strong> &amp; protected <strong className="font-bold">{isDonor ? '5 mature trees' : '2 mature trees'}</strong>!
+                </div>
+              </div>
+
+              {/* View Details Button */}
+              <button
+                type="button"
+                onClick={() => setShowImpactModal(true)}
+                className="w-full py-3.5 px-4 rounded-2xl bg-[#0B3B24] hover:bg-[#125838] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-[0_4px_14px_rgba(11,59,36,0.22)] hover:scale-[1.01] active:scale-[0.99]"
+              >
+                View Details
+              </button>
+
+            </div>
+
           </div>
 
-          <div className="text-xs text-[#586A5E] text-center sm:text-right max-w-xs">
-            Connecting conscientious donors with vocational schools, makerspaces, and eco-conscious creators across India.
-          </div>
-        </div>
+          {/* ========================================================= */}
+          {/* DONOR ONLY: ANNUAL SALES PERFORMANCE GRAPH                 */}
+          {/* Represents month-wise sales revenue and batches monetized  */}
+          {/* ========================================================= */}
+          {isDonor && (
+            <div id="sales-analytics" className="scroll-mt-6">
+              <DonorSalesChart />
+            </div>
+          )}
 
-        {/* 4 Review Cards with Quotes */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {reviews.map((rev, idx) => (
-            <div
-              key={idx}
-              className="p-6 rounded-3xl bg-[#FDFBF7] border border-[#EAE3D2] shadow-sm flex flex-col justify-between space-y-4"
-            >
-              <div className="space-y-3">
-                <Quote className="w-7 h-7 text-[#D9381E]/50" />
-                <p className="text-xs text-[#1A261D] leading-relaxed font-normal">
-                  "{rev.quote}"
+          {/* ========================================================= */}
+          {/* LIVE MARKETPLACE SURPLUS FEED (Connected to PostgreSQL)   */}
+          {/* ========================================================= */}
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-[#1A261D]">
+                  Live Reclaimed Surplus Streams
+                </h2>
+                <p className="text-xs text-[#586A5E]">
+                  Verified listings available for immediate pickup in Bengaluru, Mumbai, and Pune.
                 </p>
               </div>
-
-              <div className="pt-3 border-t border-[#EAE3D2]">
-                <div className="text-xs font-serif font-bold text-[#1A261D]">
-                  {rev.author}
-                </div>
-                <div className="text-[10px] text-[#0A5C36]">
-                  {rev.role}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-      </section>
-
-      {/* 8. EMERALD GREEN COMMUNITY BANNER WITH VERMILLION CTA */}
-      <section className="px-4 sm:px-6 lg:px-8 py-8 max-w-7xl mx-auto">
-        <div className="rounded-4xl bg-[#0A5C36] text-white p-8 sm:p-12 lg:p-16 relative overflow-hidden shadow-2xl">
-          
-          <div className="max-w-2xl space-y-6 relative z-10">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[#CEEAD8] text-xs font-medium">
-              <Leaf className="w-3.5 h-3.5" />
-              Circular Waste Movement
-            </div>
-
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-white leading-tight">
-              Join the Circular Network — <br />
-              <span className="font-serif italic font-normal text-[#CEEAD8]">100% Waste Diverted</span>, Zero Landfill
-            </h2>
-
-            <p className="text-xs sm:text-sm text-white/85 leading-relaxed max-w-lg">
-              Get notified when fresh surplus batches of cardboard, timber, textiles, and glass appear in your city.
-            </p>
-
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md pt-2">
-              <input
-                type="email"
-                value={subscribeEmail}
-                onChange={(e) => setSubscribeEmail(e.target.value)}
-                placeholder="Enter your email..."
-                required
-                className="flex-1 px-5 py-3 rounded-full bg-white/15 border border-white/20 text-white placeholder-white/60 text-xs focus:bg-white focus:text-[#1A261D] focus:outline-none transition-all"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 rounded-full bg-[#D9381E] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#B72B15] shadow-vermillion-glow transition-all hover:scale-105 active:scale-95"
+              <Link
+                to="/browse"
+                className="inline-flex items-center gap-1 text-xs font-bold text-[#0B3B24] hover:underline"
               >
-                Join Now ↗
-              </button>
-            </form>
+                <span>View Marketplace</span>
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
 
-            {emailSubscribed && (
-              <div className="text-xs text-[#CEEAD8] flex items-center gap-1.5 animate-in fade-in">
-                <CheckCircle2 className="w-4 h-4 text-[#CEEAD8]" />
-                <span>Thank you for joining our circular waste community!</span>
+            {loadingListings ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-pulse">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="h-64 bg-white rounded-3xl border border-gray-200/80" />
+                ))}
+              </div>
+            ) : listings.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {listings.map((item) => (
+                  <ListingCard
+                    key={item.id}
+                    listing={item}
+                    onRequest={(selected) => {
+                      setSelectedListingForInterest(selected);
+                      setShowInterestModal(true);
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center bg-white rounded-3xl border border-gray-200">
+                <p className="text-xs text-gray-500">No active surplus listings right now.</p>
               </div>
             )}
           </div>
 
-          {/* Subdued Background Logo Motif */}
-          <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-12 translate-y-12">
-            <Leaf className="w-96 h-96 text-white" />
-          </div>
+        </main>
+      </div>
 
-        </div>
-      </section>
-
-      {/* 9. EDITORIAL LUXURY FOOTER */}
-      <footer className="px-4 sm:px-6 lg:px-8 pt-16 pb-12 border-t border-[#EAE3D2] bg-[#FAF6EE]">
-        <div className="max-w-7xl mx-auto space-y-12">
-          
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-xs">
-            <div className="space-y-3">
-              <h4 className="font-serif font-bold text-sm text-[#1A261D]">Surplus Streams</h4>
-              <ul className="space-y-2 text-[#586A5E]">
-                <li><Link to="/browse?category=cardboard" className="hover:text-[#0A5C36]">Cardboard &amp; Packaging</Link></li>
-                <li><Link to="/browse?category=wood" className="hover:text-[#0A5C36]">Untreated Pine &amp; Timber</Link></li>
-                <li><Link to="/browse?category=glass" className="hover:text-[#0A5C36]">Sanitized Glass Jars</Link></li>
-                <li><Link to="/browse?category=textile" className="hover:text-[#0A5C36]">Denim &amp; Tailor Scraps</Link></li>
-              </ul>
-            </div>
-
-            <div className="space-y-3">
-              <h4 className="font-serif font-bold text-sm text-[#1A261D]">Platform</h4>
-              <ul className="space-y-2 text-[#586A5E]">
-                <li><Link to="/browse" className="hover:text-[#0A5C36]">Browse Marketplace</Link></li>
-                <li><Link to="/recommendations" className="hover:text-[#0A5C36]">AI Recommendation Engine</Link></li>
-                <li><Link to="/create-listing" className="hover:text-[#0A5C36]">Post Surplus Material</Link></li>
-                <li><Link to="/interests" className="hover:text-[#0A5C36]">Reuse Proposals</Link></li>
-              </ul>
-            </div>
-
-            <div className="space-y-3">
-              <h4 className="font-serif font-bold text-sm text-[#1A261D]">Academic Docs</h4>
-              <ul className="space-y-2 text-[#586A5E]">
-                <li><a href="/#gallery" className="hover:text-[#0A5C36]">Circular Gallery</a></li>
-                <li><Link to="/dashboard" className="hover:text-[#0A5C36]">User Dashboard</Link></li>
-                <li><span className="text-[#0A5C36]">BCS Capstone Project</span></li>
-                <li><span className="text-[#0A5C36]">Explainable AI Architecture</span></li>
-              </ul>
-            </div>
-
-            <div className="space-y-3">
-              <h4 className="font-serif font-bold text-sm text-[#1A261D]">System Diagnostic</h4>
-              <div className="p-3.5 rounded-2xl bg-[#FDFBF7] border border-[#EAE3D2] space-y-1.5 text-[11px] text-[#586A5E]">
-                <div className="flex items-center justify-between">
-                  <span>Backend Status:</span>
-                  <span className="font-semibold text-[#0A5C36] capitalize">{connectionStatus}</span>
+      {/* ========================================================= */}
+      {/* 3. INTERACTIVE MODAL: SCAN WASTE (AI Material Vision)      */}
+      {/* ========================================================= */}
+      {showScanModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-[28px] max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-gray-100 space-y-4">
+            
+            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-[#E8F5E9] flex items-center justify-center text-[#0B3B24]">
+                  <Camera className="w-5 h-5" />
                 </div>
-                {latency && (
-                  <div className="flex items-center justify-between">
-                    <span>DB Latency:</span>
-                    <span className="font-semibold text-[#0A5C36]">{latency} ms</span>
-                  </div>
-                )}
-                <div className="flex items-center justify-between">
-                  <span>ACID Safe:</span>
-                  <span className="font-semibold text-[#0A5C36]">PostgreSQL</span>
+                <div>
+                  <h3 className="font-bold text-base text-[#1A261D]">AI Material Scanner</h3>
+                  <p className="text-xs text-[#586A5E]">Identify surplus waste, calculate circular value &amp; sort</p>
                 </div>
               </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowScanModal(false);
+                  setScanResult(null);
+                }}
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
-          </div>
 
-          {/* Giant Editorial Wordmark */}
-          <div className="pt-8 border-t border-[#EAE3D2] text-center select-none">
-            <span className="text-5xl sm:text-7xl lg:text-9xl font-serif font-bold tracking-tighter text-[#1A261D]/15 hover:text-[#1A261D]/25 transition-colors">
-              ReSource <span className="font-serif italic font-normal text-[#D9381E]/40">AI</span>
-            </span>
-            <div className="mt-2 text-xs text-[#0A5C36] font-medium tracking-widest uppercase">
-              Connecting People • Diverting Waste • Empowering Creators
+            {/* Quick Demo Chips */}
+            <div>
+              <span className="text-[11px] font-bold text-gray-600 block mb-2">Test with sample material:</span>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => handleSimulateScan('Clean Corrugated Cardboard', 'cardboard', '98% Recyclable', '1.6 kg CO2e')}
+                  className="px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-[#E8F5E9] text-[#1A261D] font-medium transition-colors"
+                >
+                  📦 Cardboard Box
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSimulateScan('Untreated Pine Timber Offcut', 'wood', '92% Reusable', '3.4 kg CO2e')}
+                  className="px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-[#E8F5E9] text-[#1A261D] font-medium transition-colors"
+                >
+                  🪵 Timber Pallet
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSimulateScan('Sanitized Clear Glass Jars', 'glass', '100% Circular', '0.9 kg CO2e')}
+                  className="px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-[#E8F5E9] text-[#1A261D] font-medium transition-colors"
+                >
+                  🫙 Glass Jars
+                </button>
+              </div>
             </div>
-          </div>
 
+            {/* Scan Display Box */}
+            <div className="p-6 rounded-2xl bg-[#F9FAF8] border-2 border-dashed border-gray-300 text-center">
+              {scanning ? (
+                <div className="py-8 space-y-3">
+                  <div className="w-10 h-10 border-4 border-[#0B3B24] border-t-transparent rounded-full animate-spin mx-auto" />
+                  <p className="text-xs font-semibold text-[#0B3B24]">Analyzing material visual texture &amp; density...</p>
+                </div>
+              ) : scanResult ? (
+                <div className="text-left space-y-3 animate-in fade-in">
+                  <div className="flex items-center gap-2 text-[#0B3B24] font-bold text-sm">
+                    <CheckCircle2 className="w-5 h-5 text-[#3EA635]" />
+                    <span>Material Identified!</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="p-2.5 rounded-xl bg-white border border-gray-200">
+                      <div className="text-[10px] text-gray-500 uppercase">Category</div>
+                      <div className="font-bold text-[#1A261D]">{scanResult.name}</div>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-white border border-gray-200">
+                      <div className="text-[10px] text-gray-500 uppercase">Circular Rating</div>
+                      <div className="font-bold text-[#0B3B24]">{scanResult.recyclability}</div>
+                    </div>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-[#E8F5E9] text-xs font-medium text-[#0B3B24] flex items-center justify-between">
+                    <span>Carbon Avoidance Potential:</span>
+                    <strong>{scanResult.co2}</strong>
+                  </div>
+                </div>
+              ) : (
+                <div className="py-6 space-y-2">
+                  <Upload className="w-8 h-8 text-gray-400 mx-auto" />
+                  <p className="text-xs font-medium text-[#1A261D]">Drag &amp; drop material photo here</p>
+                  <p className="text-[11px] text-gray-500">Supports JPG, PNG, WEBP up to 5MB</p>
+                </div>
+              )}
+            </div>
+
+            {scanResult && (
+              <div className="pt-1 flex gap-2">
+                <Link
+                  to="/create-listing"
+                  className="flex-1 py-3 rounded-xl bg-[#0B3B24] hover:bg-[#125838] text-white text-xs font-bold text-center uppercase tracking-wider transition-all"
+                >
+                  Post This Surplus Material
+                </Link>
+                <Link
+                  to="/browse"
+                  className="px-4 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-xs font-bold text-[#1A261D] transition-all"
+                >
+                  Find Recipient
+                </Link>
+              </div>
+            )}
+
+          </div>
         </div>
-      </footer>
+      )}
+
+      {/* ========================================================= */}
+      {/* 4. INTERACTIVE MODAL: YOUR IMPACT BREAKDOWN (Animated)    */}
+      {/* ========================================================= */}
+      <ImpactModal
+        isOpen={showImpactModal}
+        onClose={() => setShowImpactModal(false)}
+      />
+
+      {/* ========================================================= */}
+      {/* 5. INTERACTIVE MODAL: FIND DISPOSAL CENTERS (LEAFLET MAP) */}
+      {/* ========================================================= */}
+      <DisposalCentersModal
+        isOpen={showCentersModal}
+        onClose={() => setShowCentersModal(false)}
+        userCity={user?.city || 'Bengaluru'}
+      />
+
+      {/* ========================================================= */}
+      {/* 6. INTERACTIVE MODAL: REWARDS & POINTS                   */}
+      {/* ========================================================= */}
+      {showRewardsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-[28px] max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4">
+            
+            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-[#3EA635]" />
+                <h3 className="font-bold text-base text-[#1A261D]">Eco Rewards</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowRewardsModal(false)}
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#E8F5E9] flex items-center justify-between">
+              <div>
+                <div className="text-xs text-[#0B3B24] font-medium">Your GreenLoop Balance</div>
+                <div className="text-2xl font-extrabold text-[#0B3B24]">1,250 Points</div>
+              </div>
+              <Award className="w-10 h-10 text-[#3EA635]" />
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <span className="font-bold text-gray-700 block">Available Rewards:</span>
+              <div className="p-3 rounded-xl bg-[#F9FAF8] border border-gray-200 flex items-center justify-between">
+                <div>
+                  <div className="font-bold text-[#1A261D]">₹200 Upcycling Store Voucher</div>
+                  <div className="text-[10px] text-gray-500">Redeem with 800 pts</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => alert('Voucher code GREEN200 unlocked!')}
+                  className="px-3 py-1.5 rounded-lg bg-[#0B3B24] text-white text-[11px] font-bold"
+                >
+                  Redeem
+                </button>
+              </div>
+              <div className="p-3 rounded-xl bg-[#F9FAF8] border border-gray-200 flex items-center justify-between">
+                <div>
+                  <div className="font-bold text-[#1A261D]">Tree Planting Certificate</div>
+                  <div className="text-[10px] text-gray-500">Redeem with 1,200 pts</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => alert('Tree planted in Cauvery Basin!')}
+                  className="px-3 py-1.5 rounded-lg bg-[#0B3B24] text-white text-[11px] font-bold"
+                >
+                  Plant Tree
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowRewardsModal(false)}
+              className="w-full py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-[#1A261D] font-bold text-xs"
+            >
+              Back to Home
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* 7. INTERACTIVE MODAL: ACCOUNT SETTINGS & PREFERENCES       */}
+      {/* ========================================================= */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-[32px] max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-gray-100 space-y-6 max-h-[90vh] overflow-y-auto">
+            
+            {/* Header */}
+            <div className="flex items-start justify-between pb-4 border-b border-gray-100">
+              <div className="flex items-center gap-3.5">
+                <img
+                  src={avatarSrc}
+                  alt={displayName}
+                  className="w-14 h-14 rounded-full object-cover border-2 border-[#3EA635] shadow-sm"
+                />
+                <div>
+                  <h3 className="font-bold text-lg text-[#1A261D] flex items-center gap-2">
+                    {displayName}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#E8F5E9] text-[#0B3B24]">
+                      {displayRole}
+                    </span>
+                    <span className="text-xs text-[#586A5E]">{user?.email || ''}</span>
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSettingsModal(false)}
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Form: City & Category Preferences */}
+            <form onSubmit={handleSavePreferences} className="space-y-5">
+              
+              {/* City Selection */}
+              <div>
+                <label className="block text-xs font-bold text-[#1A261D] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-[#0B3B24]" />
+                  Operating Hub / City
+                </label>
+                <select
+                  value={prefCity}
+                  onChange={(e) => setPrefCity(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#F9FAF8] border border-gray-200 text-xs font-semibold text-[#1A261D] focus:outline-none focus:border-[#0B3B24] transition-all"
+                >
+                  <option value="Bengaluru">Bengaluru (Karnataka)</option>
+                  <option value="Mumbai">Mumbai (Maharashtra)</option>
+                  <option value="Pune">Pune (Maharashtra)</option>
+                  <option value="Delhi">Delhi NCR</option>
+                  <option value="Hyderabad">Hyderabad (Telangana)</option>
+                  <option value="Chennai">Chennai (Tamil Nadu)</option>
+                </select>
+                <p className="text-[10.5px] text-[#586A5E] mt-1">
+                  Local surplus streams and disposal centers are prioritized by this location.
+                </p>
+              </div>
+
+              {/* Material Categories */}
+              <div>
+                <label className="block text-xs font-bold text-[#1A261D] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <Tag className="w-3.5 h-3.5 text-[#0B3B24]" />
+                  Preferred Material Streams
+                </label>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  {ALL_CATEGORIES.map((cat) => {
+                    const selected = prefCategories.includes(cat.id);
+                    return (
+                      <button
+                        type="button"
+                        key={cat.id}
+                        onClick={() => toggleCategory(cat.id)}
+                        className={`p-2.5 rounded-xl border text-left flex items-center justify-between transition-all ${
+                          selected
+                            ? 'bg-[#E8F5E9] border-[#3EA635] text-[#0B3B24] font-bold shadow-sm'
+                            : 'bg-[#F9FAF8] border-gray-200 text-[#586A5E] hover:bg-white'
+                        }`}
+                      >
+                        <span className="truncate">{cat.label}</span>
+                        {selected && <Check className="w-3.5 h-3.5 text-[#0B3B24] shrink-0" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Feedback messages */}
+              {prefSuccess && (
+                <div className="p-3 rounded-xl bg-[#E8F5E9] text-[#0B3B24] text-xs font-bold flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#3EA635]" />
+                  <span>Preferences saved successfully! AI matches updated.</span>
+                </div>
+              )}
+              {prefError && (
+                <div className="p-3 rounded-xl bg-red-50 text-red-700 text-xs font-medium">
+                  {prefError}
+                </div>
+              )}
+
+              {/* Save Preferences Button */}
+              <button
+                type="submit"
+                disabled={savingPrefs}
+                className="w-full py-3 rounded-2xl bg-[#0B3B24] hover:bg-[#125838] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-2"
+              >
+                {savingPrefs ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <span>Save Preferences</span>
+                )}
+              </button>
+            </form>
+
+
+
+            {/* Log Out CTA */}
+            <div className="pt-2 flex items-center justify-between text-xs">
+              <span className="text-[#586A5E]">Need to sign out completely?</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSettingsModal(false);
+                  logout();
+                  navigate('/login');
+                }}
+                className="text-red-600 font-bold hover:underline flex items-center gap-1"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Log Out</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* 8. INTERACTIVE MODAL: MY SURPLUS LISTINGS (For Donors)     */}
+      {/* ========================================================= */}
+      {showMyListingsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-[32px] max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-gray-100 space-y-6 max-h-[90vh] overflow-y-auto">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-[#E8F5E9] text-[#0B3B24] flex items-center justify-center">
+                  <Package className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-[#1A261D]">
+                    My Surplus Stream Listings
+                  </h3>
+                  <p className="text-xs text-[#586A5E]">
+                    {displayName} • Active materials available for local makers &amp; recyclers
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowMyListingsModal(false)}
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Action Bar: Post New Material */}
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-[#F9FAF8] border border-gray-200">
+              <div className="text-xs">
+                <div className="font-bold text-[#1A261D]">Have new surplus materials to divert?</div>
+                <div className="text-[#586A5E]">Upload specs, weights, and photos in 60 seconds.</div>
+              </div>
+              <Link
+                to="/create-listing"
+                onClick={() => setShowMyListingsModal(false)}
+                className="px-4 py-2.5 rounded-xl bg-[#0B3B24] hover:bg-[#125838] text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shrink-0"
+              >
+                <Plus className="w-4 h-4" />
+                <span>+ Post Material</span>
+              </Link>
+            </div>
+
+            {/* Listings Grid */}
+            <div className="space-y-3">
+              {loadingMyListings ? (
+                <div className="space-y-3 py-6 text-center animate-pulse">
+                  <div className="h-16 bg-gray-100 rounded-2xl" />
+                  <div className="h-16 bg-gray-100 rounded-2xl" />
+                </div>
+              ) : myListings.length > 0 ? (
+                myListings.map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-4 rounded-2xl border border-gray-200 hover:border-[#0B3B24]/40 bg-white hover:bg-[#FAFBF9] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm"
+                  >
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+                        {item.images && item.images.length > 0 ? (
+                          <img
+                            src={item.images[0]}
+                            alt={item.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-400">
+                            <Package className="w-5 h-5" />
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm text-[#1A261D] line-clamp-1">
+                          {item.title}
+                        </div>
+                        <div className="text-xs text-[#586A5E] flex items-center gap-2 mt-0.5">
+                          <span className="font-semibold text-[#0B3B24]">{item.quantity} {item.unit}</span>
+                          <span>•</span>
+                          <span className="capitalize">{item.category}</span>
+                          <span>•</span>
+                          <span>{item.city}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 self-end sm:self-center">
+                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                        item.status === 'available'
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : item.status === 'reserved'
+                            ? 'bg-amber-100 text-amber-800'
+                            : 'bg-gray-100 text-gray-600'
+                      }`}>
+                        {item.status}
+                      </span>
+                      <Link
+                        to={`/listings/${item.id}`}
+                        onClick={() => setShowMyListingsModal(false)}
+                        className="p-2 rounded-xl text-gray-500 hover:text-[#0B3B24] hover:bg-gray-100 transition-colors"
+                        title="View Live Listing"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Link>
+                      <Link
+                        to={`/edit-listing/${item.id}`}
+                        onClick={() => setShowMyListingsModal(false)}
+                        className="p-2 rounded-xl text-gray-500 hover:text-[#0B3B24] hover:bg-gray-100 transition-colors"
+                        title="Edit Listing"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="p-8 text-center bg-[#F9FAF8] rounded-2xl border border-dashed border-gray-300 space-y-3">
+                  <Package className="w-10 h-10 text-gray-400 mx-auto" />
+                  <p className="text-xs font-semibold text-[#1A261D]">No surplus listings posted yet.</p>
+                  <p className="text-[11px] text-[#586A5E]">
+                    List your warehouse cardboard, pallets, or clean industrial scrap to divert it from landfills.
+                  </p>
+                  <Link
+                    to="/create-listing"
+                    onClick={() => setShowMyListingsModal(false)}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0B3B24] text-white text-xs font-bold"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Post First Material</span>
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-2 text-center">
+              <button
+                type="button"
+                onClick={() => setShowMyListingsModal(false)}
+                className="w-full py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-[#1A261D] font-bold text-xs"
+              >
+                Close
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* Express Interest / Proposal Modal */}
+      {selectedListingForInterest && (
+        <InterestModal
+          listing={selectedListingForInterest}
+          isOpen={showInterestModal}
+          onClose={() => {
+            setShowInterestModal(false);
+            setSelectedListingForInterest(null);
+          }}
+          onSuccess={() => {
+            setShowInterestModal(false);
+            setSelectedListingForInterest(null);
+          }}
+        />
+      )}
 
     </div>
   );

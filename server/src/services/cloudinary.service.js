@@ -38,7 +38,7 @@ export const uploadImageFile = async (file) => {
       return await new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
           {
-            folder: 'resource_ai_listings',
+            folder: 'greenloop_listings',
             transformation: [{ width: 1200, height: 800, crop: 'limit', quality: 'auto' }],
           },
           (error, result) => {
