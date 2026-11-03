@@ -32,6 +32,17 @@ This service provides content-based recommendation ranking using **scikit-learn*
    ```
    Service listens on `http://localhost:8000`.
 
+5. **(Optional) Training Dataset & Model Fine-Tuning:**
+   The full 4-class training dataset (`archive.zip`, 1.0 GB / 2,969 images) is hosted on GitHub Releases:
+   * **Download URL:** [https://github.com/Om-Kalubarme/GreenLoop/releases/download/v1.0.0/archive.zip](https://github.com/Om-Kalubarme/GreenLoop/releases/download/v1.0.0/archive.zip)
+   
+   To train locally:
+   ```bash
+   curl -L -o archive.zip https://github.com/Om-Kalubarme/GreenLoop/releases/download/v1.0.0/archive.zip
+   unzip archive.zip -d archive/
+   python train_classifier.py
+   ```
+
 ## API Contract
 
 ### `GET /health`
