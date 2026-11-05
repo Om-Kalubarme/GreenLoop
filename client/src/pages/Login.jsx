@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Lock, Mail, AlertCircle, Eye, EyeOff, Sparkles, CheckCircle2, X, ExternalLink, KeyRound, Check, ArrowRight } from 'lucide-react';
@@ -20,7 +20,7 @@ export default function Login() {
   const intendedPath = location.state?.from?.pathname;
   const from = (intendedPath && intendedPath !== '/login' && intendedPath !== '/dashboard' && intendedPath !== '/donor/dashboard') ? intendedPath : '/';
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (user) {
       navigate(from, { replace: true });
     }

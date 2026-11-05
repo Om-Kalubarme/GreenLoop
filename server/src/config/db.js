@@ -6,7 +6,8 @@ dotenv.config();
 const { Pool } = pg;
 
 const isProduction = process.env.NODE_ENV === 'production';
-const useSSL = process.env.DB_SSL === 'true' || (isProduction && !process.env.DATABASE_URL?.includes('localhost'));
+const isCloudDatabase = process.env.DATABASE_URL?.includes('supabase.co') || process.env.DATABASE_URL?.includes('pooler.supabase.com') || process.env.DATABASE_URL?.includes('rds.amazonaws.com');
+const useSSL = process.env.DB_SSL === 'true' || isCloudDatabase || (isProduction && !process.env.DATABASE_URL?.includes('localhost'));
 
 const poolConfig = process.env.DATABASE_URL
   ? {

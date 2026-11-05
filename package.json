@@ -4,7 +4,8 @@
   "private": true,
   "description": "GreenLoop — AI-Powered Circular Waste-to-Resource Platform",
   "scripts": {
-    "install:all": "npm --prefix server install && npm --prefix client install",
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"cyan,magenta\" \"npm run server\" \"npm run client\"",
     "build": "npm --prefix client run build",
     "start": "npm --prefix server start",
     "server": "npm --prefix server run dev",
@@ -14,5 +15,8 @@
     "db:clean": "npm --prefix server run db:clean",
     "test": "npm --prefix server test",
     "test:matcher": "python3 -m unittest discover matcher/tests/"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
   }
 }
