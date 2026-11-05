@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Lock, Mail, AlertCircle, Eye, EyeOff, Sparkles, CheckCircle2, X, ExternalLink, KeyRound, Check, ArrowRight } from 'lucide-react';
@@ -14,11 +14,17 @@ export default function Login() {
   const [showSetupModal, setShowSetupModal] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState('Google');
 
-  const { login, isSupabaseConfigured, loginWithGoogle, loginWithMicrosoft } = useAuth();
+  const { user, login, isSupabaseConfigured, loginWithGoogle, loginWithMicrosoft } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const intendedPath = location.state?.from?.pathname;
-  const from = (intendedPath && intendedPath !== '/dashboard' && intendedPath !== '/donor/dashboard') ? intendedPath : '/';
+  const from = (intendedPath && intendedPath !== '/login' && intendedPath !== '/dashboard' && intendedPath !== '/donor/dashboard') ? intendedPath : '/';
+
+  useEffect(() => {
+    if (user) {
+      navigate(from, { replace: true });
+    }
+  }, [user, navigate, from]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
