@@ -15,7 +15,7 @@ const poolConfig = process.env.DATABASE_URL
       ssl: useSSL ? { rejectUnauthorized: false } : false,
       max: 20,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 5000,
+      connectionTimeoutMillis: 15000,
     }
   : {
       host: process.env.DB_HOST || 'localhost',
@@ -26,7 +26,7 @@ const poolConfig = process.env.DATABASE_URL
       ssl: useSSL ? { rejectUnauthorized: false } : false,
       max: 20,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 5000,
+      connectionTimeoutMillis: 15000,
     };
 
 export const pool = new Pool(poolConfig);
